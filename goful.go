@@ -34,7 +34,6 @@ func New(file string) *Goful {
 		callback:  make(chan func()),
 		exit:      false,
 	}
-	goful.Workspace().ReloadAll()
 	return goful
 }
 
@@ -112,6 +111,7 @@ func (g *Goful) Run() {
 		}
 	}()
 
+	g.Workspace().ReloadAll()
 	g.Draw()
 	widget.Flush()
 
