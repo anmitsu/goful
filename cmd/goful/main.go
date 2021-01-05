@@ -74,6 +74,7 @@ func config(g *goful.Goful) {
 	filer.SetStatView(true, false, true) // size, permission and time
 
 	// Setup open command for C-m (when the enter key is pressed)
+	// The macro %f means expanded to a file name, for more see (../../spawn.go)
 	if runtime.GOOS == "windows" {
 		g.AddKeymap("C-m", func() { g.Spawn("explorer %f %&") })
 	} else {

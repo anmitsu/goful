@@ -2,37 +2,43 @@
 
 Goful is a CUI file manager implemented by Go.
 
+* Works on cross-platform such as gnome-terminal in Ubuntu and cmd.exe in
+  Windows.
+* Multi window and workspace to display directory contents.
+* A command line to execute external commands such as bash and tmux.
+* Provides file search, glob, copy, bulk rename, etc.
+
 ## Install
 
     $ go get github.com/anmitsu/goful/cmd/goful
     ...
     $ goful
 
-![goful](<demo.gif>)
+![goful](<demo/readme_top.gif>)
 
 ## Usage
-
-Goful operates with the keyboard and key binds are based on such as shell and
-emacs. 
-
-Main key binds, for more see [cmd/goful/main.go](cmd/goful/main.go)
 
 | key            | bind |
 -----------------|-------
 | C-n, down      | Move cursor down |
 | C-p, up        | Move cursor up |
-| C-d            | Move cursor more down |
-| C-u            | Move cursor more up |
 | C-a            | Move cursor top |
 | C-e            | Move cursor bottom |
-| C-f, right     | Move next directory |
-| C-b, left      | Move previous directory |
+| C-f, right     | Move cursor right |
+| C-b, left      | Move cursor left |
 | C-h, backspace | Change to upper directory |
 | ~              | Change to home directory |
 | \              | Change to root directory |
-| space          | Mark file at cursor |
+| space          | Mark file on cursor |
 | *              | Toggle mark all files |
 | C-l            | Reload files |
+| C-m            | Open |
+| l              | Layout menu |
+| s              | Sort menu |
+| e              | Editor menu |
+| M-x            | Command menu |
+| M-f            | Move next workspace |
+| M-b            | Move previous workspace |
 | f, /           | Find files |
 | h              | Start shell mode |
 | n              | Create new file |
@@ -45,10 +51,21 @@ Main key binds, for more see [cmd/goful/main.go](cmd/goful/main.go)
 | C-g            | Cancel |
 | q, Q           | Quit application |
 
-### Menu
-
-### Command line
+### For more see [cmd/goful/main.go](cmd/goful/main.go)
 
 ## Customize
 
 Goful customizes by edit `cmd/goful/main.go` and rebuild.
+
+For example, install your customized binary to `$GOPATH/bin`.
+
+    Copy original main.go to my/goful directory
+    $ cd $GOPATH/src/github.com/anmitsu/goful/cmd
+    $ mkdir -p my/goful
+    $ cp goful/main.go my/goful
+    $ cd my/goful
+    
+    After edited my/goful/main.go
+    $ go build
+    $ go install
+

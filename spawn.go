@@ -13,7 +13,7 @@ import (
 	"github.com/nsf/termbox-go"
 )
 
-// Spawn process by an external terminal.
+// Spawn a process by an external terminal.
 func (g *Goful) Spawn(cmd string) {
 	cmd, background := g.expandMacro(cmd)
 	newSpawn(cmd, background, g.shell).spawn()
@@ -21,17 +21,17 @@ func (g *Goful) Spawn(cmd string) {
 
 const (
 	macroPrefix             = '%'
-	macroEscape             = '\\'
-	macroFile               = 'f'
-	macroFilePath           = 'F'
-	macroFileWithoutExt     = 'x'
-	macroFileWithoutExtPath = 'X'
-	macroMarkfile           = 'm'
-	macroMarkfilePath       = 'M'
-	macroDir                = 'd'
-	macroDirPath            = 'D'
-	macroNextDir            = '2'
-	macroRunBackground      = '&'
+	macroEscape             = '\\' // \ is an escape sequence for the macro prefix %
+	macroFile               = 'f'  // %f is expanded a file name on the cursor
+	macroFilePath           = 'F'  // %F is expanded a file path on the cursor
+	macroFileWithoutExt     = 'x'  // %x is expanded a file name excluded the extention on the cursor
+	macroFileWithoutExtPath = 'X'  // %x is expanded a file path excluded the extention on the cursor
+	macroMarkfile           = 'm'  // %m is expanded mark file names joined by spaces
+	macroMarkfilePath       = 'M'  // %M is expanded mark file paths joined by spaces
+	macroDir                = 'd'  // %d is expanded a directory name on the cursor
+	macroDirPath            = 'D'  // %D is expanded a directory path on the cursor
+	macroNextDir            = '2'  // %D2 is expanded the neighbor directory path
+	macroRunBackground      = '&'  // %& is a flag runned in background
 )
 
 func (g *Goful) expandMacro(cmd string) (result string, background bool) {
@@ -44,7 +44,7 @@ func (g *Goful) expandMacro(cmd string) (result string, background bool) {
 	prefix := false
 	offset := 0
 	for i, b := range data {
-		if escape { // skip escape sequence.
+		if escape { // skip the escape sequence
 			ret = widget.DeleteBytes(ret, offset-1, 1)
 			escape = false
 			continue
