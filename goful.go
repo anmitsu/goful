@@ -14,8 +14,9 @@ import (
 // Goful is CUI file manager.
 type Goful struct {
 	*filer.Filer
+	shell     func(cmd string) []string
+	terminal  func(cmd string) []string
 	next      widget.Widget
-	shell     shell
 	event     chan termbox.Event
 	interrupt chan int
 	callback  chan func()
@@ -28,7 +29,6 @@ func New(file string) *Goful {
 	goful := &Goful{
 		Filer:     filer.NewFromJSON(file, 0, 0, width, height-2),
 		next:      nil,
-		shell:     shell{"", []string{}, "", []string{}},
 		event:     make(chan termbox.Event, 20),
 		interrupt: make(chan int, 2),
 		callback:  make(chan func()),
@@ -37,21 +37,19 @@ func New(file string) *Goful {
 	return goful
 }
 
-// ConfigFiler sets keymap function for filer.
+// ConfigShell sets a function that returns a shell name and options.
+func (g *Goful) ConfigShell(config func(cmd string) []string) {
+	g.shell = config
+}
+
+// ConfigTerminal sets a function that returns a terminal name and options.
+func (g *Goful) ConfigTerminal(config func(cmd string) []string) {
+	g.terminal = config
+}
+
+// ConfigFiler sets a keymap function for the filer.
 func (g *Goful) ConfigFiler(f func(*Goful) widget.Keymap) {
 	g.MergeKeymap(f(g))
-}
-
-// ConfigShell sets shell name and options.
-func (g *Goful) ConfigShell(shell string, opts ...string) {
-	g.shell.name = shell
-	g.shell.opts = opts
-}
-
-// ConfigScreen sets screen name and options.
-func (g *Goful) ConfigScreen(screen string, opts ...string) {
-	g.shell.screen = screen
-	g.shell.screenopts = opts
 }
 
 // Next returns next widget for drawing and input.

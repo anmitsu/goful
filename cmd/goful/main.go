@@ -62,13 +62,6 @@ func config(g *goful.Goful) {
 	message.SetErrorLog("~/.goful/log/error.log") // "" is not logging
 	message.Sec(5)                                // display second for a message
 
-	if runtime.GOOS == "windows" {
-		g.ConfigShell("cmd", "/c")
-	} else {
-		g.ConfigShell("bash", "-c")
-		g.ConfigScreen("tmux", "new-window", "-n")
-	}
-
 	look.Set("default") // default or midnight
 
 	filer.SetStatView(true, false, true) // size, permission and time
@@ -79,6 +72,33 @@ func config(g *goful.Goful) {
 		g.AddKeymap("C-m", func() { g.Spawn("explorer %f %&") })
 	} else {
 		g.AddKeymap("C-m", func() { g.Spawn("xdg-open %f %&") })
+	}
+
+	// Setup a shell and a terminal to execute external commands.
+	// The shell is called when execute on background by the macro %&.
+	// The terminal is called when the other.
+	if runtime.GOOS == "windows" {
+		g.ConfigShell(func(cmd string) []string {
+			return []string{"cmd", "/c", cmd}
+		})
+		g.ConfigTerminal(func(cmd string) []string {
+			return []string{"start", "cmd", "/k", cmd}
+		})
+	} else {
+		g.ConfigShell(func(cmd string) []string {
+			return []string{"bash", "-c", cmd}
+		})
+		g.ConfigTerminal(func(cmd string) []string {
+			// for not close the terminal when the shell finishes running
+			const tail = `;read -p "HIT ENTER KEY"`
+
+			if strings.Contains(os.Getenv("TERM"), "screen") { // such as screen and tmux
+				return []string{"tmux", "new-window", "-n", cmd, cmd + tail}
+			}
+			// To execute bash in gnome-terminal of a new window.
+			// Opts -x instead of -- to open in a new tab.
+			return []string{"gnome-terminal", "--", "bash", "-c", cmd + tail}
+		})
 	}
 
 	menu.Add("sort",

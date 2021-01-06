@@ -2,7 +2,6 @@ package goful
 
 import (
 	"bytes"
-	"fmt"
 	"os"
 	"os/exec"
 	"strings"
@@ -10,13 +9,26 @@ import (
 	"github.com/anmitsu/goful/message"
 	"github.com/anmitsu/goful/utils"
 	"github.com/anmitsu/goful/widget"
-	"github.com/nsf/termbox-go"
 )
 
-// Spawn a process by an external terminal.
+// Spawn a process by the shell and terminal.
 func (g *Goful) Spawn(cmd string) {
 	cmd, background := g.expandMacro(cmd)
-	newSpawn(cmd, background, g.shell).spawn()
+	var err error
+	var execCmd *exec.Cmd
+	if background {
+		options := g.shell(cmd)
+		execCmd = exec.Command(options[0], options[1:]...)
+		err = runBackground(execCmd)
+	} else {
+		options := g.terminal(cmd)
+		execCmd = exec.Command(options[0], options[1:]...)
+		err = runTerminal(execCmd)
+	}
+	message.Info(strings.Join(execCmd.Args, " "))
+	if err != nil {
+		message.Error(err)
+	}
 }
 
 const (
@@ -106,68 +118,18 @@ func (g *Goful) expandMacro(cmd string) (result string, background bool) {
 	return string(ret), background
 }
 
-// type Spawner interface {
-// 	Spawn() error
-// 	Shell() string
-// 	ShellCmd()
-// 	Title()
-// }
-
-type shell struct {
-	name       string
-	opts       []string
-	screen     string
-	screenopts []string
-}
-
-type spawn struct {
-	cmd        string
-	background bool
-	shell      shell
-}
-
-func newSpawn(cmd string, background bool, s shell) *spawn {
-	return &spawn{cmd, background, s}
-}
-
-func (s *spawn) spawn() {
-	screen := false
-	if strings.Contains(os.Getenv("TERM"), "screen") {
-		screen = true
-	}
-
-	var err error
-	var cmd *exec.Cmd
-	if screen && !s.background {
-		opts := append(s.shell.screenopts, s.cmd, s.cmd+`; read -p "HIT ENTER KEY"`)
-		cmd = exec.Command(s.shell.screen, opts...)
-		err = s.runNewscreen(cmd)
-	} else {
-		opts := append(s.shell.opts, s.cmd)
-		cmd = exec.Command(s.shell.name, opts...)
-		if s.background {
-			err = s.runBackground(cmd)
-		} else {
-			err = s.runForeground(cmd)
-		}
-	}
-	message.Info(strings.Join(cmd.Args, " "))
-	if err != nil {
-		message.Error(err)
-	}
-}
-
-func (s *spawn) runNewscreen(cmd *exec.Cmd) error {
+func runTerminal(cmd *exec.Cmd) error {
+	var bufout, buferr bytes.Buffer
 	cmd.Stdin = os.Stdin
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
+	cmd.Stdout = &bufout
+	cmd.Stderr = &buferr
 	if err := cmd.Run(); err != nil {
 		return err
 	}
 	return nil
 }
 
-func (s *spawn) runBackground(cmd *exec.Cmd) error {
+func runBackground(cmd *exec.Cmd) error {
 	var bufout, buferr bytes.Buffer
 	cmd.Stdout = &bufout
 	cmd.Stderr = &buferr
@@ -183,28 +145,5 @@ func (s *spawn) runBackground(cmd *exec.Cmd) error {
 			message.Errorf(buferr.String())
 		}
 	}()
-	return nil
-}
-
-func (s *spawn) runForeground(cmd *exec.Cmd) error {
-	termbox.Close()
-	defer func() {
-		termbox.Init()
-		termbox.SetInputMode(termbox.InputAlt)
-	}()
-
-	c := exec.Command("clear")
-	c.Stdin = os.Stdin
-	c.Stdout = os.Stdout
-	c.Stderr = os.Stderr
-	c.Run()
-
-	cmd.Stdin = os.Stdin
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
-	cmd.Run()
-	var buf string
-	fmt.Println("\nHIT ENTER KEY")
-	fmt.Scanln(&buf)
 	return nil
 }
