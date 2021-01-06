@@ -1,2 +1,3 @@
 cmd/*
+cmd/goful/goful
 !/cmd/goful
