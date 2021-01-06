@@ -18,14 +18,13 @@ import (
 )
 
 func main() {
-	// Initialize a termbox-go.
 	if err := termbox.Init(); err != nil {
 		panic(err)
 	}
 	defer termbox.Close()
 	termbox.SetInputMode(termbox.InputAlt)
 
-	// Set a title if in a terminal multiplexer such as screen and tmux.
+	// Set a title if in a terminal such as screen and tmux.
 	if strings.Contains(os.Getenv("TERM"), "screen") {
 		os.Stdout.WriteString("\033kgoful\033\\")
 	}
@@ -41,11 +40,8 @@ func main() {
 
 	app := goful.New(state)
 	config(app)
-
 	cmdline.LoadHistory(hist)
-
 	app.Run()
-
 	app.SaveJSON(state)
 	cmdline.SaveHistory(hist)
 }
