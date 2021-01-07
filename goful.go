@@ -1,4 +1,4 @@
-// Package goful is CUI file manager.
+// Package goful is a CUI file manager.
 package goful
 
 import (
@@ -11,7 +11,7 @@ import (
 	"github.com/nsf/termbox-go"
 )
 
-// Goful is CUI file manager.
+// Goful is a CUI file manager.
 type Goful struct {
 	*filer.Filer
 	shell     func(cmd string) []string
@@ -23,7 +23,7 @@ type Goful struct {
 	exit      bool
 }
 
-// New creates a new goful client based on file recording the previous state.
+// New creates a new goful client based recording a previous state.
 func New(file string) *Goful {
 	width, height := termbox.Size()
 	goful := &Goful{
@@ -52,13 +52,13 @@ func (g *Goful) ConfigFiler(f func(*Goful) widget.Keymap) {
 	g.MergeKeymap(f(g))
 }
 
-// Next returns next widget for drawing and input.
+// Next returns a next widget for drawing and input.
 func (g *Goful) Next() widget.Widget { return g.next }
 
-// Disconnect references to next widget for exiting.
+// Disconnect references to a next widget for exiting.
 func (g *Goful) Disconnect() { g.next = nil }
 
-// Resize implements widget.Widget and resizes all widget.
+// Resize all widgets.
 func (g *Goful) Resize(x, y, width, height int) {
 	g.Filer.Resize(x, y, width, height-2)
 	if wid := g.Next(); wid != nil {
@@ -69,7 +69,7 @@ func (g *Goful) Resize(x, y, width, height int) {
 	progbar.Resize(width, height)
 }
 
-// Draw implements widget.Widget and draws all widget.
+// Draw all widgets.
 func (g *Goful) Draw() {
 	g.Filer.Draw()
 	if g.Next() != nil {
@@ -80,7 +80,7 @@ func (g *Goful) Draw() {
 	progbar.Draw()
 }
 
-// Input implements widget.Widget.
+// Input to a current widget.
 func (g *Goful) Input(key string) {
 	if g.Next() != nil {
 		g.Next().Input(key)
@@ -89,7 +89,7 @@ func (g *Goful) Input(key string) {
 	}
 }
 
-// Menu runs menu mode.
+// Menu runs a menu mode.
 func (g *Goful) Menu(name string) {
 	m, err := menu.New(name, g)
 	if err != nil {
@@ -99,7 +99,7 @@ func (g *Goful) Menu(name string) {
 	g.next = m
 }
 
-// Run goful client.
+// Run the goful client.
 func (g *Goful) Run() {
 	message.Info("Welcome to goful")
 

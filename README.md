@@ -18,7 +18,7 @@ Goful is a CUI file manager implemented by Go.
 
 ## Usage
 
-| key            | bind |
+| key            | function |
 -----------------|-------
 | C-n, down      | Move cursor down |
 | C-p, up        | Move cursor up |

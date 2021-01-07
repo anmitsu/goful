@@ -11,7 +11,7 @@ import (
 	"github.com/anmitsu/goful/widget"
 )
 
-// Completion is the list box based on cmdline text.
+// Completion is a list box displays completions of the cmdline text.
 type Completion struct {
 	*widget.ListBox
 	cmdline widget.Widget
@@ -19,12 +19,12 @@ type Completion struct {
 
 var completionKeymap func(*Completion) widget.Keymap
 
-// ConfigCompletion sets keymap function for completion.
+// ConfigCompletion sets a completion keymap function.
 func ConfigCompletion(config func(*Completion) widget.Keymap) {
 	completionKeymap = config
 }
 
-// NewCompletion creates a new completion.
+// NewCompletion creates a new completion list box.
 func NewCompletion(x, y, width, height int, cmdline *Cmdline) *Completion {
 	comp := &Completion{
 		ListBox: widget.NewListBox(x, y, width, height, "Completion"),
@@ -45,13 +45,13 @@ func NewCompletion(x, y, width, height int, cmdline *Cmdline) *Completion {
 	return comp
 }
 
-// Next implements widget.Widget.
+// Next returns nil.
 func (c *Completion) Next() widget.Widget { return nil }
 
-// Disconnect implements widget.Widget.
+// Disconnect do noting.
 func (c *Completion) Disconnect() {}
 
-// InsertCompletion inserts selected completion to cmdline and exits completion.
+// InsertCompletion inserts a selected completion to the cmdline and exits the completion.
 func (c *Completion) InsertCompletion() {
 	start := c.cmdline.(*Cmdline).TextBeforeCursor()
 	compname := c.CurrentContent().Name()
@@ -65,7 +65,7 @@ func (c *Completion) InsertCompletion() {
 	c.cmdline.Disconnect()
 }
 
-// Input implements widget.Widget.
+// Input to the completion or to the cmdline and exits.
 func (c *Completion) Input(key string) {
 	if cb, ok := completionKeymap(c)[key]; ok {
 		cb()
@@ -75,7 +75,7 @@ func (c *Completion) Input(key string) {
 	}
 }
 
-// Exit completion mode in cmdline.
+// Exit the completion.
 func (c *Completion) Exit() { c.cmdline.Disconnect() }
 
 type parser struct {

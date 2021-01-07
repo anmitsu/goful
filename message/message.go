@@ -62,7 +62,7 @@ func SetErrorLog(path string) {
 	messenger.errlog = utils.ExpandPath(path)
 }
 
-// Init message works asynchronously.
+// Init initializes the message works asynchronously.
 func Init() {
 	width, height := termbox.Size()
 	messenger = &message{

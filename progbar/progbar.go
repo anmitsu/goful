@@ -14,23 +14,23 @@ func Draw() {
 	}
 }
 
-// Start the progress bar to arrival value.
+// Start the progress bar to an arrival value.
 func Start(maxval float64) {
 	progbar.Start(maxval)
 }
 
-// Finish the progress bar and clear display.
+// Finish the progress bar and the clear display.
 func Finish() {
 	progbar.Finish()
 	progbar.Clear()
 }
 
-// IsFinished reports whether the progress bar.
+// IsFinished reports whether the progress bar finished.
 func IsFinished() bool {
 	return progbar.IsFinished()
 }
 
-// Update the progress bar by value.
+// Update the progress bar by a value.
 func Update(value float64) {
 	progbar.Update(value)
 }
@@ -43,7 +43,7 @@ func Resize(width, height int) {
 	progbar.Clear()
 }
 
-// Init the progress bar at the bottom right half position.
+// Init initializes the progress bar at the bottom position.
 func Init() {
 	width, height := termbox.Size()
 	w := int(float64(width) * 0.7)

@@ -1,4 +1,4 @@
-// Package cmdline is a command line widget like shell.
+// Package cmdline is a command line widget.
 package cmdline
 
 import (
@@ -16,17 +16,17 @@ import (
 	"github.com/nsf/termbox-go"
 )
 
-// A Mode describes cmdline mode.
+// Mode describes a cmdline mode.
 type Mode interface {
-	String() string // name to use as commands
-	Prompt() string // displayed head of cmdline
+	String() string // uses as a history map name
+	Prompt() string // is displayed at the beggining
 	Result() string
 	Init(*Cmdline)
 	Draw(*Cmdline)
 	Run(*Cmdline)
 }
 
-// Cmdline is the text box with specified mode.
+// Cmdline is one line text box with a specified mode.
 type Cmdline struct {
 	*widget.TextBox
 	filer      widget.Widget
@@ -37,13 +37,13 @@ type Cmdline struct {
 
 var keymap func(*Cmdline) widget.Keymap
 
-// Config sets keymap function for cmdline.
+// Config sets the cmdline keymap function.
 func Config(config func(*Cmdline) widget.Keymap) {
 	keymap = config
 }
 
-// New creates the cmdline with specified mode and history list box.
-// These widget size based on filer of parent widget.
+// New creates a new cmdline with a specified mode and a history list box.
+// These widget size based on the filer widget.
 func New(m Mode, filer widget.Widget) *Cmdline {
 	x, y := filer.LeftTop()
 	width, height := filer.Width(), filer.Height()
@@ -68,13 +68,13 @@ func New(m Mode, filer widget.Widget) *Cmdline {
 	return c
 }
 
-// Next implements widget.Widget.
+// Next returns a completion widget.
 func (c *Cmdline) Next() widget.Widget { return c.completion }
 
-// Disconnect implements widget.Widget.
+// Disconnect a completion widget.
 func (c *Cmdline) Disconnect() { c.completion = nil }
 
-// StartCompletion starts completion based on cmdline text.
+// StartCompletion starts a completion based on the cmdline text.
 func (c *Cmdline) StartCompletion() {
 	x, y := c.History.LeftTop()
 	width, height := c.History.Width(), c.History.Height()
@@ -88,7 +88,7 @@ func (c *Cmdline) StartCompletion() {
 	c.completion = comp
 }
 
-// Resize the cmdline and history list box.
+// Resize the cmdline and the history list box.
 func (c *Cmdline) Resize(x, y, width, height int) {
 	c.TextBox.Resize(x, y+height-1, width, 1)
 	y = (y + height) * 2 / 3
@@ -96,13 +96,13 @@ func (c *Cmdline) Resize(x, y, width, height int) {
 	c.History.Resize(x, y, width, height)
 }
 
-// ResizeRelative relative resizes the cmdline and history list box.
+// ResizeRelative resizes relative to cmdline current sizes.
 func (c *Cmdline) ResizeRelative(x, y, width, height int) {
 	c.TextBox.ResizeRelative(x, y, width, height)
 	c.History.ResizeRelative(x, y, width, height)
 }
 
-// DrawLine draws the cmdline prompt and text.
+// DrawLine draws the cmdline.
 func (c *Cmdline) DrawLine() {
 	c.Clear()
 	x, y := c.LeftTop()
@@ -122,7 +122,7 @@ func (c *Cmdline) DrawLine() {
 	}
 }
 
-// Draw the cmdline mode and completion or histry list box
+// Draw the cmdline and the completion or the histry list box
 func (c *Cmdline) Draw() {
 	c.mode.Draw(c)
 	if c.Next() != nil {
@@ -132,7 +132,7 @@ func (c *Cmdline) Draw() {
 	}
 }
 
-// Input to text or widget callback function.
+// Input to the text box or widget keymaps.
 func (c *Cmdline) Input(key string) {
 	if c.completion != nil {
 		c.completion.Input(key)
@@ -148,7 +148,7 @@ func (c *Cmdline) Input(key string) {
 	}
 }
 
-// Exit the cmdline and add cmdline text to history.
+// Exit the cmdline and add a cmdline text to the history.
 func (c *Cmdline) Exit() {
 	c.History.add()
 	c.History = nil
@@ -157,7 +157,7 @@ func (c *Cmdline) Exit() {
 	c.filer.Disconnect()
 }
 
-// Run the cmdline based on mode and add cmdline text to history.
+// Run the cmdline mode and add a cmdline text to the history.
 func (c *Cmdline) Run() {
 	c.History.add()
 	c.mode.Run(c)
@@ -165,7 +165,7 @@ func (c *Cmdline) Run() {
 
 var historyMap = map[string][]string{}
 
-// LoadHistory loads from the file and append to history map of key as file name.
+// LoadHistory loads from a path and append to history maps of a key as the file name.
 func LoadHistory(path string) error {
 	path = utils.ExpandPath(path)
 	file, err := os.Open(path)
@@ -191,7 +191,7 @@ func LoadHistory(path string) error {
 	return nil
 }
 
-// SaveHistory saves to the file of history.
+// SaveHistory saves the history to a path.
 func SaveHistory(path string) error {
 	path = utils.ExpandPath(path)
 	if err := os.MkdirAll(filepath.Dir(path), 0755); err != nil {
@@ -226,7 +226,7 @@ type History struct {
 	input   string // in the input
 }
 
-// NewHistory creates the history list box.
+// NewHistory creates a new history list box.
 func NewHistory(x, y, width, height int, cmdline *Cmdline) *History {
 	lb := widget.NewListBox(x, y, width, height, "History")
 	lb.SetLower(-1)
@@ -273,7 +273,7 @@ func (h *History) add() {
 	}
 }
 
-// Delete history on the cursor.
+// Delete a history content on the cursor.
 func (h *History) Delete() {
 	if h.Cursor() < 0 || h.Upper() < 1 {
 		return
@@ -294,7 +294,7 @@ func (h *History) Delete() {
 	}
 }
 
-// MoveCursor moves list box cursor and sets text to the cmdline.
+// MoveCursor moves the history list box cursor and sets a text to the cmdline.
 func (h *History) MoveCursor(amount int) {
 	h.ListBox.MoveCursor(amount)
 	if h.Cursor() == h.Lower() {
@@ -304,7 +304,7 @@ func (h *History) MoveCursor(amount int) {
 	}
 }
 
-// CursorDown down list box cursor and sets text to the cmdline.
+// CursorDown downs the history list box cursor and sets a text to the cmdline.
 func (h *History) CursorDown() {
 	h.ListBox.CursorDown()
 	if h.Cursor() == h.Lower() {
@@ -314,7 +314,7 @@ func (h *History) CursorDown() {
 	}
 }
 
-// CursorUp up list box cursor and sets text to the cmdline.
+// CursorUp ups the history list box cursor and sets a text to the cmdline.
 func (h *History) CursorUp() {
 	h.ListBox.CursorUp()
 	if h.Cursor() == h.Lower() {
