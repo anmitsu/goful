@@ -1,24 +1,25 @@
+// Package look is attributes setting for termbox-go.
 package look
 
 import "github.com/nsf/termbox-go"
 
-// Look is attributes of termbox.
+// Look is attributes of termbox-go.
 type Look struct {
 	fg termbox.Attribute
 	bg termbox.Attribute
 }
 
-// Fg is getter of foreground attribute.
+// Fg retruns a foreground attribute.
 func (l Look) Fg() termbox.Attribute {
 	return l.fg
 }
 
-// Bg is getter of background attribute.
+// Bg is returns a background attribute.
 func (l Look) Bg() termbox.Attribute {
 	return l.bg
 }
 
-// And combines this and others.
+// And combines itself attributes and others.
 func (l Look) And(others ...Look) Look {
 	fg, bg := l.fg, l.bg
 	for _, o := range others {
@@ -28,7 +29,7 @@ func (l Look) And(others ...Look) Look {
 	return Look{fg, bg}
 }
 
-// Set look for name.
+// Set look for a name.
 func Set(name string) {
 	switch name {
 	case "default":
@@ -40,61 +41,61 @@ func Set(name string) {
 	}
 }
 
-// Default is default look attribute.
+// Default is a default look attribute.
 func Default() Look { return defaultAttr }
 
-// Blank is blank look attribute.
+// Blank is a blank look attribute.
 func Blank() Look { return Look{0, 0} }
 
-// MessageInfo is look for infomation message.
+// MessageInfo is an infomation message look.
 func MessageInfo() Look { return messageInfo }
 
-// MessageErr is look for error message.
+// MessageErr is an error message look.
 func MessageErr() Look { return messageErr }
 
-// Prompt is look for prompt of cmdline and finder.
+// Prompt is a cmdline and finder prompt look.
 func Prompt() Look { return prompt }
 
-// Cmdline is look for cmdline text area.
+// Cmdline is a cmdline look.
 func Cmdline() Look { return cmdline }
 
-// CmdlineCommand is look for highlighted commands of cmdline text.
+// CmdlineCommand is a highlighted command look in the cmdline.
 func CmdlineCommand() Look { return cmdlineCommand }
 
-// CmdlineMacro is look for macro of cmdline text.
+// CmdlineMacro is a macro look in the cmdline.
 func CmdlineMacro() Look { return cmdlineMacro }
 
-// CmdlineOption is look for options of cmdline text.
+// CmdlineOption is a option look of the cmdline.
 func CmdlineOption() Look { return cmdlineOption }
 
-// Highlight is look for highlight text of listbox.
+// Highlight is a highlight text look in the list box.
 func Highlight() Look { return highlight }
 
-// Title is look for title of listbox.
+// Title is a title look of the list box.
 func Title() Look { return title }
 
-// Selected is look for selected item of container.
+// Selected is a selected item look of in the list.
 func Selected() Look { return selected }
 
-// Symlink is look for symlink file.
+// Symlink is a symlink file look.
 func Symlink() Look { return symlink }
 
-// SymlinkDir is look for symlink directory.
+// SymlinkDir is a symlink directory look.
 func SymlinkDir() Look { return symlinkDir }
 
-// Directory is look for directory.
+// Directory is a directory look.
 func Directory() Look { return directory }
 
-// Executable is look for executable file.
+// Executable is an executable file look.
 func Executable() Look { return executable }
 
-// Marked is look for marked file.
+// Marked is a marked file look.
 func Marked() Look { return marked }
 
-// Finder is look for finder of directory.
+// Finder is a finder text area look.
 func Finder() Look { return finder }
 
-// Progress is look for gauge of progress bar.
+// Progress is a gauge look of the progress bar.
 func Progress() Look { return progress }
 
 var (

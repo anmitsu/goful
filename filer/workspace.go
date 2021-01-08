@@ -18,7 +18,7 @@ const (
 	layoutFullscreen
 )
 
-// Workspace represents box storing directories.
+// Workspace is a box storing and layouting directories.
 type Workspace struct {
 	*widget.Window
 	Dirs   []*Directory `json:"directories"`
@@ -27,7 +27,7 @@ type Workspace struct {
 	Focus  int          `json:"focus"`
 }
 
-// NewWorkspace returns workspace of specified size.
+// NewWorkspace returns a new workspace of specified sizes.
 func NewWorkspace(x, y, width, height int, title string) *Workspace {
 	return &Workspace{
 		widget.NewWindow(x, y, width, height),
@@ -71,7 +71,7 @@ func (w *Workspace) CloseDir() {
 	w.allocate()
 }
 
-// ChdirNeighbor changes focused directory to neighbor directory path.
+// ChdirNeighbor changes the focused path a neighbor directory path.
 func (w *Workspace) ChdirNeighbor() {
 	w.Dir().Chdir(w.NextDir().Path)
 }
@@ -126,22 +126,22 @@ func (w *Workspace) ReloadAll() {
 	}
 }
 
-// Dir returns focused directory.
+// Dir returns the focused directory.
 func (w *Workspace) Dir() *Directory {
-	return w.Dirs[w.Cursor]
+	return w.Dirs[w.Focus]
 }
 
-// NextDir returns next directory.
+// NextDir returns the next directory.
 func (w *Workspace) NextDir() *Directory {
 	return w.Dirs[w.nextIndex()]
 }
 
-// PrevDir returns previous directory.
+// PrevDir returns the previous directory.
 func (w *Workspace) PrevDir() *Directory {
 	return w.Dirs[w.prevIndex()]
 }
 
-// SwapNextDir swaps focus and next for directories.
+// SwapNextDir swaps focus and next directories.
 func (w *Workspace) SwapNextDir() {
 	next := w.nextIndex()
 	w.Dirs[w.Focus], w.Dirs[next] = w.Dirs[next], w.Dirs[w.Focus]
@@ -149,7 +149,7 @@ func (w *Workspace) SwapNextDir() {
 	w.allocate()
 }
 
-// SwapPrevDir swaps focus and previous for directories.
+// SwapPrevDir swaps focus and previous directories.
 func (w *Workspace) SwapPrevDir() {
 	prev := w.prevIndex()
 	w.Dirs[w.Focus], w.Dirs[prev] = w.Dirs[prev], w.Dirs[w.Focus]
@@ -173,12 +173,12 @@ func (w *Workspace) prevIndex() int {
 	return i
 }
 
-// SetTitle sets workspace title.
+// SetTitle sets the workspace title.
 func (w *Workspace) SetTitle(title string) {
 	w.Title = title
 }
 
-// LayoutTile allocates workspace layout to tile.
+// LayoutTile allocates to the tile layout.
 func (w *Workspace) LayoutTile() {
 	w.Layout = layoutTile
 	x, y := w.LeftTop()
@@ -199,7 +199,7 @@ func (w *Workspace) LayoutTile() {
 	w.Dirs[dlen-1].Resize(x+width, y+height*(k-1), width+wodd, height+hodd)
 }
 
-// LayoutTileTop allocates workspace layout to tile top.
+// LayoutTileTop allocates to the tile top layout.
 func (w *Workspace) LayoutTileTop() {
 	w.Layout = layoutTileTop
 	dlen := len(w.Dirs)
@@ -221,7 +221,7 @@ func (w *Workspace) LayoutTileTop() {
 	w.Dirs[dlen-1].Resize(x+width*(k-1), y, width+wodd, height)
 }
 
-// LayoutTileBottom allocates workspace layout to tile bottom.
+// LayoutTileBottom allocates to the tile bottom layout.
 func (w *Workspace) LayoutTileBottom() {
 	w.Layout = layoutTileBottom
 	dlen := len(w.Dirs)
@@ -244,7 +244,7 @@ func (w *Workspace) LayoutTileBottom() {
 	w.Dirs[dlen-1].Resize(x+width*(k-1), y+height, width+wodd, height+hodd)
 }
 
-// LayoutOneline allocates workspace layout to one line.
+// LayoutOneline allocates to the one line layout.
 func (w *Workspace) LayoutOneline() {
 	w.Layout = layoutOneline
 	x, y := w.LeftTop()
@@ -257,7 +257,7 @@ func (w *Workspace) LayoutOneline() {
 	w.Dirs[k-1].Resize(x+width*(k-1), y, width+wodd, w.Height())
 }
 
-// LayoutOnecolumn allocates workspace layout to one column.
+// LayoutOnecolumn allocates to the one column layout.
 func (w *Workspace) LayoutOnecolumn() {
 	w.Layout = layoutOneColumn
 	x, y := w.LeftTop()
@@ -270,7 +270,7 @@ func (w *Workspace) LayoutOnecolumn() {
 	w.Dirs[k-1].Resize(x, y+height*(k-1), w.Width(), height+hodd)
 }
 
-// LayoutFullscreen allocates workspace layout to full screen.
+// LayoutFullscreen allocates to the full screen layout.
 func (w *Workspace) LayoutFullscreen() {
 	w.Layout = layoutFullscreen
 	for _, d := range w.Dirs {
@@ -308,7 +308,7 @@ func (w *Workspace) ResizeRelative(x, y, width, height int) {
 	w.allocate()
 }
 
-// Draw implements for interface of widget.Box.
+// Draw all directories.
 func (w *Workspace) Draw() {
 	switch w.Layout {
 	case layoutFullscreen:

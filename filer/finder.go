@@ -24,12 +24,12 @@ var finderHistroy = make([]string, 0, 100)
 
 var finderKeymap func(*Finder) widget.Keymap
 
-// ConfigFinder sets keymap function for finder.
+// ConfigFinder sets the finder keymap function.
 func ConfigFinder(config func(*Finder) widget.Keymap) {
 	finderKeymap = config
 }
 
-// NewFinder returns finder of specified size.
+// NewFinder returns a new finder to position the directory bottom.
 func NewFinder(dir *Directory, x, y, width, height int) *Finder {
 	names := make([]string, len(dir.List())-1)
 	for i := 0; i < len(dir.List())-1; i++ {
@@ -108,7 +108,7 @@ func (f *Finder) find(callback func(name string)) {
 	f.dir.SetOffsetCenteredCursor()
 }
 
-// Draw implements for interface of widget.TextBox.
+// Draw the finder.
 func (f *Finder) Draw() {
 	f.Clear()
 	x, y := f.LeftTop()
@@ -122,7 +122,7 @@ func (f *Finder) Draw() {
 	termbox.SetCursor(x, y)
 }
 
-// Exit finder mode and reload the directory to clear filtering.
+// Exit the finder and reload the directory to clear filtering.
 func (f *Finder) Exit() {
 	f.exitNotRead()
 	name := f.startname

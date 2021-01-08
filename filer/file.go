@@ -20,16 +20,16 @@ type fileStatView struct {
 	time       bool
 }
 
-// SetStatView sets file state view.
+// SetStatView sets the file state view.
 func SetStatView(size, permission, time bool) { statView = fileStatView{size, permission, time} }
 
-// ToggleSizeView toggles file size view.
+// ToggleSizeView toggles the file size view.
 func ToggleSizeView() { statView.size = !statView.size }
 
-// TogglePermView toggles file permission view.
+// TogglePermView toggles the file permission view.
 func TogglePermView() { statView.permission = !statView.permission }
 
-// ToggleTimeView toggles file time view.
+// ToggleTimeView toggles the file time view.
 func ToggleTimeView() { statView.time = !statView.time }
 
 // FileStat is file infomation.
@@ -42,7 +42,7 @@ type FileStat struct {
 	marked      bool        // marked whether
 }
 
-// NewFileStat returns FileStat of file name in directory.
+// NewFileStat creates a new file stat of the file in the directory.
 func NewFileStat(dir string, name string) *FileStat {
 	path := filepath.Join(dir, name)
 
@@ -73,17 +73,17 @@ func NewFileStat(dir string, name string) *FileStat {
 	}
 }
 
-// Name implements for interface of widget.Enterable.
+// Name returns the file name.
 func (f *FileStat) Name() string {
 	return f.name
 }
 
-// SetDisplay is setter of display name for draw.
+// SetDisplay sets the display name for drawing.
 func (f *FileStat) SetDisplay(name string) {
 	f.display = name
 }
 
-// ResetDisplay resets display name to file name.
+// ResetDisplay resets the display name to the file name.
 func (f *FileStat) ResetDisplay() {
 	if f.stat.IsDir() {
 		f.display = f.name
@@ -92,27 +92,27 @@ func (f *FileStat) ResetDisplay() {
 	}
 }
 
-// Mark file.
+// Mark the file.
 func (f *FileStat) Mark() {
 	f.marked = true
 }
 
-// Markoff of file.
+// Markoff the file.
 func (f *FileStat) Markoff() {
 	f.marked = false
 }
 
-// ToggleMark toggles mark of file.
+// ToggleMark toggles the file mark.
 func (f *FileStat) ToggleMark() {
 	f.marked = !f.marked
 }
 
-// Path returns the full path of file.
+// Path returns the file path.
 func (f *FileStat) Path() string {
 	return f.path
 }
 
-// Ext retruns the extension of file.
+// Ext retruns the file extension.
 func (f *FileStat) Ext() string {
 	if f.stat.IsDir() {
 		return ""
@@ -123,17 +123,17 @@ func (f *FileStat) Ext() string {
 	return ""
 }
 
-// IsLink reports whether symlink.
+// IsLink reports whether the symlink.
 func (f *FileStat) IsLink() bool {
 	return f.Mode()&os.ModeSymlink != 0
 }
 
-// IsExec reports whether executable file.
+// IsExec reports whether the executable file.
 func (f *FileStat) IsExec() bool {
 	return f.Mode().Perm()&0111 != 0
 }
 
-// IsMarked reports whether marked file.
+// IsMarked reports whether the marked file.
 func (f *FileStat) IsMarked() bool {
 	return f.marked
 }
@@ -206,7 +206,7 @@ func (f *FileStat) look() look.Look {
 	}
 }
 
-// Draw implements for interface of widget.Drawer.
+// Draw the file name and file stats.
 func (f *FileStat) Draw(x, y, width int, lk look.Look) {
 	lk = lk.And(f.look())
 	states := f.states()

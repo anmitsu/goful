@@ -1,4 +1,4 @@
-// Package filer is layout and viewing for files.
+// Package filer draws directories and files and handles inputs.
 package filer
 
 import (
@@ -15,7 +15,7 @@ import (
 	"github.com/mattn/go-runewidth"
 )
 
-// Filer is file manger with workspaces to layout directorires to list files
+// Filer is a file manager with workspaces to layout directorires to list files.
 type Filer struct {
 	*widget.Window
 	keymap     widget.Keymap
@@ -113,7 +113,7 @@ func (f *Filer) SaveJSON(path string) error {
 	return nil
 }
 
-// CreateWorkspace creates and adds workspace to the end.
+// CreateWorkspace creates and adds a workspace to the end.
 func (f *Filer) CreateWorkspace() {
 	title := fmt.Sprintf("%d", len(f.Workspaces)+1)
 	x, y := f.LeftTop()
@@ -124,7 +124,7 @@ func (f *Filer) CreateWorkspace() {
 	f.Workspaces = append(f.Workspaces, ws)
 }
 
-// CloseWorkspace closes workspace on the cursor.
+// CloseWorkspace closes a workspace on the cursor.
 func (f *Filer) CloseWorkspace() {
 	if len(f.Workspaces) < 2 {
 		return
@@ -139,7 +139,7 @@ func (f *Filer) CloseWorkspace() {
 	f.Workspace().visible(true)
 }
 
-// MoveWorkspace moves to other workspace.
+// MoveWorkspace moves to the other workspace.
 func (f *Filer) MoveWorkspace(amount int) {
 	f.Workspace().visible(false)
 	f.Cursor += amount
@@ -151,22 +151,22 @@ func (f *Filer) MoveWorkspace(amount int) {
 	f.Workspace().visible(true)
 }
 
-// Workspace is getter of current workspace.
+// Workspace returns the current workspace.
 func (f *Filer) Workspace() *Workspace {
 	return f.Workspaces[f.Cursor]
 }
 
-// Dir is getter of focused directory on current workspace.
+// Dir returns the focused directory on the current workspace.
 func (f *Filer) Dir() *Directory {
 	return f.Workspace().Dir()
 }
 
-// File is getter of file on the cursor in focused directory on current workspace.
+// File returns the cursor file in the focused directory on the current workspace.
 func (f *Filer) File() *FileStat {
 	return f.Dir().File()
 }
 
-// AddKeymap adds to keymap for filer.
+// AddKeymap adds to the filer keymap.
 func (f *Filer) AddKeymap(keys ...interface{}) {
 	if len(keys)%2 != 0 {
 		panic("items must be a multiple of 2")
@@ -179,14 +179,14 @@ func (f *Filer) AddKeymap(keys ...interface{}) {
 	}
 }
 
-// MergeKeymap merges to keymap for filer.
+// MergeKeymap merges to the filer keymap.
 func (f *Filer) MergeKeymap(m widget.Keymap) {
 	for key, callback := range m {
 		f.keymap[key] = callback
 	}
 }
 
-// AddExtmap adds to extmap for filer.
+// AddExtmap adds to the filer extmap.
 func (f *Filer) AddExtmap(a ...interface{}) {
 	if len(a)%3 != 0 {
 		panic("items must be a multiple of 3")
@@ -200,7 +200,7 @@ func (f *Filer) AddExtmap(a ...interface{}) {
 	}
 }
 
-// MergeExtmap merges to extmap for filer.
+// MergeExtmap merges to the filer extmap.
 func (f *Filer) MergeExtmap(m widget.Extmap) {
 	for key, submap := range m {
 		if _, found := f.extmap[key]; !found {
@@ -260,7 +260,7 @@ func (f *Filer) drawHeader() {
 		s := fmt.Sprintf("[%d] %s", i+1, ws.Dirs[i].Title())
 		s = runewidth.Truncate(s, width, "...")
 		s = runewidth.FillRight(s, width)
-		if ws.Cursor != i {
+		if ws.Focus != i {
 			x = widget.SetCells(x, y, s, look.Default())
 		} else {
 			x = widget.SetCells(x, y, s, look.Selected())
@@ -268,14 +268,14 @@ func (f *Filer) drawHeader() {
 	}
 }
 
-// Draw current workspace.
+// Draw the current workspace.
 func (f *Filer) Draw() {
 	f.Clear()
 	f.drawHeader()
 	f.Workspace().Draw()
 }
 
-// Resize implements widget.Widget.
+// Resize all workspaces.
 func (f *Filer) Resize(x, y, width, height int) {
 	f.Window.Resize(x, y, width, height)
 	for _, ws := range f.Workspaces {
@@ -283,7 +283,7 @@ func (f *Filer) Resize(x, y, width, height int) {
 	}
 }
 
-// ResizeRelative implements widget.Widget.
+// ResizeRelative resize relative to current sizes.
 func (f *Filer) ResizeRelative(x, y, width, height int) {
 	f.Window.ResizeRelative(x, y, width, height)
 	for _, ws := range f.Workspaces {

@@ -93,7 +93,7 @@ func (s globDirPattern) Read(callback func(string)) {
 	})
 }
 
-// Directory is list box to store file stats.
+// Directory is a list box to store file stats.
 type Directory struct {
 	*widget.ListBox
 	reader   reader
@@ -120,26 +120,26 @@ func (d *Directory) init4json() {
 	d.reader = defaultReader(".")
 }
 
-// Finder starts finder in directory for filtering files.
+// Finder starts a finder in the directory for filtering files.
 func (d *Directory) Finder() {
 	x, y := d.LeftTop()
 	d.finder = NewFinder(d, x+1, y+d.Height()-1, d.Width()-1, 1)
 	d.ResizeRelative(0, 0, 0, -1)
 }
 
-// EnterDir changes path to the directory on the cursor.
+// EnterDir changes the directory to a path on the cursor.
 func (d *Directory) EnterDir() {
 	d.Chdir(d.File().Name())
 }
 
-// EnterLink changes path to the symbolic directory on the cursor.
+// EnterLink changes the direcotory to a symbolic path on the cursor.
 func (d *Directory) EnterLink() {
 	if d.File().stat.IsDir() {
 		d.EnterDir()
 	}
 }
 
-// Reset marking or reader in directory.
+// Reset marking or reader.
 func (d *Directory) Reset() {
 	if d.IsMark() {
 		d.MarkClear()
@@ -149,8 +149,8 @@ func (d *Directory) Reset() {
 	}
 }
 
-// Chdir changes directory and reads new directory files by default reader.
-// Sets the cursor to the previous directory if the destination is parent.
+// Chdir changes the directory and reads new directory files by the default reader.
+// Sets the cursor to the previous directory name if parent destinats.
 func (d *Directory) Chdir(path string) {
 	path = utils.ExpandPath(path)
 	path = filepath.Clean(path)
@@ -181,13 +181,13 @@ func (d *Directory) Chdir(path string) {
 	}
 }
 
-// Glob sets reader to matching pattern in the current directory.
+// Glob sets a reader to matching pattern in the current directory.
 func (d *Directory) Glob(pattern string) {
 	d.reader = globPattern(pattern)
 	d.read()
 }
 
-// Globdir sets reader to matching pattern in the directory includeing sub directories.
+// Globdir sets a reader to matching pattern in the directory includeing sub directories.
 func (d *Directory) Globdir(pattern string) {
 	d.reader = globDirPattern(pattern)
 	d.read()
@@ -232,12 +232,12 @@ func (d *Directory) reload() {
 	d.read()
 }
 
-// File is getter of file on the cursor.
+// File returns a file on the cursor.
 func (d *Directory) File() *FileStat {
 	return d.CurrentContent().(*FileStat)
 }
 
-// Files is getter of marked files.
+// Files returns marked files.
 func (d *Directory) Files() []*FileStat {
 	files := make([]*FileStat, len(d.List()))
 	for i, e := range d.List() {
@@ -246,7 +246,7 @@ func (d *Directory) Files() []*FileStat {
 	return files
 }
 
-// Base is getter of the directory name.
+// Base returns the directory name.
 func (d *Directory) Base() string { return filepath.Base(d.Path) }
 
 func (d *Directory) sortBy(typ sortType) {
@@ -278,7 +278,7 @@ func (d *Directory) SortExt() { d.sortBy(sortExt) }
 // SortExtDec sorts files in descending order by the file extension.
 func (d *Directory) SortExtDec() { d.sortBy(sortExtRev) }
 
-// Less implements comparison operation for sort.Sort.
+// Less compares based on SortKind.
 func (d *Directory) Less(i, j int) bool {
 	ni := d.List()[i].Name()
 	nj := d.List()[j].Name()
@@ -343,12 +343,12 @@ func (d *Directory) lessExt(i, j int) bool {
 	return f1.Name() < f2.Name()
 }
 
-// IsMark reports whether file marked.
+// IsMark reports whether even one file marked.
 func (d *Directory) IsMark() bool {
 	return d.MarkCount() != 0
 }
 
-// ToggleMark toggles mark of file on the cursor.
+// ToggleMark toggles the file mark on the cursor.
 func (d *Directory) ToggleMark() {
 	fs := d.CurrentContent().(*FileStat)
 	if fs.Name() == ".." {
@@ -359,7 +359,7 @@ func (d *Directory) ToggleMark() {
 	}
 }
 
-// ToggleMarkAll toggles mark of files in directory.
+// ToggleMarkAll toggles all file marks.
 func (d *Directory) ToggleMarkAll() {
 	for _, e := range d.List() {
 		if e.(*FileStat).Name() != ".." {
@@ -368,14 +368,14 @@ func (d *Directory) ToggleMarkAll() {
 	}
 }
 
-// MarkClear clears mark of all files.
+// MarkClear clears all file marks.
 func (d *Directory) MarkClear() {
 	for _, e := range d.List() {
 		e.(*FileStat).Markoff()
 	}
 }
 
-// MarkCount returns number of marked files.
+// MarkCount returns a number of marked files.
 func (d *Directory) MarkCount() int {
 	c := 0
 	for _, e := range d.List() {
@@ -386,7 +386,7 @@ func (d *Directory) MarkCount() int {
 	return c
 }
 
-// Markfiles returns marked files.
+// Markfiles returns marked file lists.
 func (d *Directory) Markfiles() []*FileStat {
 	if d.MarkCount() < 1 {
 		return []*FileStat{d.File()}
