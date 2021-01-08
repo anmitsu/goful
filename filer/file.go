@@ -139,22 +139,21 @@ func (f *FileStat) IsMarked() bool {
 }
 
 func (f *FileStat) suffix() string {
-	suffix := ""
 	if f.IsLink() {
 		if link, err := os.Readlink(f.Path()); err != nil {
 			message.Error(err)
 		} else {
-			suffix += "@ -> " + link
-		}
-		if f.stat.IsDir() {
-			suffix += "/"
+			if f.stat.IsDir() {
+				return "@ -> " + link + "/"
+			}
+			return "@ -> " + link
 		}
 	} else if f.IsDir() {
-		suffix = "/"
+		return "/"
 	} else if f.IsExec() {
-		suffix = "*"
+		return "*"
 	}
-	return suffix
+	return ""
 }
 
 func (f *FileStat) formatFileSize(size int64) string {
