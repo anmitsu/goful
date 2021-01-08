@@ -138,7 +138,7 @@ func config(g *goful.Goful) {
 		"newfile      ", "n", func() { g.CreatefileMode() },
 		"chmod        ", "h", func() { g.ChmodMode() },
 		"rename       ", "r", func() { g.RenameMode() },
-		"regexp rename", "R", func() { g.RegexpRenameMode() },
+		"regexp rename", "R", func() { g.BulkRenameMode() },
 		"chdir        ", "d", func() { g.ChdirMode() },
 		"glob         ", "g", func() { g.GlobMode() },
 		"globdir      ", "G", func() { g.GlobdirMode() },
@@ -271,7 +271,7 @@ func filerKeymap(g *goful.Goful) widget.Keymap {
 		"c":         func() { g.CopyMode() },
 		"m":         func() { g.MoveMode() },
 		"r":         func() { g.RenameMode() },
-		"R":         func() { g.RegexpRenameMode() },
+		"R":         func() { g.BulkRenameMode() },
 		"D":         func() { g.RemoveMode() },
 	}
 }

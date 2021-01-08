@@ -272,26 +272,26 @@ func (m *renameMode) Run(c *cmdline.Cmdline) {
 	c.Exit()
 }
 
-// RegexpRenameMode starts regexp rename.
-func (g *Goful) RegexpRenameMode() cmdline.Mode {
-	mode := &regexpRenameMode{g, ""}
+// BulkRenameMode starts regexp rename.
+func (g *Goful) BulkRenameMode() cmdline.Mode {
+	mode := &bulkRenameMode{g, ""}
 	g.next = cmdline.New(mode, g)
 	return mode
 }
 
-type regexpRenameMode struct {
+type bulkRenameMode struct {
 	*Goful
 	src string
 }
 
-func (m *regexpRenameMode) String() string { return "renameregexp" }
-func (m *regexpRenameMode) Prompt() string {
+func (m *bulkRenameMode) String() string { return "renameregexp" }
+func (m *bulkRenameMode) Prompt() string {
 	return "Rename by regexp: %s/"
 }
-func (m *regexpRenameMode) Result() string          { return "" }
-func (m *regexpRenameMode) Init(c *cmdline.Cmdline) {}
-func (m *regexpRenameMode) Draw(c *cmdline.Cmdline) { c.DrawLine() }
-func (m *regexpRenameMode) Run(c *cmdline.Cmdline) {
+func (m *bulkRenameMode) Result() string          { return "" }
+func (m *bulkRenameMode) Init(c *cmdline.Cmdline) {}
+func (m *bulkRenameMode) Draw(c *cmdline.Cmdline) { c.DrawLine() }
+func (m *bulkRenameMode) Run(c *cmdline.Cmdline) {
 	var pattern, repl string
 	patterns := strings.Split(c.String(), "/")
 	if len(patterns) > 1 {

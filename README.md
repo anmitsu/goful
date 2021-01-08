@@ -46,7 +46,7 @@ Goful is a CUI file manager implemented by Go.
 | c              | Copy file |
 | m              | Move file |
 | r              | Rename file |
-| R              | Rename file by regexp |
+| R              | Bulk rename by regexp |
 | D              | Remove file |
 | C-g            | Cancel |
 | q, Q           | Quit application |
