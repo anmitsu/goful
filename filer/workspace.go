@@ -24,7 +24,7 @@ type Workspace struct {
 	Dirs   []*Directory `json:"directories"`
 	Layout layoutType   `json:"layout"`
 	Title  string       `json:"title"`
-	Cursor int          `json:"cursor"`
+	Focus  int          `json:"focus"`
 }
 
 // NewWorkspace returns workspace of specified size.
@@ -53,7 +53,7 @@ func (w *Workspace) CreateDir() {
 	w.Dirs = append(w.Dirs, nil)
 	copy(w.Dirs[1:], w.Dirs[:len(w.Dirs)-1])
 	w.Dirs[0] = dir
-	w.SetCursor(0)
+	w.SetFocus(0)
 	w.allocate()
 }
 
@@ -62,10 +62,10 @@ func (w *Workspace) CloseDir() {
 	if len(w.Dirs) < 2 {
 		return
 	}
-	i := w.Cursor
+	i := w.Focus
 	w.Dirs = append(w.Dirs[:i], w.Dirs[i+1:]...)
-	if w.Cursor >= len(w.Dirs) {
-		w.Cursor = len(w.Dirs) - 1
+	if w.Focus >= len(w.Dirs) {
+		w.Focus = len(w.Dirs) - 1
 	}
 	w.attach()
 	w.allocate()
@@ -86,24 +86,24 @@ func (w *Workspace) visible(visible bool) {
 	}
 }
 
-// MoveCursor moves cursor with specified amounts.
-func (w *Workspace) MoveCursor(amount int) {
-	w.Cursor += amount
-	if len(w.Dirs) <= w.Cursor {
-		w.Cursor = 0
-	} else if w.Cursor < 0 {
-		w.Cursor = len(w.Dirs) - 1
+// MoveFocus moves the focus with specified amounts.
+func (w *Workspace) MoveFocus(amount int) {
+	w.Focus += amount
+	if len(w.Dirs) <= w.Focus {
+		w.Focus = 0
+	} else if w.Focus < 0 {
+		w.Focus = len(w.Dirs) - 1
 	}
 	w.attach()
 }
 
-// SetCursor sets cursor to specified position.
-func (w *Workspace) SetCursor(x int) {
-	w.Cursor = x
-	if w.Cursor < 0 {
-		w.Cursor = 0
-	} else if w.Cursor > len(w.Dirs)-1 {
-		w.Cursor = len(w.Dirs) - 1
+// SetFocus sets the focus to a specified position.
+func (w *Workspace) SetFocus(x int) {
+	w.Focus = x
+	if w.Focus < 0 {
+		w.Focus = 0
+	} else if w.Focus > len(w.Dirs)-1 {
+		w.Focus = len(w.Dirs) - 1
 	}
 	w.attach()
 }
@@ -144,21 +144,21 @@ func (w *Workspace) PrevDir() *Directory {
 // SwapNextDir swaps focus and next for directories.
 func (w *Workspace) SwapNextDir() {
 	next := w.nextIndex()
-	w.Dirs[w.Cursor], w.Dirs[next] = w.Dirs[next], w.Dirs[w.Cursor]
-	w.MoveCursor(1)
+	w.Dirs[w.Focus], w.Dirs[next] = w.Dirs[next], w.Dirs[w.Focus]
+	w.MoveFocus(1)
 	w.allocate()
 }
 
 // SwapPrevDir swaps focus and previous for directories.
 func (w *Workspace) SwapPrevDir() {
 	prev := w.prevIndex()
-	w.Dirs[w.Cursor], w.Dirs[prev] = w.Dirs[prev], w.Dirs[w.Cursor]
-	w.MoveCursor(-1)
+	w.Dirs[w.Focus], w.Dirs[prev] = w.Dirs[prev], w.Dirs[w.Focus]
+	w.MoveFocus(-1)
 	w.allocate()
 }
 
 func (w *Workspace) nextIndex() int {
-	i := w.Cursor + 1
+	i := w.Focus + 1
 	if i >= len(w.Dirs) {
 		return 0
 	}
@@ -166,7 +166,7 @@ func (w *Workspace) nextIndex() int {
 }
 
 func (w *Workspace) prevIndex() int {
-	i := w.Cursor - 1
+	i := w.Focus - 1
 	if i < 0 {
 		return len(w.Dirs) - 1
 	}
@@ -315,7 +315,7 @@ func (w *Workspace) Draw() {
 		w.Dir().draw(true)
 	default:
 		for i, d := range w.Dirs {
-			if i != w.Cursor {
+			if i != w.Focus {
 				d.draw(false)
 			}
 		}
