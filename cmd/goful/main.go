@@ -119,7 +119,7 @@ func config(g *goful.Goful) {
 		"fullscreen       ", "f", func() { g.Workspace().LayoutFullscreen() },
 		"toggle size view ", "S", func() { filer.ToggleSizeView() },
 		"toggle perm view ", "P", func() { filer.TogglePermView() },
-		"toggle time view ", "M", func() { filer.ToggleSizeView() },
+		"toggle time view ", "M", func() { filer.ToggleTimeView() },
 		"size only view   ", "1", func() { filer.SetStatView(true, false, false) },
 		"perm only view   ", "2", func() { filer.SetStatView(false, true, false) },
 		"time only view   ", "3", func() { filer.SetStatView(false, false, true) },
