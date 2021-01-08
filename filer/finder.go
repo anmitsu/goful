@@ -47,7 +47,6 @@ func NewFinder(dir *Directory, x, y, width, height int) *Finder {
 		finderHistroy = append(finderHistroy, "")
 	}
 	finder.Edithook = func() { dir.read() }
-	finder.dir.ResizeRelative(0, 0, 0, -1)
 	return finder
 }
 

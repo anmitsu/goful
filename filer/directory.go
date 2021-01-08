@@ -124,6 +124,7 @@ func (d *Directory) init4json() {
 func (d *Directory) Finder() {
 	x, y := d.LeftTop()
 	d.finder = NewFinder(d, x+1, y+d.Height()-1, d.Width()-1, 1)
+	d.ResizeRelative(0, 0, 0, -1)
 }
 
 // EnterDir changes path to the directory on the cursor.
