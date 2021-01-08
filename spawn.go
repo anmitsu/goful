@@ -2,7 +2,6 @@ package goful
 
 import (
 	"bytes"
-	"os"
 	"os/exec"
 	"strings"
 
@@ -11,24 +10,39 @@ import (
 	"github.com/anmitsu/goful/widget"
 )
 
-// Spawn a process by the shell and terminal.
+// Spawn a process by the shell or the terminal.
 func (g *Goful) Spawn(cmd string) {
 	cmd, background := g.expandMacro(cmd)
-	var err error
-	var execCmd *exec.Cmd
+	var command []string
 	if background {
-		options := g.shell(cmd)
-		execCmd = exec.Command(options[0], options[1:]...)
-		err = runBackground(execCmd)
+		command = g.shell(cmd)
 	} else {
-		options := g.terminal(cmd)
-		execCmd = exec.Command(options[0], options[1:]...)
-		err = runTerminal(execCmd)
+		command = g.terminal(cmd)
 	}
+	execCmd := exec.Command(command[0], command[1:]...)
 	message.Info(strings.Join(execCmd.Args, " "))
-	if err != nil {
+	if err := spawn(execCmd); err != nil {
 		message.Error(err)
 	}
+}
+
+func spawn(cmd *exec.Cmd) error {
+	var bufout, buferr bytes.Buffer
+	cmd.Stdout = &bufout
+	cmd.Stderr = &buferr
+	if err := cmd.Start(); err != nil {
+		return err
+	}
+	go func() {
+		cmd.Wait()
+		if bufout.Len() > 0 {
+			message.Info(bufout.String())
+		}
+		if buferr.Len() > 0 {
+			message.Errorf(buferr.String())
+		}
+	}()
+	return nil
 }
 
 const (
@@ -116,34 +130,4 @@ func (g *Goful) expandMacro(cmd string) (result string, background bool) {
 		offset++
 	}
 	return string(ret), background
-}
-
-func runTerminal(cmd *exec.Cmd) error {
-	var bufout, buferr bytes.Buffer
-	cmd.Stdin = os.Stdin
-	cmd.Stdout = &bufout
-	cmd.Stderr = &buferr
-	if err := cmd.Run(); err != nil {
-		return err
-	}
-	return nil
-}
-
-func runBackground(cmd *exec.Cmd) error {
-	var bufout, buferr bytes.Buffer
-	cmd.Stdout = &bufout
-	cmd.Stderr = &buferr
-	if err := cmd.Start(); err != nil {
-		return err
-	}
-	go func() {
-		cmd.Wait()
-		if bufout.Len() > 0 {
-			message.Info(bufout.String())
-		}
-		if buferr.Len() > 0 {
-			message.Errorf(buferr.String())
-		}
-	}()
-	return nil
 }
