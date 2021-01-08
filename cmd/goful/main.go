@@ -40,6 +40,7 @@ func main() {
 
 	app := goful.New(state)
 	config(app)
+
 	cmdline.LoadHistory(hist)
 	app.Run()
 	app.SaveJSON(state)
@@ -47,18 +48,18 @@ func main() {
 }
 
 func config(g *goful.Goful) {
+	look.Set("default") // default or midnight
+
+	message.SetInfoLog("~/.goful/log/info.log")   // "" is not logging
+	message.SetErrorLog("~/.goful/log/error.log") // "" is not logging
+	message.Sec(5)                                // display second for a message
+
 	// Setup widget keymaps.
 	g.ConfigFiler(filerKeymap)
 	filer.ConfigFinder(finderKeymap)
 	cmdline.Config(cmdlineKeymap)
 	cmdline.ConfigCompletion(completionKeymap)
 	menu.Config(menuKeymap)
-
-	message.SetInfoLog("~/.goful/log/info.log")   // "" is not logging
-	message.SetErrorLog("~/.goful/log/error.log") // "" is not logging
-	message.Sec(5)                                // display second for a message
-
-	look.Set("default") // default or midnight
 
 	filer.SetStatView(true, false, true) // size, permission and time
 
