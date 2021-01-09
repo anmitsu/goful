@@ -97,6 +97,7 @@ func (s globDirPattern) Read(callback func(string)) {
 type Directory struct {
 	*widget.ListBox
 	reader   reader
+	history  map[string]string // key: path, value: file name on cursor
 	finder   *Finder
 	Path     string   `json:"path"`
 	SortKind sortType `json:"sort_kind"`
@@ -108,6 +109,7 @@ func NewDirectory(x, y, width, height int) *Directory {
 	return &Directory{
 		ListBox:  widget.NewListBox(x, y, width, height, path),
 		reader:   defaultReader("."),
+		history:  map[string]string{},
 		Path:     path,
 		SortKind: sortName,
 	}
@@ -115,6 +117,7 @@ func NewDirectory(x, y, width, height int) *Directory {
 
 func (d *Directory) init4json() {
 	d.ListBox = widget.NewListBox(0, 0, 0, 0, "")
+	d.history = map[string]string{}
 	d.SetTitle(utils.AbbrPath(d.Path))
 	d.SetColumn(1)
 	d.reader = defaultReader(".")
@@ -149,8 +152,8 @@ func (d *Directory) Reset() {
 	}
 }
 
-// Chdir changes the directory and reads new directory files by the default reader.
-// Sets the cursor to the previous directory name if parent destinats.
+// Chdir changes the current directory and reads a new path by the default reader.
+// Sets the cursor to the history name or to the previous directory name if parent destinats.
 func (d *Directory) Chdir(path string) {
 	path = utils.ExpandPath(path)
 	path = filepath.Clean(path)
@@ -168,12 +171,18 @@ func (d *Directory) Chdir(path string) {
 		message.Error(err)
 		return
 	}
+	if !d.IsEmpty() {
+		d.history[d.Path] = d.File().Name()
+	}
 	d.SetTitle(utils.AbbrPath(path))
 	d.Path = path
 	d.reader = defaultReader(".")
 	d.read()
 
-	if path == parent {
+	if name, ok := d.history[d.Path]; ok {
+		d.SetCursorByName(name)
+		d.SetOffsetCenteredCursor()
+	} else if path == parent {
 		d.SetCursorByName(olddir)
 		d.SetOffsetCenteredCursor()
 	} else {
