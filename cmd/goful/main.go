@@ -50,6 +50,12 @@ func main() {
 func config(g *goful.Goful) {
 	look.Set("default") // default or midnight
 
+	if runtime.GOOS == "windows" {
+		widget.SetBorder('|', '-', '+', '+', '+', '+') // not ambiguous runes for layout collapsing
+	} else {
+		widget.SetBorder('│', '─', '┌', '┐', '└', '┘') // 0x2502, 0x2500, 0x250c, 0x2510, 0x2514, 0x2518
+	}
+
 	message.SetInfoLog("~/.goful/log/info.log")   // "" is not logging
 	message.SetErrorLog("~/.goful/log/error.log") // "" is not logging
 	message.Sec(5)                                // display second for a message

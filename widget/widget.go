@@ -110,6 +110,20 @@ func (w *Window) ResizeRelative(x, y, width, height int) {
 	w.height += height
 }
 
+var (
+	vLine    rune = 0x2502 // │
+	hLine    rune = 0x2500 // ─
+	ulCorner rune = 0x250c // ┌
+	urCorner rune = 0x2510 // ┐
+	llCorner rune = 0x2514 // └
+	lrCorner rune = 0x2518 // ┘
+)
+
+// SetBorder sets window border runes.
+func SetBorder(v, h, ul, ur, ll, lr rune) {
+	vLine, hLine, ulCorner, urCorner, llCorner, lrCorner = v, h, ul, ur, ll, lr
+}
+
 var mutex sync.Mutex
 
 // Flush is to a terminal refresh with a single thread.
