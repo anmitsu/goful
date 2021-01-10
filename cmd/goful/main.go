@@ -43,7 +43,7 @@ func main() {
 
 	cmdline.LoadHistory(hist)
 	app.Run()
-	app.SaveJSON(state)
+	app.SaveState(state)
 	cmdline.SaveHistory(hist)
 }
 

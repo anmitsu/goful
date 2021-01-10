@@ -27,7 +27,7 @@ type Goful struct {
 func New(path string) *Goful {
 	width, height := termbox.Size()
 	goful := &Goful{
-		Filer:     filer.NewFromJSON(path, 0, 0, width, height-2),
+		Filer:     filer.NewFromState(path, 0, 0, width, height-2),
 		next:      nil,
 		event:     make(chan termbox.Event, 20),
 		interrupt: make(chan int, 2),

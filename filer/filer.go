@@ -55,8 +55,8 @@ func New(x, y, width, height int) *Filer {
 	}
 }
 
-// NewFromJSON creates a new filer form the state json file.
-func NewFromJSON(path string, x, y, width, height int) *Filer {
+// NewFromState creates a new filer form the state json file.
+func NewFromState(path string, x, y, width, height int) *Filer {
 	file, err := os.Open(utils.ExpandPath(path))
 	if err != nil {
 		return New(x, y, width, height)
@@ -94,8 +94,8 @@ func NewFromJSON(path string, x, y, width, height int) *Filer {
 	return filer
 }
 
-// SaveJSON saves the filer state to the file.
-func (f *Filer) SaveJSON(path string) error {
+// SaveState saves the filer state to the file.
+func (f *Filer) SaveState(path string) error {
 	jsondata, err := json.MarshalIndent(f, "", "  ")
 	if err != nil {
 		return err
