@@ -154,7 +154,7 @@ func (g *Goful) copy(dst string, src ...string) {
 			if err := walker.walk(s, dst); err != nil {
 				message.Error(err)
 			}
-			}
+		}
 		message.Infof("Copied to %s form %s", dst, src)
 	}()
 }
@@ -168,7 +168,7 @@ func (g *Goful) move(dst string, src ...string) {
 			if err := walker.walk(s, dst); err != nil {
 				message.Error(err)
 			}
-			}
+		}
 		message.Infof("Moved to %s form %s", dst, src)
 	}()
 }
@@ -471,8 +471,8 @@ func letCopy(srcfile, dstfile *os.File) error {
 
 	quit := make(chan bool)
 	go func() { // drawing progress and infomation bar
-		infobar.StartFilectrl(srcstat)
-		defer infobar.FinishFilectrl()
+		infobar.StartTask(srcstat)
+		defer infobar.FinishTask()
 		ticker := time.NewTicker(50 * time.Millisecond)
 		defer ticker.Stop()
 		for {

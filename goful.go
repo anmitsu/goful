@@ -65,8 +65,8 @@ func (g *Goful) Resize(x, y, width, height int) {
 		wid.Resize(x, y, width, height-2)
 	}
 	message.Resize(width, height)
-	infobar.Resize(width, height)
-	progbar.Resize(width, height)
+	infobar.Resize(0, height-1, width, 1)
+	progbar.Resize(0, height-1, width, 1)
 }
 
 // Draw all widgets.

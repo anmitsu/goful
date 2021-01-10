@@ -36,17 +36,12 @@ func Update(value float64) {
 }
 
 // Resize the progress bar.
-func Resize(width, height int) {
-	w := int(float64(width) * 0.7)
-	x := width - w
-	progbar.Resize(x, height-1, w, 1)
-	progbar.Clear()
+func Resize(x, y, width, height int) {
+	progbar.Resize(x, y, width, height)
 }
 
 // Init initializes the progress bar at the bottom position.
 func Init() {
 	width, height := termbox.Size()
-	w := int(float64(width) * 0.7)
-	x := width - w
-	progbar = widget.NewProgressGauge(x, height-1, w, 1)
+	progbar = widget.NewProgressGauge(0, height-1, width, 1)
 }
