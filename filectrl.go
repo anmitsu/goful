@@ -487,7 +487,6 @@ func letCopy(srcfile, dstfile *os.File) error {
 	}()
 
 	buf := make([]byte, 1024*32)
-	var curval float64
 	for {
 		n, err := srcfile.Read(buf)
 		if err != nil && err != io.EOF {
@@ -499,8 +498,7 @@ func letCopy(srcfile, dstfile *os.File) error {
 		if _, err := dstfile.Write(buf[:n]); err != nil {
 			return err
 		}
-		curval += float64(n)
-		progbar.Update(curval)
+		progbar.Update(float64(n))
 	}
 	close(quit)
 	progbar.Finish()

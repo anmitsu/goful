@@ -23,10 +23,12 @@ func TestGauge(t *testing.T) {
 	gauge := NewProgressGauge(0, 0, width/2, 1)
 	gauge.Start(float64(maxval))
 	ticker := time.NewTicker(10 * time.Millisecond)
-	n := 0
+
+	const n = 50 * 1024 * 1024 / 100 // 50Mb/s
+	progress := 0
 	for {
-		n += 50 * 1024 * 1024 / 100 // 50Mb/s
-		if n > maxval {
+		progress += n
+		if progress > maxval {
 			gauge.Finish()
 			break
 		}

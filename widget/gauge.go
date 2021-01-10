@@ -27,13 +27,14 @@ func NewProgressGauge(x, y, width, height int) *ProgressGauge {
 
 // Start the timer from now.
 func (b *ProgressGauge) Start(maxval float64) {
+	b.curval = 0
 	b.maxval = maxval
 	b.starttime = time.Now()
 }
 
 // Update the value.
 func (b *ProgressGauge) Update(value float64) {
-	b.curval = value
+	b.curval += value
 }
 
 // Finish the progress.
