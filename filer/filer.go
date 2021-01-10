@@ -225,14 +225,12 @@ func (f *Filer) Input(key string) {
 		}
 	}
 
-	if sub, ok := f.extmap[key]; ok {
-		if callback, ok := sub[".link"]; ok && f.File().IsLink() {
+	if ext, ok := f.extmap[key]; ok {
+		if callback, ok := ext[".dir"]; ok && (f.File().IsDir() || f.File().stat.IsDir()) {
 			callback()
-		} else if callback, ok := sub[".dir"]; ok && f.File().IsDir() {
+		} else if callback, ok := ext[".exec"]; ok && f.File().IsExec() {
 			callback()
-		} else if callback, ok := sub[".exec"]; ok && f.File().IsExec() {
-			callback()
-		} else if callback, ok := sub[f.File().Ext()]; ok {
+		} else if callback, ok := ext[f.File().Ext()]; ok {
 			callback()
 		} else if callback, ok := f.keymap[key]; ok {
 			callback()

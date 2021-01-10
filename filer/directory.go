@@ -135,13 +135,6 @@ func (d *Directory) EnterDir() {
 	d.Chdir(d.File().Name())
 }
 
-// EnterLink changes the direcotory to a symbolic path on the cursor.
-func (d *Directory) EnterLink() {
-	if d.File().stat.IsDir() {
-		d.EnterDir()
-	}
-}
-
 // Reset marking or reader.
 func (d *Directory) Reset() {
 	if d.IsMark() {

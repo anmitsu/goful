@@ -130,7 +130,7 @@ func (f *FileStat) IsLink() bool {
 
 // IsExec reports whether the executable file.
 func (f *FileStat) IsExec() bool {
-	return f.Mode().Perm()&0111 != 0
+	return f.stat.Mode().Perm()&0111 != 0
 }
 
 // IsMarked reports whether the marked file.

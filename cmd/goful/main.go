@@ -156,7 +156,6 @@ func config(g *goful.Goful) {
 	g.MergeExtmap(widget.Extmap{
 		"C-m": { // associates by file types with the enter key event
 			".dir":   func() { g.Dir().EnterDir() },
-			".link":  func() { g.Dir().EnterLink() },
 			".exec":  func() { g.ShellMode(" ./" + g.File().Name()) },
 			".zip":   func() { g.ShellMode("unzip %f -d %D") },
 			".gz":    func() { g.ShellMode("tar xvfz %f -C %D") },
