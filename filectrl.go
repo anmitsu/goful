@@ -150,11 +150,7 @@ func (g *Goful) copy(dst string, src ...string) {
 
 	go func() {
 		defer g.syncCallback(func() { g.Workspace().ReloadAll() })
-		for _, s := range src {
-			if err := walker.walk(s, dst); err != nil {
-				message.Error(err)
-			}
-		}
+		g.goWalk(walker, dst, src...)
 		message.Infof("Copied to %s form %s", dst, src)
 	}()
 }
@@ -164,13 +160,47 @@ func (g *Goful) move(dst string, src ...string) {
 
 	go func() {
 		defer g.syncCallback(func() { g.Workspace().ReloadAll() })
-		for _, s := range src {
-			if err := walker.walk(s, dst); err != nil {
-				message.Error(err)
-			}
-		}
+		g.goWalk(walker, dst, src...)
 		message.Infof("Moved to %s form %s", dst, src)
 	}()
+}
+
+func (g *Goful) goWalk(walker *walker, dst string, src ...string) {
+	g.ResizeRelative(0, 0, 0, -1)
+	infobar.ResizeRelative(0, -1, 0, 0)
+	message.ResizeRelative(0, -1, 0, 0)
+
+	size, count := calcSizeCount(src...)
+	progbar.Start(size)
+	infobar.StartTaskCount(count)
+	for _, s := range src {
+		if err := walker.walk(s, dst); err != nil {
+			message.Error(err)
+		}
+	}
+	infobar.ResetTaskCount()
+	progbar.Finish()
+
+	g.ResizeRelative(0, 0, 0, 1)
+	infobar.ResizeRelative(0, 1, 0, 0)
+	message.ResizeRelative(0, 1, 0, 0)
+	widget.Flush()
+}
+
+func calcSizeCount(src ...string) (float64, int) {
+	size := int64(0)
+	count := 0
+	for _, s := range src {
+		filepath.Walk(s, func(path string, info os.FileInfo, err error) error {
+			if info.IsDir() || info.Mode()&os.ModeSymlink != 0 {
+				return nil
+			}
+			size += info.Size()
+			count++
+			return nil
+		})
+	}
+	return float64(size), count
 }
 
 type walker struct {
@@ -467,12 +497,8 @@ func letCopy(srcfile, dstfile *os.File) error {
 		return err
 	}
 
-	progbar.Start(float64(srcstat.Size()))
-
 	quit := make(chan bool)
 	go func() { // drawing progress and infomation bar
-		infobar.StartTask(srcstat)
-		defer infobar.FinishTask()
 		ticker := time.NewTicker(50 * time.Millisecond)
 		defer ticker.Stop()
 		for {
@@ -486,6 +512,7 @@ func letCopy(srcfile, dstfile *os.File) error {
 		}
 	}()
 
+	infobar.StartTask(srcstat)
 	buf := make([]byte, 1024*32)
 	for {
 		n, err := srcfile.Read(buf)
@@ -501,7 +528,6 @@ func letCopy(srcfile, dstfile *os.File) error {
 		progbar.Update(float64(n))
 	}
 	close(quit)
-	progbar.Finish()
-	widget.Flush()
+	infobar.FinishTask()
 	return nil
 }

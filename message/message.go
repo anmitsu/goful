@@ -38,6 +38,11 @@ func Resize(x, y, width, height int) {
 	messenger.Resize(x, y, width, height)
 }
 
+// ResizeRelative resizes relative to current size.
+func ResizeRelative(x, y, width, height int) {
+	messenger.ResizeRelative(x, y, width, height)
+}
+
 // Draw the message window.
 func Draw() {
 	if !messenger.display {
