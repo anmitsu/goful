@@ -20,6 +20,7 @@ type Goful struct {
 	event     chan termbox.Event
 	interrupt chan int
 	callback  chan func()
+	task      chan int
 	exit      bool
 }
 
@@ -32,6 +33,7 @@ func New(path string) *Goful {
 		event:     make(chan termbox.Event, 20),
 		interrupt: make(chan int, 2),
 		callback:  make(chan func()),
+		task:      make(chan int, 1),
 		exit:      false,
 	}
 	return goful

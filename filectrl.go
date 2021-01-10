@@ -149,7 +149,11 @@ func (g *Goful) copy(dst string, src ...string) {
 	walker := g.newWalker(overwriteNo, overwriteNo, copyJob{})
 
 	go func() {
-		defer g.syncCallback(func() { g.Workspace().ReloadAll() })
+		g.task <- 1
+		defer g.syncCallback(func() {
+			g.Workspace().ReloadAll()
+			<-g.task
+		})
 		g.goWalk(walker, dst, src...)
 		message.Infof("Copied to %s form %s", dst, src)
 	}()
@@ -159,7 +163,11 @@ func (g *Goful) move(dst string, src ...string) {
 	walker := g.newWalker(overwriteNo, overwriteNo, moveJob{})
 
 	go func() {
-		defer g.syncCallback(func() { g.Workspace().ReloadAll() })
+		g.task <- 1
+		defer g.syncCallback(func() {
+			g.Workspace().ReloadAll()
+			<-g.task
+		})
 		g.goWalk(walker, dst, src...)
 		message.Infof("Moved to %s form %s", dst, src)
 	}()
