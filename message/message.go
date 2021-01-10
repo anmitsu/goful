@@ -34,8 +34,8 @@ func Errorf(format string, a ...interface{}) {
 }
 
 // Resize the message window.
-func Resize(width, height int) {
-	messenger.Resize(0, height-2, width, 1)
+func Resize(x, y, width, height int) {
+	messenger.Resize(x, y, width, height)
 }
 
 // Draw the message window.

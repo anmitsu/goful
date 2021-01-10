@@ -64,7 +64,7 @@ func (g *Goful) Resize(x, y, width, height int) {
 	if wid := g.Next(); wid != nil {
 		wid.Resize(x, y, width, height-2)
 	}
-	message.Resize(width, height)
+	message.Resize(0, height-2, width, 1)
 	infobar.Resize(0, height-1, width, 1)
 	progbar.Resize(0, height-1, width, 1)
 }
