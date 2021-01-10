@@ -61,9 +61,9 @@ Goful customizes by edit `cmd/goful/main.go` and rebuild.
 For example, install your customized binary to `$GOPATH/bin`.
 
     Copy original main.go to my/goful directory
-    $ cd $GOPATH/src/github.com/anmitsu/goful/cmd
+    $ cd $GOPATH/src/github.com/anmitsu/goful/cmd/goful
     $ mkdir -p my/goful
-    $ cp goful/main.go my/goful
+    $ cp main.go my/goful
     $ cd my/goful
     
     After edited my/goful/main.go
