@@ -150,20 +150,12 @@ func (g *Goful) copy(dst string, src ...string) {
 
 	go func() {
 		defer g.syncCallback(func() { g.Workspace().ReloadAll() })
-
-		if len(src) > 1 {
-			if err := walker.walkFiles(dst, src...); err != nil {
+		for _, s := range src {
+			if err := walker.walk(s, dst); err != nil {
 				message.Error(err)
-			} else {
-				message.Infof("Copied to %s form %s", dst, src)
 			}
-		} else {
-			if err := walker.walk(src[0], dst); err != nil {
-				message.Error(err)
-			} else {
-				message.Infof("Copied to %s from %s", dst, src[0])
 			}
-		}
+		message.Infof("Copied to %s form %s", dst, src)
 	}()
 }
 
@@ -172,20 +164,12 @@ func (g *Goful) move(dst string, src ...string) {
 
 	go func() {
 		defer g.syncCallback(func() { g.Workspace().ReloadAll() })
-
-		if len(src) > 1 {
-			if err := walker.walkFiles(dst, src...); err != nil {
+		for _, s := range src {
+			if err := walker.walk(s, dst); err != nil {
 				message.Error(err)
-			} else {
-				message.Infof("Moved to %s from %s", dst, src)
 			}
-		} else {
-			if err := walker.walk(src[0], dst); err != nil {
-				message.Error(err)
-			} else {
-				message.Infof("Moved to %s from %s", dst, src[0])
 			}
-		}
+		message.Infof("Moved to %s form %s", dst, src)
 	}()
 }
 
@@ -198,15 +182,6 @@ type walker struct {
 
 func (g *Goful) newWalker(fileConfirmed, dirConfirmed overWrite, f fileJob) *walker {
 	return &walker{g, fileConfirmed, dirConfirmed, f}
-}
-
-func (w *walker) walkFiles(dst string, src ...string) error {
-	for _, s := range src {
-		if err := w.walk(s, dst); err != nil {
-			return err
-		}
-	}
-	return nil
 }
 
 func (w *walker) walk(src, dst string) error {
