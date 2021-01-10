@@ -29,6 +29,8 @@ func New(path string) *Goful {
 	width, height := termbox.Size()
 	goful := &Goful{
 		Filer:     filer.NewFromState(path, 0, 0, width, height-2),
+		shell:     nil,
+		terminal:  nil,
 		next:      nil,
 		event:     make(chan termbox.Event, 20),
 		interrupt: make(chan int, 2),

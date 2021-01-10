@@ -37,10 +37,11 @@ func NewFinder(dir *Directory, x, y, width, height int) *Finder {
 	}
 
 	finder := &Finder{
-		TextBox:   widget.NewTextBox(x, y, width, height),
-		dir:       dir,
-		names:     names,
-		startname: dir.CurrentContent().Name(),
+		TextBox:    widget.NewTextBox(x, y, width, height),
+		dir:        dir,
+		names:      names,
+		startname:  dir.CurrentContent().Name(),
+		historyPos: 0,
 	}
 
 	if len(finderHistroy) < 1 {

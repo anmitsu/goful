@@ -75,6 +75,8 @@ func Init() {
 		buf:     make(chan buffer, 20),
 		display: false,
 		sec:     5,
+		infolog: "",
+		errlog:  "",
 	}
 	go messenger.run()
 }
