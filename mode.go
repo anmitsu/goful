@@ -19,47 +19,50 @@ import (
 // match shell separators, macros, options and spaces.
 var re = regexp.MustCompile(`([;|>&])|(%(?:[&mMfFxX]|[dD]2?))|([[:space:]]-[[:word:]-=]+)|[[:space:]]`)
 
-// ShellMode starts shell mode.
-func (g *Goful) ShellMode(cmd string) cmdline.Mode {
+// SpawnMode starts the spawn mode.
+func (g *Goful) SpawnMode(cmd string) cmdline.Mode {
 	commands, err := utils.SearchCommands()
 	if err != nil {
 		message.Error(err)
 	}
-	mode := &shellMode{g, commands}
+	mode := &spawnMode{g, commands}
 	c := cmdline.New(mode, g)
 	c.SetText(cmd)
 	g.next = c
 	return mode
 }
 
-type shellMode struct {
+type spawnMode struct {
 	*Goful
 	commands map[string]bool
 }
 
-func (m *shellMode) String() string          { return "shell" }
-func (m *shellMode) Prompt() string          { return "$ " }
-func (m *shellMode) Result() string          { return "" }
-func (m *shellMode) Init(c *cmdline.Cmdline) {}
+func (m *spawnMode) String() string          { return "shell" }
+func (m *spawnMode) Prompt() string          { return "$ " }
+func (m *spawnMode) Result() string          { return "" }
+func (m *spawnMode) Init(c *cmdline.Cmdline) {}
 
-func (m *shellMode) Draw(c *cmdline.Cmdline) {
+func (m *spawnMode) Draw(c *cmdline.Cmdline) {
 	c.Clear()
 	x, y := c.LeftTop()
 	x++
 	x = widget.SetCells(x, y, m.Prompt(), look.Prompt())
 	termbox.SetCursor(x+c.Cursor(), y)
+	m.drawCommand(x, y, c.String())
+}
 
+func (m *spawnMode) drawCommand(x, y int, cmd string) {
 	start := 0
 	// match is index [start, end, sep_start, sep_end, macro_start, macro_end, opt_start, opt_end]
-	for _, match := range re.FindAllStringSubmatchIndex(c.String(), -1) {
-		s := c.String()[start:match[0]]
+	for _, match := range re.FindAllStringSubmatchIndex(cmd, -1) {
+		s := cmd[start:match[0]]
 		if _, ok := m.commands[s]; ok { // as command
 			x = widget.SetCells(x, y, s, look.CmdlineCommand())
 		} else {
 			x = widget.SetCells(x, y, s, look.Cmdline())
 		}
 		start = match[0]
-		s = c.String()[start:match[1]]
+		s = cmd[start:match[1]]
 		if match[2] != -1 { // as shell separator ;|>&
 			x = widget.SetCells(x, y, s, look.Cmdline())
 		} else if match[4] != -1 { // as macro %& %m %M %f %F %x %X %d2 %D %d2 %D2
@@ -72,7 +75,7 @@ func (m *shellMode) Draw(c *cmdline.Cmdline) {
 		start = match[1]
 	}
 	// draw the rest
-	s := c.String()[start:]
+	s := cmd[start:]
 	if _, ok := m.commands[s]; ok { // as command
 		x = widget.SetCells(x, y, s, look.CmdlineCommand())
 	} else {
@@ -80,9 +83,42 @@ func (m *shellMode) Draw(c *cmdline.Cmdline) {
 	}
 }
 
-func (m *shellMode) Run(c *cmdline.Cmdline) {
+func (m *spawnMode) Run(c *cmdline.Cmdline) {
 	m.commands = nil
 	m.Spawn(c.String())
+	c.Exit()
+}
+
+// ShellMode starts the shell mode.
+func (g *Goful) ShellMode(cmd string) cmdline.Mode {
+	commands, err := utils.SearchCommands()
+	if err != nil {
+		message.Error(err)
+	}
+	mode := &shellMode{&spawnMode{g, commands}}
+	c := cmdline.New(mode, g)
+	c.SetText(cmd)
+	g.next = c
+	return mode
+}
+
+type shellMode struct {
+	*spawnMode
+}
+
+func (m *shellMode) Prompt() string { return "Shell: " }
+func (m *shellMode) Draw(c *cmdline.Cmdline) {
+	c.Clear()
+	x, y := c.LeftTop()
+	x++
+	x = widget.SetCells(x, y, m.Prompt(), look.Prompt())
+	termbox.SetCursor(x+c.Cursor(), y)
+	m.drawCommand(x, y, c.String())
+}
+
+func (m *shellMode) Run(c *cmdline.Cmdline) {
+	m.commands = nil
+	m.SpawnShell(c.String())
 	c.Exit()
 }
 

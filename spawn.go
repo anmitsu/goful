@@ -2,24 +2,26 @@ package goful
 
 import (
 	"bytes"
+	"os"
 	"os/exec"
 	"strings"
 
 	"github.com/anmitsu/goful/message"
 	"github.com/anmitsu/goful/utils"
 	"github.com/anmitsu/goful/widget"
+	"github.com/nsf/termbox-go"
 )
 
 // Spawn a process by the shell or the terminal.
 func (g *Goful) Spawn(cmd string) {
 	cmd, background := g.expandMacro(cmd)
-	var command []string
+	var args []string
 	if background {
-		command = g.shell(cmd)
+		args = g.shell(cmd)
 	} else {
-		command = g.terminal(cmd)
+		args = g.terminal(cmd)
 	}
-	execCmd := exec.Command(command[0], command[1:]...)
+	execCmd := exec.Command(args[0], args[1:]...)
 	message.Info(strings.Join(execCmd.Args, " "))
 	if err := spawn(execCmd); err != nil {
 		message.Error(err)
@@ -43,6 +45,29 @@ func spawn(cmd *exec.Cmd) error {
 		}
 	}()
 	return nil
+}
+
+// SpawnShell spawns the shell after command executing.
+func (g *Goful) SpawnShell(cmd string) {
+	cmd, _ = g.expandMacro(cmd)
+	args := g.shell(cmd)
+	execCmd := exec.Command(args[0], args[1:]...)
+	execCmd.Stdin = os.Stdin
+	execCmd.Stdout = os.Stdout
+	execCmd.Stderr = os.Stderr
+	termbox.Close()
+	defer func(cmd string) {
+		termbox.Init()
+		termbox.SetInputMode(termbox.InputAlt)
+		message.Info(cmd)
+	}(strings.Join(execCmd.Args, " "))
+	execCmd.Run()
+
+	shell := exec.Command(args[0])
+	shell.Stdin = os.Stdin
+	shell.Stdout = os.Stdout
+	shell.Stderr = os.Stderr
+	shell.Run()
 }
 
 const (
