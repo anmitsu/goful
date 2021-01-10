@@ -21,7 +21,7 @@ type Filer struct {
 	keymap     widget.Keymap
 	extmap     widget.Extmap
 	Workspaces []*Workspace `json:"workspaces"`
-	Cursor     int          `json:"cursor"`
+	Current    int          `json:"current"`
 }
 
 // New creates a new filer based on specified size and coordinates.
@@ -51,7 +51,7 @@ func New(x, y, width, height int) *Filer {
 		keymap:     widget.Keymap{},
 		extmap:     widget.Extmap{},
 		Workspaces: workspaces,
-		Cursor:     0,
+		Current:    0,
 	}
 }
 
@@ -73,7 +73,7 @@ func NewFromJSON(path string, x, y, width, height int) *Filer {
 		keymap:     widget.Keymap{},
 		extmap:     widget.Extmap{},
 		Workspaces: []*Workspace{},
-		Cursor:     0,
+		Current:    0,
 	}
 	if err := json.Unmarshal(data, filer); err != nil {
 		return New(x, y, width, height)
@@ -124,17 +124,17 @@ func (f *Filer) CreateWorkspace() {
 	f.Workspaces = append(f.Workspaces, ws)
 }
 
-// CloseWorkspace closes a workspace on the cursor.
+// CloseWorkspace closes a workspace on the current.
 func (f *Filer) CloseWorkspace() {
 	if len(f.Workspaces) < 2 {
 		return
 	}
-	i := f.Cursor
+	i := f.Current
 	f.Workspaces[i].visible(false)
 	f.Workspaces[i] = nil
 	f.Workspaces = append(f.Workspaces[:i], f.Workspaces[i+1:]...)
-	if f.Cursor > len(f.Workspaces)-1 {
-		f.Cursor = len(f.Workspaces) - 1
+	if f.Current > len(f.Workspaces)-1 {
+		f.Current = len(f.Workspaces) - 1
 	}
 	f.Workspace().visible(true)
 }
@@ -142,18 +142,18 @@ func (f *Filer) CloseWorkspace() {
 // MoveWorkspace moves to the other workspace.
 func (f *Filer) MoveWorkspace(amount int) {
 	f.Workspace().visible(false)
-	f.Cursor += amount
-	if f.Cursor >= len(f.Workspaces) {
-		f.Cursor = 0
-	} else if f.Cursor < 0 {
-		f.Cursor = len(f.Workspaces) - 1
+	f.Current += amount
+	if f.Current >= len(f.Workspaces) {
+		f.Current = 0
+	} else if f.Current < 0 {
+		f.Current = len(f.Workspaces) - 1
 	}
 	f.Workspace().visible(true)
 }
 
 // Workspace returns the current workspace.
 func (f *Filer) Workspace() *Workspace {
-	return f.Workspaces[f.Cursor]
+	return f.Workspaces[f.Current]
 }
 
 // Dir returns the focused directory on the current workspace.
@@ -246,7 +246,7 @@ func (f *Filer) drawHeader() {
 	x, y := f.LeftTop()
 	for i, ws := range f.Workspaces {
 		s := fmt.Sprintf(" %s ", ws.Title)
-		if f.Cursor != i {
+		if f.Current != i {
 			x = widget.SetCells(x, y, s, look.Default())
 		} else {
 			x = widget.SetCells(x, y, s, look.Selected())
