@@ -61,7 +61,7 @@ func New(name string, filer widget.Widget) (*Menu, error) {
 		filer:   filer,
 	}
 	for _, item := range items {
-		s := fmt.Sprintf("%s (%s)", item.label, item.accel)
+		s := fmt.Sprintf("(%s) %s", item.accel, item.label)
 		menu.AppendString(s)
 	}
 	return menu, nil
