@@ -94,6 +94,10 @@ func (c *Cmdline) Resize(x, y, width, height int) {
 	y = (y + height) * 2 / 3
 	height -= y + 1
 	c.History.Resize(x, y, width, height)
+	if c.Next() != nil {
+		c.Next().Resize(x, y, width, height)
+	}
+	c.filer.ResizeRelative(0, 0, 0, -1)
 }
 
 // ResizeRelative resizes relative to cmdline current sizes.
