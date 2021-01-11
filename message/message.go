@@ -135,7 +135,7 @@ func (m *message) log(path, s string) error {
 }
 
 func (m *message) add(msg string, l look.Look) {
-	m.buf <- buffer{msg, l}
+	go func() { m.buf <- buffer{msg, l} }()
 }
 
 func (m *message) run() {
