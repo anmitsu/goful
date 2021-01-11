@@ -144,7 +144,7 @@ func (g *Goful) syncCallback(callback func()) {
 }
 
 func (g *Goful) eventHandler(ev termbox.Event) {
-	if key := widget.Event2String(&ev); key != "" {
+	if key := widget.EventToString(&ev); key != "" {
 		if key == "resize" {
 			width, height := ev.Width, ev.Height
 			g.Resize(0, 0, width, height)

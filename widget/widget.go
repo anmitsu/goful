@@ -205,9 +205,9 @@ var specialkey = map[termbox.Key]string{
 	termbox.KeyArrowRight: "right",
 }
 
-// Event2String converts the keyboard intput event to string.
+// EventToString converts the keyboard intput event to string.
 // A meta key input event returns prefixed `M-'.
-func Event2String(ev *termbox.Event) string {
+func EventToString(ev *termbox.Event) string {
 	const meta = "M-"
 	switch ev.Type {
 	case termbox.EventKey:
