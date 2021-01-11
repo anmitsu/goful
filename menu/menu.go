@@ -67,6 +67,16 @@ func New(name string, filer widget.Widget) (*Menu, error) {
 	return menu, nil
 }
 
+// Resize the menu window.
+func (w *Menu) Resize(x, y, width, height int) {
+	width = width / 3
+	h := len(menusMap[w.Title()]) + 2
+	if max := height / 2; h > max {
+		h = max
+	}
+	w.ListBox.Resize(x, height-h-1, width, h)
+}
+
 // Exec executes a menu item on the cursor and exits the menu.
 func (w *Menu) Exec() {
 	w.Exit()
