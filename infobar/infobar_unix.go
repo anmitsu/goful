@@ -35,7 +35,7 @@ func (w *InfoBar) draw(fi os.FileInfo) {
 	mtime := fi.ModTime().String()
 	name := fi.Name()
 
-	info := fmt.Sprintf("%s %s %s %d %s %s", perm, username, group, size, mtime, name)
+	info := fmt.Sprintf("%s %s %s %d %d %s %s", perm, username, group, stat.Nlink, size, mtime, name)
 	s := runewidth.Truncate(info, w.Width(), "...")
 	widget.SetCells(x, y, s, look.Default())
 }
