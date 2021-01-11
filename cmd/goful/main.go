@@ -48,7 +48,7 @@ func main() {
 }
 
 func config(g *goful.Goful) {
-	look.Set("default") // default or midnight
+	look.Set("default") // default, midnight, dark or gray
 
 	if runtime.GOOS == "windows" {
 		widget.SetBorder('|', '-', '+', '+', '+', '+') // not ambiguous runes for layout collapsing
@@ -131,8 +131,10 @@ func config(g *goful.Goful) {
 		"time only view   ", "3", func() { filer.SetStatView(false, false, true) },
 		"view all state   ", "V", func() { filer.SetStatView(true, true, true) },
 		"non view state   ", "0", func() { filer.SetStatView(false, false, false) },
-		"set look default ", "d", func() { look.Set("default") },
-		"set look midnight", "n", func() { look.Set("midnight") },
+		"set default look ", "d", func() { look.Set("default") },
+		"set midnight look", "n", func() { look.Set("midnight") },
+		"set dark look    ", "D", func() { look.Set("dark") },
+		"set gray look    ", "g", func() { look.Set("gray") },
 	)
 	g.AddKeymap("l", func() { g.Menu("layout") })
 

@@ -36,6 +36,10 @@ func Set(name string) {
 		setDefault()
 	case "midnight":
 		setMidnight()
+	case "dark":
+		setDark()
+	case "gray":
+		setGray()
 	default:
 		setDefault()
 	}
@@ -159,4 +163,46 @@ func setMidnight() {
 	marked = Look{termbox.ColorYellow | termbox.AttrBold, termbox.ColorBlue}
 	finder = Look{termbox.ColorBlack, termbox.ColorCyan}
 	progress = Look{termbox.ColorWhite, termbox.ColorCyan}
+}
+
+func setDark() {
+	defaultAttr = Look{termbox.ColorWhite, termbox.ColorBlack}
+	messageInfo = Look{termbox.ColorGreen | termbox.AttrBold, termbox.ColorBlack}
+	messageErr = Look{termbox.ColorRed | termbox.AttrBold, termbox.ColorBlack}
+	prompt = Look{termbox.ColorCyan | termbox.AttrBold, termbox.ColorBlack}
+	cmdline = Look{termbox.ColorWhite, termbox.ColorBlack}
+	cmdlineCommand = Look{termbox.ColorGreen | termbox.AttrBold, termbox.ColorBlack}
+	cmdlineMacro = Look{termbox.ColorMagenta, termbox.ColorBlack}
+	cmdlineOption = Look{termbox.ColorYellow, termbox.ColorBlack}
+	highlight = Look{termbox.ColorWhite | termbox.AttrBold, termbox.ColorBlack}
+	title = Look{termbox.ColorWhite | termbox.AttrBold, termbox.ColorBlack}
+	selected = Look{termbox.AttrReverse, termbox.ColorBlack}
+	symlink = Look{termbox.ColorMagenta, termbox.ColorBlack}
+	symlinkDir = Look{termbox.ColorMagenta | termbox.AttrBold, termbox.ColorBlack}
+	directory = Look{termbox.ColorCyan | termbox.AttrBold, termbox.ColorBlack}
+	executable = Look{termbox.ColorRed | termbox.AttrBold, termbox.ColorBlack}
+	marked = Look{termbox.ColorYellow | termbox.AttrBold, termbox.ColorBlack}
+	finder = Look{termbox.ColorBlack, termbox.ColorCyan}
+	progress = Look{termbox.ColorWhite, termbox.ColorBlue}
+}
+
+func setGray() {
+	defaultAttr = Look{termbox.ColorLightGray, termbox.ColorDarkGray}
+	messageInfo = Look{termbox.ColorGreen | termbox.AttrBold, termbox.ColorDarkGray}
+	messageErr = Look{termbox.ColorLightRed | termbox.AttrBold, termbox.ColorDarkGray}
+	prompt = Look{termbox.ColorCyan | termbox.AttrBold, termbox.ColorDarkGray}
+	cmdline = Look{termbox.ColorLightGray, termbox.ColorDarkGray}
+	cmdlineCommand = Look{termbox.ColorGreen | termbox.AttrBold, termbox.ColorDarkGray}
+	cmdlineMacro = Look{termbox.ColorLightMagenta, termbox.ColorDarkGray}
+	cmdlineOption = Look{termbox.ColorYellow, termbox.ColorDarkGray}
+	highlight = Look{termbox.ColorLightGray | termbox.AttrBold, termbox.ColorDarkGray}
+	title = Look{termbox.ColorLightGray | termbox.AttrBold, termbox.ColorDarkGray}
+	selected = Look{termbox.AttrReverse, termbox.ColorDarkGray}
+	symlink = Look{termbox.ColorLightMagenta, termbox.ColorDarkGray}
+	symlinkDir = Look{termbox.ColorLightMagenta | termbox.AttrBold, termbox.ColorDarkGray}
+	directory = Look{termbox.ColorCyan | termbox.AttrBold, termbox.ColorDarkGray}
+	executable = Look{termbox.ColorLightRed | termbox.AttrBold, termbox.ColorDarkGray}
+	marked = Look{termbox.ColorYellow | termbox.AttrBold, termbox.ColorDarkGray}
+	finder = Look{termbox.ColorBlack, termbox.ColorCyan}
+	progress = Look{termbox.ColorLightGray, termbox.ColorBlue}
 }
