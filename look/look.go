@@ -130,7 +130,7 @@ func setDefault() {
 	cmdlineOption = Look{termbox.ColorYellow, termbox.ColorDefault}
 	highlight = Look{termbox.ColorDefault | termbox.AttrBold, termbox.ColorDefault}
 	title = Look{termbox.ColorDefault | termbox.AttrBold, termbox.ColorDefault}
-	selected = Look{termbox.ColorDefault, termbox.AttrReverse}
+	selected = Look{termbox.AttrReverse, termbox.ColorDefault}
 	symlink = Look{termbox.ColorMagenta, termbox.ColorDefault}
 	symlinkDir = Look{termbox.ColorMagenta | termbox.AttrBold, termbox.ColorDefault}
 	directory = Look{termbox.ColorCyan | termbox.AttrBold, termbox.ColorDefault}
@@ -151,7 +151,7 @@ func setMidnight() {
 	cmdlineOption = Look{termbox.ColorYellow, termbox.ColorBlue}
 	highlight = Look{termbox.ColorWhite | termbox.AttrBold, termbox.ColorBlue}
 	title = Look{termbox.ColorWhite | termbox.AttrBold, termbox.ColorBlue}
-	selected = Look{termbox.ColorWhite, termbox.AttrReverse}
+	selected = Look{termbox.AttrReverse, termbox.ColorBlue}
 	symlink = Look{termbox.ColorMagenta, termbox.ColorBlue}
 	symlinkDir = Look{termbox.ColorMagenta | termbox.AttrBold, termbox.ColorBlue}
 	directory = Look{termbox.ColorCyan | termbox.AttrBold, termbox.ColorBlue}
