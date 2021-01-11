@@ -30,7 +30,7 @@ Goful is a CUI file manager implemented by Go.
 | ~              | Change to home directory |
 | \              | Change to root directory |
 | space          | Mark file on cursor |
-| *              | Toggle mark all files |
+| M-*            | Toggle mark all files |
 | C-l            | Reload files |
 | C-m            | Open |
 | l              | Layout menu |

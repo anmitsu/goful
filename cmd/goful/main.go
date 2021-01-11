@@ -265,7 +265,7 @@ func filerKeymap(g *goful.Goful) widget.Keymap {
 		"pgdn":      func() { g.Dir().PageDown() },
 		"pgup":      func() { g.Dir().PageUp() },
 		"space":     func() { g.Dir().ToggleMark() },
-		"*":         func() { g.Dir().ToggleMarkAll() },
+		"M-*":       func() { g.Dir().ToggleMarkAll() },
 		"C-g":       func() { g.Dir().Reset() },
 		"f":         func() { g.Dir().Finder() },
 		"/":         func() { g.Dir().Finder() },
