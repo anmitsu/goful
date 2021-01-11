@@ -2,6 +2,7 @@ package widget
 
 import (
 	"bytes"
+	"fmt"
 	"strings"
 	"testing"
 	"time"
@@ -9,6 +10,26 @@ import (
 	"github.com/anmitsu/goful/look"
 	"github.com/nsf/termbox-go"
 )
+
+func TestEventToString(t *testing.T) {
+	if err := termbox.Init(); err != nil {
+		t.Fatal(err)
+	}
+	defer termbox.Close()
+	termbox.SetInputMode(termbox.InputAlt)
+
+	fmt.Println("Exit by q")
+	for {
+		ev := termbox.PollEvent()
+		key := EventToString(&ev)
+		switch key {
+		case "q":
+			return
+		default:
+			fmt.Printf("%c %d %s; ", ev.Ch, ev.Key, key)
+		}
+	}
+}
 
 func TestGauge(t *testing.T) {
 	if err := termbox.Init(); err != nil {
