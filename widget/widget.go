@@ -1,3 +1,4 @@
+// Package widget provides base user interfaces.
 package widget
 
 import (

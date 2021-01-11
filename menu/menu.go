@@ -1,3 +1,4 @@
+// Package menu provides the menu window widget.
 package menu
 
 import (

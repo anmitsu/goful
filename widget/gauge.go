@@ -32,7 +32,7 @@ func (b *ProgressGauge) Start(maxval float64) {
 	b.starttime = time.Now()
 }
 
-// Update the value.
+// Update the current value.
 func (b *ProgressGauge) Update(value float64) {
 	b.curval += value
 }

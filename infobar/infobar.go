@@ -1,4 +1,4 @@
-// Package infobar is the infomation bar to display file infomation.
+// Package infobar displays the file infomation and file control task.
 package infobar
 
 import (
@@ -62,7 +62,7 @@ func ResizeRelative(x, y, width, height int) {
 	infobar.ResizeRelative(x, y, width, height)
 }
 
-// Init the infomation bar at the bottom left half position.
+// Init the infomation bar at the bottom position.
 func Init() {
 	width, height := termbox.Size()
 	infobar = &InfoBar{widget.NewWindow(0, height-1, width, 1), nil, 0, 0}

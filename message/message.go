@@ -1,3 +1,4 @@
+// Package message provides the message window widget.
 package message
 
 import (

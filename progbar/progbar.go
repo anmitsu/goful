@@ -1,3 +1,4 @@
+// Package progbar displays the file control task progress.
 package progbar
 
 import (
