@@ -20,7 +20,8 @@ import (
 var re = regexp.MustCompile(`([;|>&])|(%(?:[&mMfFxX]|[dD]2?))|([[:space:]]-[[:word:]-=]+)|[[:space:]]`)
 
 // SpawnMode starts the spawn mode.
-func (g *Goful) SpawnMode(cmd string) cmdline.Mode {
+// The head of variadic arguments is used for cursor positioning.
+func (g *Goful) SpawnMode(cmd string, cursor ...int) cmdline.Mode {
 	commands, err := utils.SearchCommands()
 	if err != nil {
 		message.Error(err)
@@ -28,6 +29,9 @@ func (g *Goful) SpawnMode(cmd string) cmdline.Mode {
 	mode := &spawnMode{g, commands}
 	c := cmdline.New(mode, g)
 	c.SetText(cmd)
+	if len(cursor) > 0 {
+		c.MoveCursor(cursor[0])
+	}
 	g.next = c
 	return mode
 }
@@ -90,7 +94,8 @@ func (m *spawnMode) Run(c *cmdline.Cmdline) {
 }
 
 // ShellMode starts the shell mode.
-func (g *Goful) ShellMode(cmd string) cmdline.Mode {
+// The head of variadic arguments is used for cursor positioning.
+func (g *Goful) ShellMode(cmd string, cursor ...int) cmdline.Mode {
 	commands, err := utils.SearchCommands()
 	if err != nil {
 		message.Error(err)
@@ -98,6 +103,9 @@ func (g *Goful) ShellMode(cmd string) cmdline.Mode {
 	mode := &shellMode{&spawnMode{g, commands}}
 	c := cmdline.New(mode, g)
 	c.SetText(cmd)
+	if len(cursor) > 0 {
+		c.MoveCursor(cursor[0])
+	}
 	g.next = c
 	return mode
 }
