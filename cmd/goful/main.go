@@ -153,6 +153,45 @@ func config(g *goful.Goful) {
 	)
 	g.AddKeymap("M-x", func() { g.Menu("command") })
 
+	menu.Add("external-command",
+		"copy %m to %D2    ", "c", func() { g.SpawnMode("cp -vai %m %D2") },
+		"move %m to %D2    ", "m", func() { g.SpawnMode("mv -vi %m %D2") },
+		"remove %m files   ", "D", func() { g.SpawnMode("rm -vR %m") },
+		"make directory    ", "k", func() { g.SpawnMode("mkdir -vp ./") },
+		"create newfile    ", "n", func() { g.SpawnMode("touch ./") },
+		"time copy %f to %m", "T", func() { g.SpawnMode("touch -r %f %m") },
+		"change mode %m    ", "M", func() { g.SpawnMode("chmod 644 %m", -3) },
+		"move (rename) %f  ", "r", func() { g.SpawnMode("mv -vi %f " + g.File().Name()) },
+		"bulk rename %m    ", "R", func() { g.SpawnMode(`rename -v "s///" %m`, -6) },
+		"find . -name      ", "f", func() { g.SpawnMode(`find . -name "*"`, -1) },
+		"archives menu     ", "A", func() { g.Menu("archive") },
+	)
+	g.AddKeymap("x", func() { g.Menu("external-command") })
+
+	menu.Add("archive",
+		"zip     ", "z", func() { g.SpawnMode(`zip -roD %x.zip %m`, -7) },
+		"tar     ", "t", func() { g.SpawnMode(`tar cvf %x.tar %m`, -7) },
+		"tar.gz  ", "g", func() { g.SpawnMode(`tar cvfz %x.tgz %m`, -7) },
+		"tar.bz2 ", "b", func() { g.SpawnMode(`tar cvfj %x.bz2 %m`, -7) },
+		"tar.xz  ", "x", func() { g.SpawnMode(`tar cvfJ %x.txz %m`, -7) },
+		"rar     ", "r", func() { g.SpawnMode(`rar u %x.rar %m`, -7) },
+
+		"extract zip for %m", "Z", func() { g.SpawnMode(`for i in %m; do unzip "$i" -d ./; done`, -6) },
+		"extract tar for %m", "T", func() { g.SpawnMode(`for i in %m; do tar xvf "$i" -C ./; done`, -6) },
+		"extract tgz for %m", "G", func() { g.SpawnMode(`for i in %m; do tar xvfz "$i" -C ./; done`, -6) },
+		"extract bz2 for %m", "B", func() { g.SpawnMode(`for i in %m; do tar xvfj "$i" -C ./; done`, -6) },
+		"extract txz for %m", "X", func() { g.SpawnMode(`for i in %m; do tar xvfJ "$i" -C ./; done`, -6) },
+		"extract rar for %m", "R", func() { g.SpawnMode(`for i in %m; do unrar x "$i" -C ./; done`, -6) },
+
+		"find . *.zip extract", "1", func() { g.SpawnMode(`find . -name "*.zip" -type f -prune -print0 | xargs -n1 -0 unzip -d ./`) },
+		"find . *.tar extract", "2", func() { g.SpawnMode(`find . -name "*.tar" -type f -prune -print0 | xargs -n1 -0 tar xvf -C ./`) },
+		"find . *.tgz extract", "3", func() { g.SpawnMode(`find . -name "*.tgz" -type f -prune -print0 | xargs -n1 -0 tar xvfz -C ./`) },
+		"find . *.bz2 extract", "4", func() { g.SpawnMode(`find . -name "*.bz2" -type f -prune -print0 | xargs -n1 -0 tar xvfj -C ./`) },
+		"find . *.txz extract", "5", func() { g.SpawnMode(`find . -name "*.txz" -type f -prune -print0 | xargs -n1 -0 tar xvfJ -C ./`) },
+		"find . *.rar extract", "6", func() { g.SpawnMode(`find . -name "*.rar" -type f -prune -print0 | xargs -n1 -0 unrar x -C ./`) },
+	)
+	g.AddKeymap("A", func() { g.Menu("archive") })
+
 	g.AddKeymap("v", func() { g.Spawn("less %f") })
 
 	g.MergeExtmap(widget.Extmap{
