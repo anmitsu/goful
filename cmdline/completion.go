@@ -6,9 +6,9 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/anmitsu/go-shlex"
 	"github.com/anmitsu/goful/utils"
 	"github.com/anmitsu/goful/widget"
+	"github.com/google/shlex"
 )
 
 // Completion is a list box displays completions of the cmdline text.
@@ -86,7 +86,7 @@ type parser struct {
 
 func parseCmdline(c *Cmdline) *parser {
 	text := c.TextBeforeCursor()
-	words, _ := shlex.Split(text, true)
+	words, _ := shlex.Split(text)
 
 	switch i := len(words); i {
 	case 0:
