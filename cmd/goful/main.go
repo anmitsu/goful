@@ -104,6 +104,7 @@ func config(g *goful.Goful) {
 		})
 	}
 
+	// Setup menus and add to keymap.
 	menu.Add("sort",
 		"sort name          ", "n", func() { g.Dir().SortName() },
 		"sort name decending", "N", func() { g.Dir().SortNameDec() },
@@ -117,26 +118,31 @@ func config(g *goful.Goful) {
 	g.AddKeymap("s", func() { g.Menu("sort") })
 
 	menu.Add("layout",
-		"tile             ", "t", func() { g.Workspace().LayoutTile() },
-		"tile-top         ", "T", func() { g.Workspace().LayoutTileTop() },
-		"tile-bottom      ", "B", func() { g.Workspace().LayoutTileBottom() },
-		"oneline          ", "l", func() { g.Workspace().LayoutOneline() },
-		"onecolumn        ", "c", func() { g.Workspace().LayoutOnecolumn() },
-		"fullscreen       ", "f", func() { g.Workspace().LayoutFullscreen() },
-		"toggle size view ", "S", func() { filer.ToggleSizeView() },
-		"toggle perm view ", "P", func() { filer.TogglePermView() },
-		"toggle time view ", "M", func() { filer.ToggleTimeView() },
-		"size only view   ", "1", func() { filer.SetStatView(true, false, false) },
-		"perm only view   ", "2", func() { filer.SetStatView(false, true, false) },
-		"time only view   ", "3", func() { filer.SetStatView(false, false, true) },
-		"view all state   ", "V", func() { filer.SetStatView(true, true, true) },
-		"non view state   ", "0", func() { filer.SetStatView(false, false, false) },
-		"set default look ", "d", func() { look.Set("default") },
-		"set midnight look", "n", func() { look.Set("midnight") },
-		"set dark look    ", "D", func() { look.Set("dark") },
-		"set gray look    ", "g", func() { look.Set("gray") },
+		"tile       ", "t", func() { g.Workspace().LayoutTile() },
+		"tile-top   ", "T", func() { g.Workspace().LayoutTileTop() },
+		"tile-bottom", "b", func() { g.Workspace().LayoutTileBottom() },
+		"oneline    ", "l", func() { g.Workspace().LayoutOneline() },
+		"onecolumn  ", "c", func() { g.Workspace().LayoutOnecolumn() },
+		"fullscreen ", "f", func() { g.Workspace().LayoutFullscreen() },
 	)
 	g.AddKeymap("l", func() { g.Menu("layout") })
+
+	menu.Add("view",
+		"toggle size  ", "s", func() { filer.ToggleSizeView() },
+		"toggle perm  ", "p", func() { filer.TogglePermView() },
+		"toggle time  ", "t", func() { filer.ToggleTimeView() },
+		"all state    ", "1", func() { filer.SetStatView(true, true, true) },
+		"no state     ", "0", func() { filer.SetStatView(false, false, false) },
+	)
+	g.AddKeymap("V", func() { g.Menu("view") })
+
+	menu.Add("look",
+		"default      ", "D", func() { look.Set("default") },
+		"midnight     ", "n", func() { look.Set("midnight") },
+		"dark         ", "d", func() { look.Set("dark") },
+		"gray         ", "g", func() { look.Set("gray") },
+	)
+	g.AddKeymap("L", func() { g.Menu("look") })
 
 	menu.Add("command",
 		"copy         ", "c", func() { g.CopyMode() },
@@ -144,9 +150,9 @@ func config(g *goful.Goful) {
 		"delete       ", "D", func() { g.RemoveMode() },
 		"mkdir        ", "k", func() { g.MkdirMode() },
 		"newfile      ", "n", func() { g.CreatefileMode() },
-		"chmod        ", "h", func() { g.ChmodMode() },
+		"chmod        ", "M", func() { g.ChmodMode() },
 		"rename       ", "r", func() { g.RenameMode() },
-		"regexp rename", "R", func() { g.BulkRenameMode() },
+		"bulk rename  ", "R", func() { g.BulkRenameMode() },
 		"chdir        ", "d", func() { g.ChdirMode() },
 		"glob         ", "g", func() { g.GlobMode() },
 		"globdir      ", "G", func() { g.GlobdirMode() },
@@ -192,33 +198,18 @@ func config(g *goful.Goful) {
 	)
 	g.AddKeymap("A", func() { g.Menu("archive") })
 
-	g.AddKeymap("v", func() { g.Spawn("less %f") })
-
-	g.MergeExtmap(widget.Extmap{
-		"C-m": { // associates by file types with the enter key event
-			".dir":   func() { g.Dir().EnterDir() },
-			".exec":  func() { g.SpawnMode(" ./" + g.File().Name()) },
-			".zip":   func() { g.SpawnMode("unzip %f -d %D") },
-			".gz":    func() { g.SpawnMode("tar xvfz %f -C %D") },
-			".tgz":   func() { g.SpawnMode("tar xvfz %f -C %D") },
-			".bz2":   func() { g.SpawnMode("tar xvfj %f -C %D") },
-			".tar":   func() { g.SpawnMode("tar xvf %f -C %D") },
-			".rar":   func() { g.SpawnMode("unrar x %f -C %D") },
-			".java":  func() { g.SpawnMode("javac %f") },
-			".class": func() { g.SpawnMode("java %x") },
-			".jar":   func() { g.SpawnMode("java -jar %f") },
-			".py":    func() { g.SpawnMode("python %f") },
-			".go":    func() { g.SpawnMode("go run %f") },
-		},
-		"v": {
-			".gz":  func() { g.Spawn("tar tvfz %f | less") },
-			".tgz": func() { g.Spawn("tar tvfz %f | less") },
-			".bz2": func() { g.Spawn("tar tvfj %f | less") },
-			".tar": func() { g.Spawn("tar tvf %f | less") },
-			".zip": func() { g.Spawn("zipinfo -Ocp932 %f | less") },
-			".rar": func() { g.Spawn("unrar l %f | less") },
-		},
-	})
+	menu.Add("jump",
+		"/etc       ", "e", func() { g.Dir().Chdir("/etc") },
+		"/usr       ", "u", func() { g.Dir().Chdir("/usr") },
+		"/media     ", "M", func() { g.Dir().Chdir("/media") },
+		"~/Desktop  ", "t", func() { g.Dir().Chdir("~/Desktop") },
+		"~/Documents", "D", func() { g.Dir().Chdir("~/Documents") },
+		"~/Downloads", "d", func() { g.Dir().Chdir("~/Downloads") },
+		"~/Music    ", "m", func() { g.Dir().Chdir("~/Music") },
+		"~/Pictures ", "p", func() { g.Dir().Chdir("~/Pictures") },
+		"~/Videos   ", "v", func() { g.Dir().Chdir("~/Videos") },
+	)
+	g.AddKeymap("j", func() { g.Menu("jump") })
 
 	menu.Add("editor",
 		"vscode        ", "c", func() { g.Spawn("code %f %&") },
@@ -230,20 +221,42 @@ func config(g *goful.Goful) {
 	menu.Add("image",
 		"eog        ", "e", func() { g.Spawn("eog %f %&") },
 		"gimp       ", "g", func() { g.Spawn("gimp %m %&") },
+		"xdg-open   ", "x", func() { g.Spawn("xdg-open %f %&") },
 	)
 
 	menu.Add("media",
 		"mpv     ", "m", func() { g.Spawn("mpv %f") },
 		"vlc     ", "v", func() { g.Spawn("vlc %f %&") },
+		"xdg-open", "x", func() { g.Spawn("xdg-open %f %&") },
 	)
 
+	g.AddKeymap("v", func() { g.Spawn("less %f") })
+
 	g.MergeExtmap(widget.Extmap{
-		"C-m": { // associates image and media files with the enter key event
+		"C-m": { // associates by file types with the enter key event
+			".dir":  func() { g.Dir().EnterDir() },
+			".exec": func() { g.SpawnMode(" ./" + g.File().Name()) },
+
+			".zip": func() { g.SpawnMode("unzip %f -d %D") },
+			".tar": func() { g.SpawnMode("tar xvf %f -C %D") },
+			".gz":  func() { g.SpawnMode("tar xvfz %f -C %D") },
+			".tgz": func() { g.SpawnMode("tar xvfz %f -C %D") },
+			".bz2": func() { g.SpawnMode("tar xvfj %f -C %D") },
+			".xz":  func() { g.SpawnMode("tar xvfJ %f -C %D") },
+			".txz": func() { g.SpawnMode("tar xvfJ %f -C %D") },
+			".rar": func() { g.SpawnMode("unrar x %f -C %D") },
+
+			".py": func() { g.SpawnMode("python %f") },
+			".rb": func() { g.SpawnMode("ruby %f") },
+			".js": func() { g.SpawnMode("node %f") },
+			".go": func() { g.SpawnMode("go run %f") },
+
 			".jpg":  func() { g.Menu("image") },
 			".jpeg": func() { g.Menu("image") },
 			".gif":  func() { g.Menu("image") },
 			".png":  func() { g.Menu("image") },
 			".bmp":  func() { g.Menu("image") },
+
 			".avi":  func() { g.Menu("media") },
 			".mp4":  func() { g.Menu("media") },
 			".mkv":  func() { g.Menu("media") },
@@ -253,23 +266,23 @@ func config(g *goful.Goful) {
 			".flac": func() { g.Menu("media") },
 			".tta":  func() { g.Menu("media") },
 		},
+		"v": {
+			".gz":  func() { g.Spawn("tar tvfz %f | less") },
+			".tgz": func() { g.Spawn("tar tvfz %f | less") },
+			".bz2": func() { g.Spawn("tar tvfj %f | less") },
+			".txz": func() { g.Spawn("tar tvfJ %f | less") },
+			".tar": func() { g.Spawn("tar tvf %f | less") },
+			".zip": func() { g.Spawn("zipinfo -Ocp932 %f | less") },
+			".rar": func() { g.Spawn("unrar l %f | less") },
+		},
 	})
-
-	menu.Add("jump",
-		"Desktop   ", "t", func() { g.Dir().Chdir("~/Desktop/") },
-		"Documents ", "D", func() { g.Dir().Chdir("~/Documents/") },
-		"Downloads ", "d", func() { g.Dir().Chdir("~/Downloads/") },
-		"Music     ", "m", func() { g.Dir().Chdir("~/Music/") },
-		"Pictures  ", "p", func() { g.Dir().Chdir("~/Pictures/") },
-		"Videos    ", "v", func() { g.Dir().Chdir("~/Videos/") },
-	)
-	g.AddKeymap("j", func() { g.Menu("jump") })
 }
 
 // Widget keymap functions.
 
 func filerKeymap(g *goful.Goful) widget.Keymap {
 	return widget.Keymap{
+		"M-C-c":     func() { g.CreateWorkspace() },
 		"M-C-w":     func() { g.CloseWorkspace() },
 		"M-f":       func() { g.MoveWorkspace(1) },
 		"M-b":       func() { g.MoveWorkspace(-1) },

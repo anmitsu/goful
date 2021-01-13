@@ -33,10 +33,14 @@ Goful is a CUI file manager implemented by Go.
 | M-*            | Toggle mark all files |
 | C-l            | Reload files |
 | C-m            | Open |
-| l              | Layout menu |
 | s              | Sort menu |
+| l              | Layout menu |
+| V              | View menu |
+| L              | Look menu |
 | e              | Editor menu |
 | M-x            | Command menu |
+| x              | External command menu |
+| A              | Archive menu |
 | M-f            | Move next workspace |
 | M-b            | Move previous workspace |
 | f, /           | Find files |
