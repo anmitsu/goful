@@ -5,9 +5,9 @@ import (
 	"runtime"
 	"strings"
 
-	"github.com/anmitsu/goful"
 	"github.com/anmitsu/goful/cmdline"
 	"github.com/anmitsu/goful/filer"
+	"github.com/anmitsu/goful/goful"
 	"github.com/anmitsu/goful/infobar"
 	"github.com/anmitsu/goful/look"
 	"github.com/anmitsu/goful/menu"
