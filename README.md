@@ -44,8 +44,8 @@ Goful is a CUI file manager implemented by Go.
 | M-f            | Move next workspace |
 | M-b            | Move previous workspace |
 | f, /           | Find files |
-| h              | Start spawn mode |
-| H              | Start shell mode |
+| h              | Start shell mode |
+| H              | Start shell suspend mode |
 | n              | Create new file |
 | k              | Create new directory |
 | c              | Copy file |

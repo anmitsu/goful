@@ -135,10 +135,6 @@ func (g *Goful) Run() {
 	}
 }
 
-func (g *Goful) quit() {
-	g.exit = true
-}
-
 func (g *Goful) syncCallback(callback func()) {
 	g.callback <- callback
 }
@@ -152,25 +148,4 @@ func (g *Goful) eventHandler(ev termbox.Event) {
 			g.Input(key)
 		}
 	}
-}
-
-func (g *Goful) dialog(message string, options ...string) string {
-	g.interrupt <- 1
-	defer func() { g.interrupt <- 1 }()
-
-	tmp := g.Next()
-	dialog := g.DialogMode(message, options...)
-	g.Draw()
-	widget.Flush()
-
-	for g.Next() != nil {
-		select {
-		case ev := <-g.event:
-			g.eventHandler(ev)
-		}
-		g.Draw()
-		widget.Flush()
-	}
-	g.next = tmp
-	return dialog.Result()
 }

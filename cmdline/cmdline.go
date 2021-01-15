@@ -20,8 +20,6 @@ import (
 type Mode interface {
 	String() string // uses as a history map name
 	Prompt() string // is displayed at the beggining
-	Result() string
-	Init(*Cmdline)
 	Draw(*Cmdline)
 	Run(*Cmdline)
 }
@@ -55,7 +53,6 @@ func New(m Mode, filer widget.Widget) *Cmdline {
 		mode:       m,
 		History:    &History{},
 	}
-	c.mode.Init(c)
 
 	y = (y + height) * 2 / 3
 	height -= y + 1

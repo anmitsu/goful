@@ -47,8 +47,8 @@ func spawn(cmd *exec.Cmd) error {
 	return nil
 }
 
-// SpawnShell spawns the shell after command executing.
-func (g *Goful) SpawnShell(cmd string) {
+// SpawnSuspend spawns a process and suspends termbox.
+func (g *Goful) SpawnSuspend(cmd string) {
 	cmd, _ = g.expandMacro(cmd)
 	args := g.shell(cmd)
 	execCmd := exec.Command(args[0], args[1:]...)

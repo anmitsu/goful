@@ -19,34 +19,50 @@ import (
 // match shell separators, macros, options and spaces.
 var re = regexp.MustCompile(`([;|>&])|(%(?:[&mMfFxX]|[dD]2?))|([[:space:]]-[[:word:]-=]+)|[[:space:]]`)
 
-// SpawnMode starts the spawn mode.
+// Shell starts the shell mode.
 // The head of variadic arguments is used for cursor positioning.
-func (g *Goful) SpawnMode(cmd string, cursor ...int) cmdline.Mode {
+func (g *Goful) Shell(cmd string, offset ...int) {
 	commands, err := utils.SearchCommands()
 	if err != nil {
 		message.Error(err)
 	}
-	mode := &spawnMode{g, commands}
-	c := cmdline.New(mode, g)
+	c := cmdline.New(&shellMode{g, commands, false}, g)
 	c.SetText(cmd)
-	if len(cursor) > 0 {
-		c.MoveCursor(cursor[0])
+	if len(offset) > 0 {
+		c.MoveCursor(offset[0])
 	}
 	g.next = c
-	return mode
 }
 
-type spawnMode struct {
+// ShellSuspend starts the shell mode and suspends termbox after running.
+// The head of variadic arguments is used for cursor positioning.
+func (g *Goful) ShellSuspend(cmd string, offset ...int) {
+	commands, err := utils.SearchCommands()
+	if err != nil {
+		message.Error(err)
+	}
+	c := cmdline.New(&shellMode{g, commands, true}, g)
+	c.SetText(cmd)
+	if len(offset) > 0 {
+		c.MoveCursor(offset[0])
+	}
+	g.next = c
+}
+
+type shellMode struct {
 	*Goful
 	commands map[string]bool
+	suspend  bool
 }
 
-func (m *spawnMode) String() string          { return "shell" }
-func (m *spawnMode) Prompt() string          { return "$ " }
-func (m *spawnMode) Result() string          { return "" }
-func (m *spawnMode) Init(c *cmdline.Cmdline) {}
-
-func (m *spawnMode) Draw(c *cmdline.Cmdline) {
+func (m *shellMode) String() string { return "shell" }
+func (m *shellMode) Prompt() string {
+	if m.suspend {
+		return "Suspend $ "
+	}
+	return "$ "
+}
+func (m *shellMode) Draw(c *cmdline.Cmdline) {
 	c.Clear()
 	x, y := c.LeftTop()
 	x++
@@ -55,7 +71,7 @@ func (m *spawnMode) Draw(c *cmdline.Cmdline) {
 	m.drawCommand(x, y, c.String())
 }
 
-func (m *spawnMode) drawCommand(x, y int, cmd string) {
+func (m *shellMode) drawCommand(x, y int, cmd string) {
 	start := 0
 	// match is index [start, end, sep_start, sep_end, macro_start, macro_end, opt_start, opt_end]
 	for _, match := range re.FindAllStringSubmatchIndex(cmd, -1) {
@@ -87,54 +103,37 @@ func (m *spawnMode) drawCommand(x, y int, cmd string) {
 	}
 }
 
-func (m *spawnMode) Run(c *cmdline.Cmdline) {
-	m.commands = nil
-	m.Spawn(c.String())
-	c.Exit()
-}
-
-// ShellMode starts the shell mode.
-// The head of variadic arguments is used for cursor positioning.
-func (g *Goful) ShellMode(cmd string, cursor ...int) cmdline.Mode {
-	commands, err := utils.SearchCommands()
-	if err != nil {
-		message.Error(err)
-	}
-	mode := &shellMode{&spawnMode{g, commands}}
-	c := cmdline.New(mode, g)
-	c.SetText(cmd)
-	if len(cursor) > 0 {
-		c.MoveCursor(cursor[0])
-	}
-	g.next = c
-	return mode
-}
-
-type shellMode struct {
-	*spawnMode
-}
-
-func (m *shellMode) Prompt() string { return "Shell: " }
-func (m *shellMode) Draw(c *cmdline.Cmdline) {
-	c.Clear()
-	x, y := c.LeftTop()
-	x++
-	x = widget.SetCells(x, y, m.Prompt(), look.Prompt())
-	termbox.SetCursor(x+c.Cursor(), y)
-	m.drawCommand(x, y, c.String())
-}
-
 func (m *shellMode) Run(c *cmdline.Cmdline) {
+	if m.suspend {
+		m.SpawnSuspend(c.String())
+	} else {
+		m.Spawn(c.String())
+	}
 	m.commands = nil
-	m.SpawnShell(c.String())
 	c.Exit()
 }
 
-// DialogMode starts dialog.
-func (g *Goful) DialogMode(message string, options ...string) cmdline.Mode {
-	mode := &dialogMode{message, options, ""}
-	g.next = cmdline.New(mode, g)
-	return mode
+func (g *Goful) dialog(message string, options ...string) string {
+	g.interrupt <- 1
+	defer func() { g.interrupt <- 1 }()
+
+	tmp := g.Next()
+	dialog := &dialogMode{message, options, ""}
+	g.next = cmdline.New(dialog, g)
+
+	g.Draw()
+	widget.Flush()
+
+	for g.Next() != nil {
+		select {
+		case ev := <-g.event:
+			g.eventHandler(ev)
+		}
+		g.Draw()
+		widget.Flush()
+	}
+	g.next = tmp
+	return dialog.result
 }
 
 type dialogMode struct {
@@ -147,8 +146,6 @@ func (m *dialogMode) String() string { return "dialog" }
 func (m *dialogMode) Prompt() string {
 	return fmt.Sprintf("%s [%s]: ", m.message, strings.Join(m.options, "/"))
 }
-func (m *dialogMode) Result() string          { return m.result }
-func (m *dialogMode) Init(c *cmdline.Cmdline) {}
 func (m *dialogMode) Draw(c *cmdline.Cmdline) { c.DrawLine() }
 func (m *dialogMode) Run(c *cmdline.Cmdline) {
 	for _, opt := range m.options {
@@ -161,11 +158,9 @@ func (m *dialogMode) Run(c *cmdline.Cmdline) {
 	c.SetText("")
 }
 
-// QuitMode starts quit cmdline mode.
-func (g *Goful) QuitMode() cmdline.Mode {
-	mode := &quitMode{g}
-	g.next = cmdline.New(mode, g)
-	return mode
+// Quit starts the quit mode.
+func (g *Goful) Quit() {
+	g.next = cmdline.New(&quitMode{g}, g)
 }
 
 type quitMode struct {
@@ -174,14 +169,12 @@ type quitMode struct {
 
 func (m quitMode) String() string          { return "quit" }
 func (m quitMode) Prompt() string          { return "Quit? [yes/no]: " }
-func (m quitMode) Result() string          { return "" }
-func (m quitMode) Init(c *cmdline.Cmdline) {}
 func (m quitMode) Draw(c *cmdline.Cmdline) { c.DrawLine() }
 func (m quitMode) Run(c *cmdline.Cmdline) {
 	switch c.String() {
 	case "yes":
 		c.Exit()
-		m.quit()
+		m.exit = true
 	case "no":
 		c.Exit()
 	default:
@@ -189,11 +182,15 @@ func (m quitMode) Run(c *cmdline.Cmdline) {
 	}
 }
 
-// CopyMode starts copy.
-func (g *Goful) CopyMode() cmdline.Mode {
-	mode := &copyMode{g, ""}
-	g.next = cmdline.New(mode, g)
-	return mode
+// Copy starts the copy mode.
+func (g *Goful) Copy() {
+	c := cmdline.New(&copyMode{g, ""}, g)
+	if g.Dir().IsMark() {
+		c.SetText(g.Workspace().NextDir().Path)
+	} else {
+		c.SetText(g.File().Name())
+	}
+	g.next = c
 }
 
 type copyMode struct {
@@ -209,14 +206,6 @@ func (m *copyMode) Prompt() string {
 		return fmt.Sprintf("Copy from %s to: ", m.src)
 	} else {
 		return "Copy from: "
-	}
-}
-func (m *copyMode) Result() string { return "" }
-func (m *copyMode) Init(c *cmdline.Cmdline) {
-	if m.Dir().IsMark() {
-		c.SetText(m.Workspace().NextDir().Path)
-	} else {
-		c.SetText(m.File().Name())
 	}
 }
 func (m *copyMode) Draw(c *cmdline.Cmdline) { c.DrawLine() }
@@ -236,11 +225,15 @@ func (m *copyMode) Run(c *cmdline.Cmdline) {
 	}
 }
 
-// MoveMode starts move.
-func (g *Goful) MoveMode() cmdline.Mode {
-	mode := &moveMode{g, ""}
-	g.next = cmdline.New(mode, g)
-	return mode
+// Move starts the move mode.
+func (g *Goful) Move() {
+	c := cmdline.New(&moveMode{g, ""}, g)
+	if g.Dir().IsMark() {
+		c.SetText(g.Workspace().NextDir().Path)
+	} else {
+		c.SetText(g.File().Name())
+	}
+	g.next = c
 }
 
 type moveMode struct {
@@ -256,14 +249,6 @@ func (m *moveMode) Prompt() string {
 		return fmt.Sprintf("Move from %s to: ", m.src)
 	} else {
 		return "Move from: "
-	}
-}
-func (m *moveMode) Result() string { return "" }
-func (m *moveMode) Init(c *cmdline.Cmdline) {
-	if m.Dir().IsMark() {
-		c.SetText(m.Workspace().NextDir().Path)
-	} else {
-		c.SetText(m.File().Name())
 	}
 }
 func (m *moveMode) Draw(c *cmdline.Cmdline) { c.DrawLine() }
@@ -283,11 +268,13 @@ func (m *moveMode) Run(c *cmdline.Cmdline) {
 	}
 }
 
-// RenameMode starts rename.
-func (g *Goful) RenameMode() cmdline.Mode {
-	mode := &renameMode{g, ""}
-	g.next = cmdline.New(mode, g)
-	return mode
+// Rename starts the rename mode.
+func (g *Goful) Rename() {
+	src := g.File().Name()
+	c := cmdline.New(&renameMode{g, src}, g)
+	c.SetText(src)
+	c.MoveCursor(-len(filepath.Ext(src)))
+	g.next = c
 }
 
 type renameMode struct {
@@ -295,16 +282,8 @@ type renameMode struct {
 	src string
 }
 
-func (m *renameMode) String() string { return "rename" }
-func (m *renameMode) Prompt() string {
-	return fmt.Sprintf("Rename: %s -> ", m.src)
-}
-func (m *renameMode) Result() string { return "rename" }
-func (m *renameMode) Init(c *cmdline.Cmdline) {
-	m.src = m.File().Name()
-	c.SetText(m.src)
-	c.MoveCursor(-len(filepath.Ext(m.src)))
-}
+func (m *renameMode) String() string          { return "rename" }
+func (m *renameMode) Prompt() string          { return fmt.Sprintf("Rename: %s -> ", m.src) }
 func (m *renameMode) Draw(c *cmdline.Cmdline) { c.DrawLine() }
 func (m *renameMode) Run(c *cmdline.Cmdline) {
 	dst := c.String()
@@ -316,11 +295,9 @@ func (m *renameMode) Run(c *cmdline.Cmdline) {
 	c.Exit()
 }
 
-// BulkRenameMode starts regexp rename.
-func (g *Goful) BulkRenameMode() cmdline.Mode {
-	mode := &bulkRenameMode{g, ""}
-	g.next = cmdline.New(mode, g)
-	return mode
+// BulkRename starts the bulk rename mode.
+func (g *Goful) BulkRename() {
+	g.next = cmdline.New(&bulkRenameMode{g, ""}, g)
 }
 
 type bulkRenameMode struct {
@@ -332,8 +309,6 @@ func (m *bulkRenameMode) String() string { return "renameregexp" }
 func (m *bulkRenameMode) Prompt() string {
 	return "Rename by regexp: %s/"
 }
-func (m *bulkRenameMode) Result() string          { return "" }
-func (m *bulkRenameMode) Init(c *cmdline.Cmdline) {}
 func (m *bulkRenameMode) Draw(c *cmdline.Cmdline) { c.DrawLine() }
 func (m *bulkRenameMode) Run(c *cmdline.Cmdline) {
 	var pattern, repl string
@@ -349,11 +324,13 @@ func (m *bulkRenameMode) Run(c *cmdline.Cmdline) {
 	m.renameRegexp(pattern, repl, m.Dir().Markfiles()...)
 }
 
-// RemoveMode starts remove.
-func (g *Goful) RemoveMode() cmdline.Mode {
-	mode := &removeMode{g, ""}
-	g.next = cmdline.New(mode, g)
-	return mode
+// Remove starts the remove mode.
+func (g *Goful) Remove() {
+	c := cmdline.New(&removeMode{g, ""}, g)
+	if !g.Dir().IsMark() {
+		c.SetText(g.File().Name())
+	}
+	g.next = c
 }
 
 type removeMode struct {
@@ -362,7 +339,6 @@ type removeMode struct {
 }
 
 func (m *removeMode) String() string { return "remove" }
-func (m *removeMode) Result() string { return "" }
 func (m *removeMode) Prompt() string {
 	if m.Dir().IsMark() {
 		return fmt.Sprintf("Remove %d mark files? [yes/no]: ", m.Dir().MarkCount())
@@ -370,11 +346,6 @@ func (m *removeMode) Prompt() string {
 		return fmt.Sprintf("Remove? %s [yes/no]: ", m.src)
 	} else {
 		return "Remove: "
-	}
-}
-func (m *removeMode) Init(c *cmdline.Cmdline) {
-	if !m.Dir().IsMark() {
-		c.SetText(m.File().Name())
 	}
 }
 func (m *removeMode) Draw(c *cmdline.Cmdline) { c.DrawLine() }
@@ -399,11 +370,9 @@ func (m *removeMode) Run(c *cmdline.Cmdline) {
 	}
 }
 
-// MkdirMode starts make directory.
-func (g *Goful) MkdirMode() cmdline.Mode {
-	mode := &mkdirMode{g, ""}
-	g.next = cmdline.New(mode, g)
-	return mode
+// Mkdir starts the make directory mode.
+func (g *Goful) Mkdir() {
+	g.next = cmdline.New(&mkdirMode{g, ""}, g)
 }
 
 type mkdirMode struct {
@@ -412,14 +381,12 @@ type mkdirMode struct {
 }
 
 func (m *mkdirMode) String() string { return "mkdir" }
-func (m *mkdirMode) Result() string { return "" }
 func (m *mkdirMode) Prompt() string {
 	if m.path != "" {
 		return "Mode (default 0755): "
 	}
 	return "Make directory: "
 }
-func (m *mkdirMode) Init(c *cmdline.Cmdline) {}
 func (m *mkdirMode) Draw(c *cmdline.Cmdline) { c.DrawLine() }
 func (m *mkdirMode) Run(c *cmdline.Cmdline) {
 	if m.path != "" {
@@ -444,29 +411,25 @@ func (m *mkdirMode) Run(c *cmdline.Cmdline) {
 	}
 }
 
-// CreatefileMode starts file creation.
-func (g *Goful) CreatefileMode() cmdline.Mode {
-	mode := &createFileMode{g, ""}
-	g.next = cmdline.New(mode, g)
-	return mode
+// TouchFile starts the touch file mode.
+func (g *Goful) TouchFile() {
+	g.next = cmdline.New(&touchFileMode{g, ""}, g)
 }
 
-type createFileMode struct {
+type touchFileMode struct {
 	*Goful
 	path string
 }
 
-func (m *createFileMode) String() string { return "createfile" }
-func (m *createFileMode) Result() string { return "" }
-func (m *createFileMode) Prompt() string {
+func (m *touchFileMode) String() string { return "touchfile" }
+func (m *touchFileMode) Prompt() string {
 	if m.path != "" {
 		return "Mode (default 0664): "
 	}
-	return "New file: "
+	return "Touch file: "
 }
-func (m *createFileMode) Init(c *cmdline.Cmdline) {}
-func (m *createFileMode) Draw(c *cmdline.Cmdline) { c.DrawLine() }
-func (m *createFileMode) Run(c *cmdline.Cmdline) {
+func (m *touchFileMode) Draw(c *cmdline.Cmdline) { c.DrawLine() }
+func (m *touchFileMode) Run(c *cmdline.Cmdline) {
 	if m.path != "" {
 		mode := c.String()
 		if mode != "" {
@@ -486,11 +449,13 @@ func (m *createFileMode) Run(c *cmdline.Cmdline) {
 	}
 }
 
-// ChmodMode starts change mode.
-func (g *Goful) ChmodMode() cmdline.Mode {
-	mode := &chmodMode{g, nil}
-	g.next = cmdline.New(mode, g)
-	return mode
+// Chmod starts the change mode mode.
+func (g *Goful) Chmod() {
+	c := cmdline.New(&chmodMode{g, nil}, g)
+	if !g.Dir().IsMark() {
+		c.SetText(g.File().Name())
+	}
+	g.next = c
 }
 
 type chmodMode struct {
@@ -499,7 +464,6 @@ type chmodMode struct {
 }
 
 func (m *chmodMode) String() string { return "chmod" }
-func (m *chmodMode) Result() string { return "" }
 func (m *chmodMode) Prompt() string {
 	if m.Dir().IsMark() {
 		return fmt.Sprintf("Chmod %d mark files to: ", m.Dir().MarkCount())
@@ -507,11 +471,6 @@ func (m *chmodMode) Prompt() string {
 		return fmt.Sprintf("Chmod %s: %o to ", m.fi.Name(), m.fi.Mode())
 	}
 	return "Chmod: "
-}
-func (m *chmodMode) Init(c *cmdline.Cmdline) {
-	if !m.Dir().IsMark() {
-		c.SetText(m.File().Name())
-	}
 }
 func (m *chmodMode) Draw(c *cmdline.Cmdline) { c.DrawLine() }
 func (m *chmodMode) Run(c *cmdline.Cmdline) {
@@ -543,11 +502,9 @@ func (m *chmodMode) Run(c *cmdline.Cmdline) {
 	}
 }
 
-// ChangeWorkspaceTitle starts changing workspace title.
-func (g *Goful) ChangeWorkspaceTitle() cmdline.Mode {
-	mode := &changeWorkspaceTitle{g}
-	g.next = cmdline.New(mode, g)
-	return mode
+// ChangeWorkspaceTitle starts the changing workspace title.
+func (g *Goful) ChangeWorkspaceTitle() {
+	g.next = cmdline.New(&changeWorkspaceTitle{g}, g)
 }
 
 type changeWorkspaceTitle struct {
@@ -555,9 +512,7 @@ type changeWorkspaceTitle struct {
 }
 
 func (m *changeWorkspaceTitle) String() string          { return "changeworkspacetitle" }
-func (m *changeWorkspaceTitle) Result() string          { return "" }
 func (m *changeWorkspaceTitle) Prompt() string          { return "Change workspace title: " }
-func (m *changeWorkspaceTitle) Init(c *cmdline.Cmdline) {}
 func (m *changeWorkspaceTitle) Draw(c *cmdline.Cmdline) { c.DrawLine() }
 func (m *changeWorkspaceTitle) Run(c *cmdline.Cmdline) {
 	title := c.String()
@@ -567,11 +522,9 @@ func (m *changeWorkspaceTitle) Run(c *cmdline.Cmdline) {
 	c.Exit()
 }
 
-// ChdirMode starts change directory.
-func (g *Goful) ChdirMode() cmdline.Mode {
-	mode := &chdirMode{g}
-	g.next = cmdline.New(mode, g)
-	return mode
+// Chdir starts the change directory mode.
+func (g *Goful) Chdir() {
+	g.next = cmdline.New(&chdirMode{g}, g)
 }
 
 type chdirMode struct {
@@ -579,9 +532,7 @@ type chdirMode struct {
 }
 
 func (m *chdirMode) String() string          { return "chdir" }
-func (m *chdirMode) Result() string          { return "" }
 func (m *chdirMode) Prompt() string          { return "Chdir to: " }
-func (m *chdirMode) Init(c *cmdline.Cmdline) {}
 func (m *chdirMode) Draw(c *cmdline.Cmdline) { c.DrawLine() }
 func (m *chdirMode) Run(c *cmdline.Cmdline) {
 	if path := c.String(); path != "" {
@@ -590,23 +541,17 @@ func (m *chdirMode) Run(c *cmdline.Cmdline) {
 	}
 }
 
-// GlobMode starts glob.
-func (g *Goful) GlobMode() cmdline.Mode {
-	mode := &globMode{g}
-	g.next = cmdline.New(mode, g)
-	return mode
+// Glob starts the glob mode.
+func (g *Goful) Glob() {
+	g.next = cmdline.New(&globMode{g}, g)
 }
 
 type globMode struct {
 	*Goful
 }
 
-func (m *globMode) String() string { return "glob" }
-func (m *globMode) Result() string { return "" }
-func (m *globMode) Prompt() string {
-	return "Glob pattern: "
-}
-func (m *globMode) Init(c *cmdline.Cmdline) {}
+func (m *globMode) String() string          { return "glob" }
+func (m *globMode) Prompt() string          { return "Glob pattern: " }
 func (m *globMode) Draw(c *cmdline.Cmdline) { c.DrawLine() }
 func (m *globMode) Run(c *cmdline.Cmdline) {
 	if pattern := c.String(); pattern != "" {
@@ -615,23 +560,17 @@ func (m *globMode) Run(c *cmdline.Cmdline) {
 	}
 }
 
-// GlobdirMode starts globdir.
-func (g *Goful) GlobdirMode() cmdline.Mode {
-	mode := &globdirMode{g}
-	g.next = cmdline.New(mode, g)
-	return mode
+// Globdir starts the globdir mode.
+func (g *Goful) Globdir() {
+	g.next = cmdline.New(&globdirMode{g}, g)
 }
 
 type globdirMode struct {
 	*Goful
 }
 
-func (m *globdirMode) String() string { return "globdir" }
-func (m *globdirMode) Result() string { return "" }
-func (m *globdirMode) Prompt() string {
-	return "Globdir pattern: "
-}
-func (m *globdirMode) Init(c *cmdline.Cmdline) {}
+func (m *globdirMode) String() string          { return "globdir" }
+func (m *globdirMode) Prompt() string          { return "Globdir pattern: " }
 func (m *globdirMode) Draw(c *cmdline.Cmdline) { c.DrawLine() }
 func (m *globdirMode) Run(c *cmdline.Cmdline) {
 	if pattern := c.String(); pattern != "" {
