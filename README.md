@@ -22,13 +22,22 @@ Goful is a CUI file manager implemented by Go.
 -----------------|-------
 | C-n, down      | Move cursor down |
 | C-p, up        | Move cursor up |
-| C-a            | Move cursor top |
-| C-e            | Move cursor bottom |
+| C-a, home      | Move cursor top |
+| C-e, end       | Move cursor bottom |
 | C-f, right     | Move cursor right |
 | C-b, left      | Move cursor left |
+| M-v, pgdn      | Page down |
+| M-p, pgup      | Page up |
+| M-n            | Scroll down |
+| M-p            | Scroll up |
 | C-h, backspace | Change to upper directory |
 | ~              | Change to home directory |
 | \              | Change to root directory |
+| w              | Change to neighbor directory |
+| M-C-m          | New directory window |
+| C-w            | Close directory window |
+| M-f            | Move next workspace |
+| M-b            | Move previous workspace |
 | space          | Mark file on cursor |
 | M-*            | Toggle mark all files |
 | C-l            | Reload files |
@@ -41,8 +50,6 @@ Goful is a CUI file manager implemented by Go.
 | M-x            | Command menu |
 | x              | External command menu |
 | A              | Archive menu |
-| M-f            | Move next workspace |
-| M-b            | Move previous workspace |
 | f, /           | Find files |
 | h              | Start shell mode |
 | H              | Start shell suspend mode |
@@ -53,6 +60,7 @@ Goful is a CUI file manager implemented by Go.
 | r              | Rename file |
 | R              | Bulk rename by regexp |
 | D              | Remove file |
+| d              | Change directory |
 | g              | Glob file |
 | G              | Glob directory |
 | C-g            | Cancel |
