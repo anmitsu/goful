@@ -53,6 +53,8 @@ Goful is a CUI file manager implemented by Go.
 | r              | Rename file |
 | R              | Bulk rename by regexp |
 | D              | Remove file |
+| g              | Glob file |
+| G              | Glob directory |
 | C-g            | Cancel |
 | q, Q           | Quit application |
 
@@ -74,6 +76,5 @@ For example, install your customized binary to `$GOPATH/bin`.
     $ cd my/goful
     
     After edited my/goful/main.go
-    $ go build
     $ go install
 

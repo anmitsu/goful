@@ -33,18 +33,17 @@ func main() {
 	infobar.Init()
 	progbar.Init()
 
-	const (
-		state = "~/.goful/state.json"
-		hist  = "~/.goful/history/shell"
-	)
+	const state = "~/.goful/state.json"
+	const history = "~/.goful/history/shell"
 
 	app := goful.New(state)
 	config(app)
+	cmdline.LoadHistory(history)
 
-	cmdline.LoadHistory(hist)
 	app.Run()
+
 	app.SaveState(state)
-	cmdline.SaveHistory(hist)
+	cmdline.SaveHistory(history)
 }
 
 func config(g *goful.Goful) {
@@ -333,6 +332,9 @@ func filerKeymap(g *goful.Goful) widget.Keymap {
 		"r":         func() { g.Rename() },
 		"R":         func() { g.BulkRename() },
 		"D":         func() { g.Remove() },
+		"d":         func() { g.Chdir() },
+		"g":         func() { g.Glob() },
+		"G":         func() { g.Globdir() },
 	}
 }
 
