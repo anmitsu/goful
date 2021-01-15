@@ -321,7 +321,7 @@ func (m *bulkRenameMode) Run(c *cmdline.Cmdline) {
 		return
 	}
 	c.Exit()
-	m.renameRegexp(pattern, repl, m.Dir().Markfiles()...)
+	m.bulkRename(pattern, repl, m.Dir().Markfiles()...)
 }
 
 // Remove starts the remove mode.
@@ -411,8 +411,8 @@ func (m *mkdirMode) Run(c *cmdline.Cmdline) {
 	}
 }
 
-// TouchFile starts the touch file mode.
-func (g *Goful) TouchFile() {
+// Touch starts the touch file mode.
+func (g *Goful) Touch() {
 	g.next = cmdline.New(&touchFileMode{g, ""}, g)
 }
 

@@ -39,7 +39,7 @@ func (g *Goful) rename(src, dst string) {
 	}
 }
 
-func (g *Goful) renameRegexp(pattern, repl string, files ...*filer.FileStat) {
+func (g *Goful) bulkRename(pattern, repl string, files ...*filer.FileStat) {
 	re, err := regexp.Compile(pattern)
 	if err != nil {
 		message.Error(err)
