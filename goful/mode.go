@@ -305,10 +305,8 @@ type bulkRenameMode struct {
 	src string
 }
 
-func (m *bulkRenameMode) String() string { return "renameregexp" }
-func (m *bulkRenameMode) Prompt() string {
-	return "Rename by regexp: %s/"
-}
+func (m *bulkRenameMode) String() string          { return "bulkrename" }
+func (m *bulkRenameMode) Prompt() string          { return "Rename by regexp: %s/" }
 func (m *bulkRenameMode) Draw(c *cmdline.Cmdline) { c.DrawLine() }
 func (m *bulkRenameMode) Run(c *cmdline.Cmdline) {
 	var pattern, repl string
