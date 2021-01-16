@@ -72,16 +72,17 @@ func (g *Goful) SpawnSuspend(cmd string) {
 
 const (
 	macroPrefix             = '%'
-	macroEscape             = '\\' // \ is an escape sequence for the macro prefix %
-	macroFile               = 'f'  // %f is expanded a file name on the cursor
-	macroFilePath           = 'F'  // %F is expanded a file path on the cursor
-	macroFileWithoutExt     = 'x'  // %x is expanded a file name excluded the extention on the cursor
-	macroFileWithoutExtPath = 'X'  // %x is expanded a file path excluded the extention on the cursor
-	macroMarkfile           = 'm'  // %m is expanded mark file names joined by spaces
-	macroMarkfilePath       = 'M'  // %M is expanded mark file paths joined by spaces
-	macroDir                = 'd'  // %d is expanded a directory name on the cursor
-	macroDirPath            = 'D'  // %D is expanded a directory path on the cursor
-	macroNextDir            = '2'  // %D2 is expanded the neighbor directory path
+	macroEscape             = '\\' // \ is an escape sequence
+	macroNonQuote           = '~'  // %~ is expanded non quote
+	macroFile               = 'f'  // %f %~f are expanded a file name on the cursor
+	macroFilePath           = 'F'  // %F %~F are expanded a file path on the cursor
+	macroFileWithoutExt     = 'x'  // %x %~x are expanded a file name excluded the extention on the cursor
+	macroFileWithoutExtPath = 'X'  // %x %~X are expanded a file path excluded the extention on the cursor
+	macroMarkfile           = 'm'  // %m %~m are expanded mark file names joined by spaces
+	macroMarkfilePath       = 'M'  // %M %~M are expanded mark file paths joined by spaces
+	macroDir                = 'd'  // %d %~d are expanded a directory name on the cursor
+	macroDirPath            = 'D'  // %D %~D are expanded a directory path on the cursor
+	macroNextDir            = '2'  // %d2 %D2 %~d2 %~D2 are expanded the neighbor directory name or path
 	macroRunBackground      = '&'  // %& is a flag runned in background
 )
 
@@ -93,6 +94,7 @@ func (g *Goful) expandMacro(cmd string) (result string, background bool) {
 	background = false
 	escape := false
 	prefix := false
+	nonQuote := false
 	offset := 0
 	for i, b := range data {
 		if escape { // skip the escape sequence
@@ -102,42 +104,83 @@ func (g *Goful) expandMacro(cmd string) (result string, background bool) {
 		}
 
 		if prefix {
+			if b == macroNonQuote {
+				if nonQuote { // continuous ~ is not expand
+					prefix = false
+					nonQuote = false
+					offset++
+				}
+				nonQuote = true
+				continue
+			}
 			prefix = false
 			src := ""
 			macrolen := 2
 			switch b {
 			case macroFile:
-				src = utils.Quote(g.File().Name())
+				src = g.File().Name()
+				if !nonQuote {
+					src = utils.Quote(src)
+				}
 			case macroFilePath:
-				src = utils.Quote(g.File().Path())
+				src = g.File().Path()
+				if !nonQuote {
+					src = utils.Quote(src)
+				}
 			case macroFileWithoutExt:
-				src = utils.Quote(utils.RemoveExt(g.File().Name()))
+				src = utils.RemoveExt(g.File().Name())
+				if !nonQuote {
+					src = utils.Quote(src)
+				}
 			case macroFileWithoutExtPath:
-				src = utils.Quote(utils.RemoveExt(g.File().Path()))
+				src = utils.RemoveExt(g.File().Path())
+				if !nonQuote {
+					src = utils.Quote(src)
+				}
 			case macroMarkfile:
-				src = strings.Join(g.Dir().MarkfileQuotedNames(), " ")
+				if !nonQuote {
+					src = strings.Join(g.Dir().MarkfileQuotedNames(), " ")
+				} else {
+					src = strings.Join(g.Dir().MarkfileNames(), " ")
+				}
 			case macroMarkfilePath:
-				src = strings.Join(g.Dir().MarkfileQuotedPaths(), " ")
+				if !nonQuote {
+					src = strings.Join(g.Dir().MarkfileQuotedPaths(), " ")
+				} else {
+					src = strings.Join(g.Dir().MarkfilePaths(), " ")
+				}
 			case macroDir:
 				if i != len(data)-1 && data[i+1] == macroNextDir {
 					src = g.Workspace().NextDir().Base()
-					macrolen = 3
+					macrolen++
 				} else {
 					src = g.Dir().Base()
 				}
-				src = utils.Quote(src)
+				if !nonQuote {
+					src = utils.Quote(src)
+				}
 			case macroDirPath:
 				if i != len(data)-1 && data[i+1] == macroNextDir {
 					src = g.Workspace().NextDir().Path
-					macrolen = 3
+					macrolen++
 				} else {
 					src = g.Dir().Path
 				}
-				src = utils.Quote(src)
+				if !nonQuote {
+					src = utils.Quote(src)
+				}
 			case macroRunBackground:
 				background = true
 			default:
+				if nonQuote {
+					nonQuote = false
+					offset++
+				}
 				goto other
+			}
+			if nonQuote {
+				nonQuote = false
+				macrolen++
 			}
 			ret = widget.DeleteBytes(ret, offset-1, macrolen)
 			ret = widget.InsertBytes(ret, []byte(src), offset-1)

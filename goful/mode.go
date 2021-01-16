@@ -17,7 +17,7 @@ import (
 )
 
 // match shell separators, macros, options and spaces.
-var re = regexp.MustCompile(`([;|>&])|(%(?:[&mMfFxX]|[dD]2?))|([[:space:]]-[[:word:]-=]+)|[[:space:]]`)
+var re = regexp.MustCompile(`([;|>&])|(%~?(?:[&mMfFxX]|[dD]2?))|([[:space:]]-[[:word:]-=]+)|[[:space:]]`)
 
 // Shell starts the shell mode.
 // The head of variadic arguments is used for cursor positioning.
