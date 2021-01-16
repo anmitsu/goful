@@ -14,6 +14,7 @@ import (
 )
 
 func (w *InfoBar) draw(fi os.FileInfo) {
+	w.Clear()
 	x, y := w.LeftTop()
 	x++
 

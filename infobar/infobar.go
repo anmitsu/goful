@@ -15,7 +15,6 @@ var infobar *InfoBar
 
 // Draw the infomation bar for file infomation.
 func Draw(fi os.FileInfo) {
-	infobar.Clear()
 	if infobar.task != nil {
 		infobar.drawTask()
 	} else {
@@ -77,6 +76,7 @@ type InfoBar struct {
 }
 
 func (w *InfoBar) drawTask() {
+	w.Clear()
 	const (
 		Gb = 1024 * 1024 * 1024
 		Mb = 1024 * 1024
