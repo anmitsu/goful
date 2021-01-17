@@ -97,7 +97,10 @@ func (f *Finder) find(callback func(name string)) {
 		return
 	}
 
-	current := f.dir.CurrentContent().Name()
+	current := ""
+	if !f.dir.IsEmpty() {
+		current = f.dir.CurrentContent().Name()
+	}
 	f.dir.ClearList()
 	f.dir.AppendList(NewFileStat(f.dir.Path, ".."))
 	for _, name := range f.names {
@@ -105,8 +108,10 @@ func (f *Finder) find(callback func(name string)) {
 			callback(name)
 		}
 	}
-	f.dir.SetCursorByName(current)
-	f.dir.SetOffsetCenteredCursor()
+	if current != "" {
+		f.dir.SetCursorByName(current)
+		f.dir.SetOffsetCenteredCursor()
+	}
 }
 
 // Draw the finder.

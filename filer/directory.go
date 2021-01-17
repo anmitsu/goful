@@ -123,6 +123,15 @@ func (d *Directory) init4json() {
 	d.reader = defaultReader(".")
 }
 
+// Resize the window and the finder.
+func (d *Directory) Resize(x, y, width, height int) {
+	d.ListBox.Resize(x, y, width, height)
+	if d.finder != nil {
+		d.finder.Resize(x+1, y+d.Height()-1, d.Width()-1, 1)
+		d.ResizeRelative(0, 0, 0, -1)
+	}
+}
+
 // Finder starts a finder in the directory for filtering files.
 func (d *Directory) Finder() {
 	x, y := d.LeftTop()
