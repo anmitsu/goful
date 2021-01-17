@@ -109,10 +109,14 @@ func (g *Goful) touch(name string, mode os.FileMode) {
 }
 
 func (g *Goful) remove(files ...string) {
+	filesAbs := make([]string, len(files))
+	for i := 0; i < len(files); i++ {
+		filesAbs[i], _ = filepath.Abs(files[i])
+	}
 	go func() {
 		defer g.syncCallback(func() { g.Workspace().ReloadAll() })
 
-		if err := removeFiles(files...); err != nil {
+		if err := removeFiles(filesAbs...); err != nil {
 			message.Error(err)
 		} else {
 			message.Infof("Removed %s", files)
@@ -146,29 +150,39 @@ func (g *Goful) confirm(message string) overWrite {
 }
 
 func (g *Goful) copy(dst string, src ...string) {
-	walker := g.newWalker(overwriteNo, overwriteNo, copyJob{})
+	srcAbs := make([]string, len(src))
+	for i := 0; i < len(src); i++ {
+		srcAbs[i], _ = filepath.Abs(src[i])
+	}
+	dstAbs, _ := filepath.Abs(dst)
 
+	walker := g.newWalker(overwriteNo, overwriteNo, copyJob{})
 	go func() {
 		g.task <- 1
 		defer g.syncCallback(func() {
 			g.Workspace().ReloadAll()
 			<-g.task
 		})
-		g.goWalk(walker, dst, src...)
+		g.goWalk(walker, dstAbs, srcAbs...)
 		message.Infof("Copied to %s form %s", dst, src)
 	}()
 }
 
 func (g *Goful) move(dst string, src ...string) {
-	walker := g.newWalker(overwriteNo, overwriteNo, moveJob{})
+	srcAbs := make([]string, len(src))
+	for i := 0; i < len(src); i++ {
+		srcAbs[i], _ = filepath.Abs(src[i])
+	}
+	dstAbs, _ := filepath.Abs(dst)
 
+	walker := g.newWalker(overwriteNo, overwriteNo, moveJob{})
 	go func() {
 		g.task <- 1
 		defer g.syncCallback(func() {
 			g.Workspace().ReloadAll()
 			<-g.task
 		})
-		g.goWalk(walker, dst, src...)
+		g.goWalk(walker, dstAbs, srcAbs...)
 		message.Infof("Moved to %s form %s", dst, src)
 	}()
 }
@@ -223,15 +237,6 @@ func (g *Goful) newWalker(fileConfirmed, dirConfirmed overWrite, f fileJob) *wal
 }
 
 func (w *walker) walk(src, dst string) error {
-	src, err := filepath.Abs(src)
-	if err != nil {
-		return err
-	}
-	dst, err = filepath.Abs(dst)
-	if err != nil {
-		return err
-	}
-
 	srcstat, err := os.Lstat(src)
 	if err != nil {
 		return err
@@ -390,10 +395,6 @@ func (job moveJob) afterVisitDir(src string, srcstat os.FileInfo, dst string) er
 
 func removeFiles(files ...string) error {
 	for _, file := range files {
-		file, err := filepath.Abs(file)
-		if err != nil {
-			return err
-		}
 		if err := os.RemoveAll(file); err != nil {
 			return err
 		}
