@@ -109,8 +109,9 @@ func (g *Goful) expandMacro(cmd string) (result string, background bool) {
 					prefix = false
 					nonQuote = false
 					offset++
+				} else {
+					nonQuote = true
 				}
-				nonQuote = true
 				continue
 			}
 			prefix = false

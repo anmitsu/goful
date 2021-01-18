@@ -97,9 +97,9 @@ func (m *shellMode) drawCommand(x, y int, cmd string) {
 	// draw the rest
 	s := cmd[start:]
 	if _, ok := m.commands[s]; ok { // as command
-		x = widget.SetCells(x, y, s, look.CmdlineCommand())
+		widget.SetCells(x, y, s, look.CmdlineCommand())
 	} else {
-		x = widget.SetCells(x, y, s, look.Cmdline())
+		widget.SetCells(x, y, s, look.Cmdline())
 	}
 }
 

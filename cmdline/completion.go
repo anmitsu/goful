@@ -32,7 +32,7 @@ func NewCompletion(x, y, width, height int, cmdline *Cmdline) *Completion {
 	}
 
 	parser := parseCmdline(cmdline)
-	candidates := []string{}
+	var candidates []string
 	if cmdline.mode.String() == "shell" && parser.cmdname == "" {
 		candidates = append(parser.compCommands(), parser.compFiles()...)
 	} else {
