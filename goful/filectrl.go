@@ -507,7 +507,7 @@ func letCopy(srcfile, dstfile *os.File) error {
 	}
 
 	quit := make(chan bool)
-	go func() { // drawing progress and infomation bar
+	go func() { // drawing progress and information bar
 		ticker := time.NewTicker(50 * time.Millisecond)
 		defer ticker.Stop()
 		for {

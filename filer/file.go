@@ -32,7 +32,7 @@ func TogglePermView() { statView.permission = !statView.permission }
 // ToggleTimeView toggles the file time view.
 func ToggleTimeView() { statView.time = !statView.time }
 
-// FileStat is file infomation.
+// FileStat is file information.
 type FileStat struct {
 	os.FileInfo             // os.Lstat(path)
 	stat        os.FileInfo // os.Stat(path)

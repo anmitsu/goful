@@ -76,8 +76,8 @@ const (
 	macroNonQuote           = '~'  // %~ is expanded non quote
 	macroFile               = 'f'  // %f %~f are expanded a file name on the cursor
 	macroFilePath           = 'F'  // %F %~F are expanded a file path on the cursor
-	macroFileWithoutExt     = 'x'  // %x %~x are expanded a file name excluded the extention on the cursor
-	macroFileWithoutExtPath = 'X'  // %x %~X are expanded a file path excluded the extention on the cursor
+	macroFileWithoutExt     = 'x'  // %x %~x are expanded a file name excluded the extension on the cursor
+	macroFileWithoutExtPath = 'X'  // %x %~X are expanded a file path excluded the extension on the cursor
 	macroMarkfile           = 'm'  // %m %~m are expanded mark file names joined by spaces
 	macroMarkfilePath       = 'M'  // %M %~M are expanded mark file paths joined by spaces
 	macroDir                = 'd'  // %d %~d are expanded a directory name on the cursor

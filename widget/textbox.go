@@ -241,7 +241,7 @@ func (b *TextBox) InsertChar(r rune) {
 	b.Edithook()
 }
 
-// InsertString inserts string to postion on editing cursor.
+// InsertString inserts string to position on editing cursor.
 func (b *TextBox) InsertString(str string) {
 	for _, s := range str {
 		b.InsertChar(s)

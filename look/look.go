@@ -51,7 +51,7 @@ func Default() Look { return defaultAttr }
 // Blank is a blank look attribute.
 func Blank() Look { return Look{0, 0} }
 
-// MessageInfo is an infomation message look.
+// MessageInfo is an information message look.
 func MessageInfo() Look { return messageInfo }
 
 // MessageErr is an error message look.

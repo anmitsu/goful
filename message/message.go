@@ -14,12 +14,12 @@ import (
 	"github.com/nsf/termbox-go"
 )
 
-// Info notifies an infomation message.
+// Info notifies an information message.
 func Info(s string) {
 	messenger.info(s)
 }
 
-// Infof notifies a formated infomation message.
+// Infof notifies a formated information message.
 func Infof(format string, a ...interface{}) {
 	messenger.info(fmt.Sprintf(format, a...))
 }
@@ -56,7 +56,7 @@ func Sec(sec time.Duration) {
 	messenger.sec = sec
 }
 
-// SetInfoLog sets a path to log infomation messages.
+// SetInfoLog sets a path to log information messages.
 // If sets to "", non logging.
 func SetInfoLog(path string) {
 	messenger.infolog = utils.ExpandPath(path)

@@ -19,7 +19,7 @@ import (
 // Mode describes a cmdline mode.
 type Mode interface {
 	String() string // uses as a history map name
-	Prompt() string // is displayed at the beggining
+	Prompt() string // is displayed at the beginning
 	Draw(*Cmdline)
 	Run(*Cmdline)
 }
