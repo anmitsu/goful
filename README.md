@@ -1,5 +1,9 @@
 # Goful
 
+[![Go Report Card](https://goreportcard.com/badge/github.com/anmitsu/goful)](https://goreportcard.com/report/github.com/anmitsu/goful)
+[![Go Reference](https://pkg.go.dev/badge/github.com/anmitsu/goful.svg)](https://pkg.go.dev/github.com/anmitsu/goful)
+[![MIT License](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/anmitsu/goful/blob/master/LICENSE)
+
 Goful is a CUI file manager implemented by Go.
 
 * Works on cross-platform such as gnome-terminal in Ubuntu and cmd.exe in
