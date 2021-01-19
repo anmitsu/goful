@@ -18,7 +18,7 @@ Goful is a CUI file manager implemented by Go.
     ...
     $ goful
 
-![goful](<_demo/readme_top.gif>)
+![demo](.github/demo.gif)
 
 ## Usage
 
