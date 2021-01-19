@@ -156,26 +156,13 @@ func (f *FileStat) suffix() string {
 	return ""
 }
 
-func (f *FileStat) formatFileSize(size int64) string {
-	switch {
-	case size > 1024*1024*1024:
-		return fmt.Sprintf("%6.1fG", float64(size)/(1024*1024*1024))
-	case size > 1024*1024:
-		return fmt.Sprintf("%6.1fM", float64(size)/(1024*1024))
-	case size > 1024:
-		return fmt.Sprintf("%6.1fk", float64(size)/1024)
-	default:
-		return fmt.Sprintf("%7d", size)
-	}
-}
-
 func (f *FileStat) states() string {
 	ret := f.Ext()
 	if statView.size {
 		if f.stat.IsDir() {
 			ret += fmt.Sprintf("%8s", "<DIR>")
 		} else {
-			ret += " " + f.formatFileSize(f.stat.Size())
+			ret += fmt.Sprintf("%8s", utils.FormatSize(f.stat.Size()))
 		}
 	}
 	if statView.permission {

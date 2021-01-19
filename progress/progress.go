@@ -6,6 +6,7 @@ import (
 	"os"
 
 	"github.com/anmitsu/goful/look"
+	"github.com/anmitsu/goful/utils"
 	"github.com/anmitsu/goful/widget"
 	"github.com/mattn/go-runewidth"
 	"github.com/nsf/termbox-go"
@@ -89,27 +90,13 @@ func (w *progressWindow) drawTask() {
 		return
 	}
 	w.Clear()
-	const (
-		Gb = 1024 * 1024 * 1024
-		Mb = 1024 * 1024
-		kb = 1024
-	)
-	size := w.task.Size()
-	format := ""
-	if size > Gb {
-		format = fmt.Sprintf("%.1fG", float64(size)/Gb)
-	} else if size > Mb {
-		format = fmt.Sprintf("%.1fM", float64(size)/Mb)
-	} else if size > kb {
-		format = fmt.Sprintf("%.1fk", float64(size)/kb)
-	} else {
-		format = fmt.Sprintf("%d", size)
-	}
+
+	size := utils.FormatSize(w.task.Size())
 
 	x, y := w.LeftTop()
 	x++
 	name := w.task.Name()
-	s := fmt.Sprintf("Progress %d/%d (%s): %s", w.done+1, w.taskCount, format, name)
+	s := fmt.Sprintf("Progress %d/%d (%sB): %s", w.done+1, w.taskCount, size, name)
 	s = runewidth.Truncate(s, w.Width(), "...")
 	widget.SetCells(x, y, s, look.Default())
 }

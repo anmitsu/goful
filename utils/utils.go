@@ -69,6 +69,27 @@ func Quote(s string) string {
 	return fmt.Sprintf(`"%s"`, strings.Replace(s, `"`, `\"`, -1))
 }
 
+// FormatSize returns formated to SI prefix unit.
+func FormatSize(n int64) string {
+	const (
+		Tb = 1024 * 1024 * 1024 * 1024
+		Gb = 1024 * 1024 * 1024
+		Mb = 1024 * 1024
+		kb = 1024
+	)
+	if n > Tb {
+		return fmt.Sprintf("%.1fT", float64(n)/Tb)
+	} else if n > Gb {
+		return fmt.Sprintf("%.1fG", float64(n)/Gb)
+	} else if n > Mb {
+		return fmt.Sprintf("%.1fM", float64(n)/Mb)
+	} else if n > kb {
+		return fmt.Sprintf("%.1fk", float64(n)/kb)
+	} else {
+		return fmt.Sprintf("%d", n)
+	}
+}
+
 func searchPath(results map[string]bool, path string) (map[string]bool, error) {
 	dir, err := os.Open(path)
 	defer dir.Close()
