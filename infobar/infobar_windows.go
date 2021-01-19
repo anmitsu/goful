@@ -11,7 +11,7 @@ import (
 	"github.com/mattn/go-runewidth"
 )
 
-func (w *InfoBar) draw(fi os.FileInfo) {
+func (w *infoWindow) draw(fi os.FileInfo) {
 	w.Clear()
 	x, y := w.LeftTop()
 	x++

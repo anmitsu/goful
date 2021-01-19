@@ -12,7 +12,7 @@ import (
 	"github.com/anmitsu/goful/look"
 	"github.com/anmitsu/goful/menu"
 	"github.com/anmitsu/goful/message"
-	"github.com/anmitsu/goful/progbar"
+	"github.com/anmitsu/goful/progress"
 	"github.com/anmitsu/goful/widget"
 	"github.com/nsf/termbox-go"
 )
@@ -31,7 +31,7 @@ func main() {
 
 	message.Init()
 	infobar.Init()
-	progbar.Init()
+	progress.Init()
 
 	const state = "~/.goful/state.json"
 	const history = "~/.goful/history/shell"

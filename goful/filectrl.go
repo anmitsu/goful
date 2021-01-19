@@ -11,9 +11,8 @@ import (
 	"time"
 
 	"github.com/anmitsu/goful/filer"
-	"github.com/anmitsu/goful/infobar"
 	"github.com/anmitsu/goful/message"
-	"github.com/anmitsu/goful/progbar"
+	"github.com/anmitsu/goful/progress"
 	"github.com/anmitsu/goful/widget"
 )
 
@@ -188,24 +187,19 @@ func (g *Goful) move(dst string, src ...string) {
 }
 
 func (g *Goful) goWalk(walker *walker, dst string, src ...string) {
-	g.ResizeRelative(0, 0, 0, -1)
-	infobar.ResizeRelative(0, -1, 0, 0)
-	message.ResizeRelative(0, -1, 0, 0)
+	g.ResizeRelative(0, 0, 0, -2)
 
 	size, count := calcSizeCount(src...)
-	progbar.Start(size)
-	infobar.StartTaskCount(count)
+	progress.Start(size)
+	progress.StartTaskCount(count)
 	for _, s := range src {
 		if err := walker.walk(s, dst); err != nil {
 			message.Error(err)
 		}
 	}
-	infobar.ResetTaskCount()
-	progbar.Finish()
+	progress.Finish()
 
-	g.ResizeRelative(0, 0, 0, 1)
-	infobar.ResizeRelative(0, 1, 0, 0)
-	message.ResizeRelative(0, 1, 0, 0)
+	g.ResizeRelative(0, 0, 0, 2)
 	widget.Flush()
 }
 
@@ -507,13 +501,13 @@ func letCopy(srcfile, dstfile *os.File) error {
 	}
 
 	quit := make(chan bool)
-	go func() { // drawing progress and information bar
+	go func() { // drawing progress
 		ticker := time.NewTicker(50 * time.Millisecond)
 		defer ticker.Stop()
 		for {
 			select {
 			case <-ticker.C:
-				progbar.Draw()
+				progress.Draw()
 				widget.Flush()
 			case <-quit:
 				return
@@ -521,7 +515,7 @@ func letCopy(srcfile, dstfile *os.File) error {
 		}
 	}()
 
-	infobar.StartTask(srcstat)
+	progress.StartTask(srcstat)
 	buf := make([]byte, 1024*32)
 	for {
 		n, err := srcfile.Read(buf)
@@ -534,9 +528,9 @@ func letCopy(srcfile, dstfile *os.File) error {
 		if _, err := dstfile.Write(buf[:n]); err != nil {
 			return err
 		}
-		progbar.Update(float64(n))
+		progress.Update(float64(n))
 	}
 	close(quit)
-	infobar.FinishTask()
+	progress.FinishTask()
 	return nil
 }

@@ -6,7 +6,7 @@ import (
 	"github.com/anmitsu/goful/infobar"
 	"github.com/anmitsu/goful/menu"
 	"github.com/anmitsu/goful/message"
-	"github.com/anmitsu/goful/progbar"
+	"github.com/anmitsu/goful/progress"
 	"github.com/anmitsu/goful/widget"
 	"github.com/nsf/termbox-go"
 )
@@ -65,16 +65,16 @@ func (g *Goful) Disconnect() { g.next = nil }
 // Resize all widgets.
 func (g *Goful) Resize(x, y, width, height int) {
 	offset := 0
-	if infobar.ExistsTask() {
-		offset = 1
+	if !progress.IsFinished() {
+		offset = 2
 	}
 	g.Filer.Resize(x, y, width, height-2-offset)
 	if wid := g.Next(); wid != nil {
 		wid.Resize(x, y, width, height-2-offset)
 	}
-	message.Resize(0, height-2-offset, width, 1)
-	infobar.Resize(0, height-1-offset, width, 1)
-	progbar.Resize(0, height-1, width, 1)
+	message.Resize(0, height-2, width, 1)
+	infobar.Resize(0, height-1, width, 1)
+	progress.Resize(0, height-4, width, 1)
 }
 
 // Draw all widgets.
@@ -85,7 +85,7 @@ func (g *Goful) Draw() {
 	}
 	message.Draw()
 	infobar.Draw(g.File())
-	progbar.Draw()
+	progress.Draw()
 }
 
 // Input to a current widget.
