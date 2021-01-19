@@ -90,3 +90,6 @@ For example, install your customized binary to `$GOPATH/bin`.
     After edited my/goful/main.go
     $ go install
 
+## Contributing
+
+[Contributing Guide](.github/CONTRIBUTING.md)
