@@ -14,15 +14,15 @@ import (
 	"github.com/anmitsu/goful/message"
 	"github.com/anmitsu/goful/progress"
 	"github.com/anmitsu/goful/widget"
-	"github.com/nsf/termbox-go"
+	"github.com/mattn/go-runewidth"
 )
 
 func main() {
-	if err := termbox.Init(); err != nil {
-		panic(err)
-	}
-	defer termbox.Close()
-	termbox.SetInputMode(termbox.InputAlt)
+	widget.Init()
+	defer widget.Fini()
+
+	// TODO
+	runewidth.DefaultCondition = &runewidth.Condition{EastAsianWidth: false}
 
 	// Set a title if in a terminal such as screen and tmux.
 	if strings.Contains(os.Getenv("TERM"), "screen") {
@@ -47,8 +47,9 @@ func main() {
 }
 
 func config(g *goful.Goful) {
-	look.Set("default") // default, midnight, dark or gray
+	look.Set("default") // TODO
 
+	// TODO
 	if runtime.GOOS == "windows" {
 		widget.SetBorder('|', '-', '+', '+', '+', '+') // not ambiguous runes for layout collapsing
 	} else {
@@ -315,9 +316,10 @@ func filerKeymap(g *goful.Goful) widget.Keymap {
 		"M-v":       func() { g.Dir().PageUp() },
 		"pgdn":      func() { g.Dir().PageDown() },
 		"pgup":      func() { g.Dir().PageUp() },
-		"space":     func() { g.Dir().ToggleMark() },
+		" ":         func() { g.Dir().ToggleMark() },
 		"M-*":       func() { g.Dir().ToggleMarkAll() },
 		"C-g":       func() { g.Dir().Reset() },
+		"C-[":       func() { g.Dir().Reset() },
 		"f":         func() { g.Dir().Finder() },
 		"/":         func() { g.Dir().Finder() },
 		"q":         func() { g.Quit() },

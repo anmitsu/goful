@@ -8,7 +8,7 @@ import (
 	"github.com/anmitsu/goful/message"
 	"github.com/anmitsu/goful/progress"
 	"github.com/anmitsu/goful/widget"
-	"github.com/nsf/termbox-go"
+	"github.com/gdamore/tcell/v2"
 )
 
 // Goful is a CUI file manager.
@@ -17,7 +17,7 @@ type Goful struct {
 	shell     func(cmd string) []string
 	terminal  func(cmd string) []string
 	next      widget.Widget
-	event     chan termbox.Event
+	event     chan tcell.Event
 	interrupt chan int
 	callback  chan func()
 	task      chan int
@@ -26,13 +26,13 @@ type Goful struct {
 
 // New creates a new goful client based recording a previous state.
 func New(path string) *Goful {
-	width, height := termbox.Size()
+	width, height := widget.Size()
 	goful := &Goful{
 		Filer:     filer.NewFromState(path, 0, 0, width, height-2),
 		shell:     nil,
 		terminal:  nil,
 		next:      nil,
-		event:     make(chan termbox.Event, 20),
+		event:     make(chan tcell.Event, 20),
 		interrupt: make(chan int, 2),
 		callback:  make(chan func()),
 		task:      make(chan int, 1),
@@ -113,7 +113,7 @@ func (g *Goful) Run() {
 
 	go func() {
 		for {
-			g.event <- termbox.PollEvent()
+			g.event <- widget.PollEvent()
 		}
 	}()
 
@@ -139,10 +139,10 @@ func (g *Goful) syncCallback(callback func()) {
 	g.callback <- callback
 }
 
-func (g *Goful) eventHandler(ev termbox.Event) {
-	if key := widget.EventToString(&ev); key != "" {
+func (g *Goful) eventHandler(ev tcell.Event) {
+	if key := widget.EventToString(ev); key != "" {
 		if key == "resize" {
-			width, height := ev.Width, ev.Height
+			width, height := ev.(*tcell.EventResize).Size()
 			g.Resize(0, 0, width, height)
 		} else {
 			g.Input(key)

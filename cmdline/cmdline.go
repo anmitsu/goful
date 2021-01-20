@@ -13,7 +13,6 @@ import (
 	"github.com/anmitsu/goful/utils"
 	"github.com/anmitsu/goful/widget"
 	"github.com/mattn/go-runewidth"
-	"github.com/nsf/termbox-go"
 )
 
 // Mode describes a cmdline mode.
@@ -107,7 +106,6 @@ func (c *Cmdline) ResizeRelative(x, y, width, height int) {
 func (c *Cmdline) DrawLine() {
 	c.Clear()
 	x, y := c.LeftTop()
-	x++
 	x = widget.SetCells(x, y, c.mode.Prompt(), look.Prompt())
 	w := c.Width() - runewidth.StringWidth(c.mode.Prompt()) - 2
 	s := c.String()
@@ -116,10 +114,10 @@ func (c *Cmdline) DrawLine() {
 		s = c.TextBeforeCursor()
 		s = widget.TruncLeft(s, w, "...")
 		x = widget.SetCells(x, y, s, look.Cmdline())
-		termbox.SetCursor(x, y)
+		widget.ShowCursor(x, y)
 	} else {
 		widget.SetCells(x, y, s, look.Cmdline())
-		termbox.SetCursor(x+c.Cursor(), y)
+		widget.ShowCursor(x+c.Cursor(), y)
 	}
 }
 
@@ -153,7 +151,7 @@ func (c *Cmdline) Input(key string) {
 func (c *Cmdline) Exit() {
 	c.History.add()
 	c.History = nil
-	termbox.HideCursor()
+	widget.HideCursor()
 	c.filer.ResizeRelative(0, 0, 0, 1)
 	c.filer.Disconnect()
 }

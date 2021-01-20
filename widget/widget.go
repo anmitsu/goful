@@ -5,8 +5,8 @@ import (
 	"sync"
 
 	"github.com/anmitsu/goful/look"
+	"github.com/gdamore/tcell/v2"
 	"github.com/mattn/go-runewidth"
-	"github.com/nsf/termbox-go"
 )
 
 // Widget describes a window manager in CUI.
@@ -62,23 +62,15 @@ func (w *Window) RightTop() (x, y int) { return w.x + w.width - 1, w.y }
 // Border draws a frame with runes represent lines and corners.
 func (w *Window) Border() {
 	xend, yend := w.RightBottom()
-	fg, bg := look.Default().Fg(), look.Default().Bg()
-	termbox.SetCell(w.x, w.y, ulCorner, fg, bg)
-	for x := w.x + 1; x < xend; x++ {
-		termbox.SetCell(x, w.y, hLine, fg, bg)
+	screen.SetContent(xend, w.y, urCorner, nil, look.Default())
+	screen.SetContent(xend, yend, lrCorner, nil, look.Default())
+	for x := w.x; x < xend; x++ {
+		screen.SetContent(x, w.y, hLine, nil, look.Default())
+		screen.SetContent(x, yend, hLine, nil, look.Default())
 	}
-	termbox.SetCell(xend, w.y, urCorner, fg, bg)
-
 	for y := w.y + 1; y < yend; y++ {
-		termbox.SetCell(w.x, y, vLine, fg, bg)
-		termbox.SetCell(xend, y, vLine, fg, bg)
+		screen.SetContent(xend, y, vLine, nil, look.Default())
 	}
-
-	termbox.SetCell(w.x, yend, llCorner, fg, bg)
-	for x := w.x + 1; x < xend; x++ {
-		termbox.SetCell(x, yend, hLine, fg, bg)
-	}
-	termbox.SetCell(xend, yend, lrCorner, fg, bg)
 }
 
 // Draw the window to cells.
@@ -92,7 +84,7 @@ func (w *Window) Clear() {
 	xend, yend := w.RightBottom()
 	for y := w.y; y < yend+1; y++ {
 		for x := w.x; x < xend+1; x++ {
-			termbox.SetCell(x, y, ' ', look.Default().Fg(), look.Default().Bg())
+			screen.SetContent(x, y, ' ', nil, look.Default())
 		}
 	}
 }
@@ -130,9 +122,7 @@ var mutex sync.Mutex
 // Flush is to a terminal refresh with a single thread.
 func Flush() {
 	mutex.Lock()
-	if termbox.IsInit {
-		termbox.Flush()
-	}
+	screen.Show()
 	mutex.Unlock()
 }
 
@@ -143,99 +133,128 @@ type (
 	Extmap map[string]map[string]func()
 )
 
-var ctrlcombo = map[termbox.Key]string{
-	termbox.KeyCtrlSpace:      "C-scape",
-	termbox.KeyCtrlA:          "C-a",
-	termbox.KeyCtrlB:          "C-b",
-	termbox.KeyCtrlC:          "C-c",
-	termbox.KeyCtrlD:          "C-d",
-	termbox.KeyCtrlE:          "C-e",
-	termbox.KeyCtrlF:          "C-f",
-	termbox.KeyCtrlG:          "C-g",
-	termbox.KeyCtrlH:          "C-h",
-	termbox.KeyCtrlI:          "C-i",
-	termbox.KeyCtrlJ:          "C-j",
-	termbox.KeyCtrlK:          "C-k",
-	termbox.KeyCtrlL:          "C-l",
-	termbox.KeyCtrlM:          "C-m",
-	termbox.KeyCtrlN:          "C-n",
-	termbox.KeyCtrlO:          "C-o",
-	termbox.KeyCtrlP:          "C-p",
-	termbox.KeyCtrlQ:          "C-q",
-	termbox.KeyCtrlR:          "C-r",
-	termbox.KeyCtrlS:          "C-s",
-	termbox.KeyCtrlT:          "C-t",
-	termbox.KeyCtrlU:          "C-u",
-	termbox.KeyCtrlV:          "C-v",
-	termbox.KeyCtrlW:          "C-w",
-	termbox.KeyCtrlX:          "C-x",
-	termbox.KeyCtrlY:          "C-y",
-	termbox.KeyCtrlZ:          "C-z",
-	termbox.KeyCtrlLsqBracket: "C-[",
-	termbox.KeyCtrlBackslash:  "C-\\",
-	termbox.KeyCtrlRsqBracket: "C-]",
-	termbox.KeyCtrl6:          "C-6",
-	termbox.KeyCtrlSlash:      "C-/",
-	termbox.KeySpace:          "space",
-	termbox.KeyBackspace2:     "backspace",
-}
-
-var specialkey = map[termbox.Key]string{
-	termbox.KeyF1:         "f1",
-	termbox.KeyF2:         "f2",
-	termbox.KeyF3:         "f3",
-	termbox.KeyF4:         "f4",
-	termbox.KeyF5:         "f5",
-	termbox.KeyF6:         "f6",
-	termbox.KeyF7:         "f7",
-	termbox.KeyF8:         "f8",
-	termbox.KeyF9:         "f9",
-	termbox.KeyF10:        "f10",
-	termbox.KeyF11:        "f11",
-	termbox.KeyF12:        "f12",
-	termbox.KeyInsert:     "insert",
-	termbox.KeyDelete:     "delete",
-	termbox.KeyHome:       "home",
-	termbox.KeyEnd:        "end",
-	termbox.KeyPgup:       "pgup",
-	termbox.KeyPgdn:       "pgdn",
-	termbox.KeyArrowUp:    "up",
-	termbox.KeyArrowDown:  "down",
-	termbox.KeyArrowLeft:  "left",
-	termbox.KeyArrowRight: "right",
+var keyToSting = map[tcell.Key]string{
+	tcell.KeyCtrlA:         "C-a",
+	tcell.KeyCtrlB:         "C-b",
+	tcell.KeyCtrlC:         "C-c",
+	tcell.KeyCtrlD:         "C-d",
+	tcell.KeyCtrlE:         "C-e",
+	tcell.KeyCtrlF:         "C-f",
+	tcell.KeyCtrlG:         "C-g",
+	tcell.KeyCtrlH:         "C-h",
+	tcell.KeyCtrlI:         "C-i",
+	tcell.KeyCtrlJ:         "C-j",
+	tcell.KeyCtrlK:         "C-k",
+	tcell.KeyCtrlL:         "C-l",
+	tcell.KeyCtrlM:         "C-m",
+	tcell.KeyCtrlN:         "C-n",
+	tcell.KeyCtrlO:         "C-o",
+	tcell.KeyCtrlP:         "C-p",
+	tcell.KeyCtrlQ:         "C-q",
+	tcell.KeyCtrlR:         "C-r",
+	tcell.KeyCtrlS:         "C-s",
+	tcell.KeyCtrlT:         "C-t",
+	tcell.KeyCtrlU:         "C-u",
+	tcell.KeyCtrlV:         "C-v",
+	tcell.KeyCtrlW:         "C-w",
+	tcell.KeyCtrlX:         "C-x",
+	tcell.KeyCtrlY:         "C-y",
+	tcell.KeyCtrlZ:         "C-z",
+	tcell.KeyCtrlLeftSq:    "C-[",
+	tcell.KeyCtrlBackslash: "C-\\",
+	tcell.KeyBackspace2:    "backspace",
+	tcell.KeyF1:            "f1",
+	tcell.KeyF2:            "f2",
+	tcell.KeyF3:            "f3",
+	tcell.KeyF4:            "f4",
+	tcell.KeyF5:            "f5",
+	tcell.KeyF6:            "f6",
+	tcell.KeyF7:            "f7",
+	tcell.KeyF8:            "f8",
+	tcell.KeyF9:            "f9",
+	tcell.KeyF10:           "f10",
+	tcell.KeyF11:           "f11",
+	tcell.KeyF12:           "f12",
+	tcell.KeyInsert:        "insert",
+	tcell.KeyDelete:        "delete",
+	tcell.KeyHome:          "home",
+	tcell.KeyEnd:           "end",
+	tcell.KeyPgUp:          "pgup",
+	tcell.KeyPgDn:          "pgdn",
+	tcell.KeyUp:            "up",
+	tcell.KeyDown:          "down",
+	tcell.KeyLeft:          "left",
+	tcell.KeyRight:         "right",
 }
 
 // EventToString converts the keyboard intput event to string.
 // A meta key input event returns prefixed `M-'.
-func EventToString(ev *termbox.Event) string {
+func EventToString(ev tcell.Event) string {
 	const meta = "M-"
-	switch ev.Type {
-	case termbox.EventKey:
-		if ev.Mod&termbox.ModAlt != 0 {
-			if ev.Ch == 0 && ev.Key < 128 {
-				return meta + ctrlcombo[ev.Key]
+	switch ev := ev.(type) {
+	case *tcell.EventKey:
+		if ev.Modifiers() == tcell.ModAlt {
+			if ev.Key() < 128 {
+				return meta + keyToSting[ev.Key()]
 			}
-			return meta + string(ev.Ch)
+			return meta + string(ev.Rune())
 		}
-		if ev.Key >= termbox.KeyArrowRight {
-			return specialkey[ev.Key]
-		} else if ev.Ch == 0 && ev.Key < 128 {
-			return ctrlcombo[ev.Key]
+		if key, ok := keyToSting[ev.Key()]; ok {
+			return key
 		}
-		return string(ev.Ch)
-	case termbox.EventResize:
+		return string(ev.Rune())
+	case *tcell.EventResize:
 		return "resize"
 	}
 	return ""
 }
 
+var screen tcell.Screen
+
+// Init initializes the tcell screen.
+func Init() {
+	s, err := tcell.NewScreen()
+	if err != nil {
+		panic(err)
+	} else if err := s.Init(); err != nil {
+		panic(err)
+	}
+	screen = s
+}
+
+// Fini finishes the tcell screen.
+func Fini() {
+	screen.Fini()
+}
+
+// Size returns the tcell screen width and height.
+func Size() (width, height int) {
+	return screen.Size()
+}
+
+// ShowCursor shows the cursor at x, y.
+func ShowCursor(x, y int) {
+	screen.ShowCursor(x, y)
+}
+
+// HideCursor hides the cursor.
+func HideCursor() {
+	screen.HideCursor()
+}
+
+// PollEvent polls input events.
+func PollEvent() tcell.Event {
+	return screen.PollEvent()
+}
+
 // SetCells sets a string to cells in a window and returns the last x position.
-func SetCells(x, y int, s string, l look.Look) (pos int) {
+func SetCells(x, y int, s string, style tcell.Style) (pos int) {
 	pos = x
 	for _, r := range s {
-		termbox.SetCell(pos, y, r, l.Fg(), l.Bg())
+		screen.SetContent(pos, y, r, nil, style)
+		// TODO
 		if runewidth.EastAsianWidth && runewidth.IsAmbiguousWidth(r) {
-			termbox.SetCell(pos+1, y, ' ', l.Fg(), l.Bg())
+			screen.SetContent(pos+1, y, ' ', nil, style)
 		}
 		pos += runewidth.RuneWidth(r)
 	}

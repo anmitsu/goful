@@ -11,7 +11,7 @@ import (
 // Drawer describes drawring for list box contents.
 type Drawer interface {
 	Name() string
-	Draw(x, y, width int, lk look.Look)
+	Draw(x, y, width int, focus bool)
 }
 
 type content struct {
@@ -24,10 +24,14 @@ func newContent(name string) *content {
 
 func (e *content) Name() string { return e.name }
 
-func (e *content) Draw(x, y, width int, lk look.Look) {
+func (e *content) Draw(x, y, width int, focus bool) {
 	s := runewidth.Truncate(e.Name(), width, "...")
 	s = runewidth.FillRight(s, width)
-	SetCells(x, y, s, lk)
+	style := look.Default()
+	if focus {
+		style = style.Reverse(true)
+	}
+	SetCells(x, y, s, style)
 }
 
 type highlightContent struct {
@@ -41,11 +45,15 @@ func newHighlightContent(name, highlight string) *highlightContent {
 
 func (e *highlightContent) Name() string { return e.name }
 
-func (e *highlightContent) Draw(x, y, width int, lk look.Look) {
+func (e *highlightContent) Draw(x, y, width int, focus bool) {
 	if e.highlight == "" {
 		s := runewidth.Truncate(e.Name(), width, "...")
 		s = runewidth.FillRight(s, width)
-		SetCells(x, y, s, lk)
+		style := look.Default()
+		if focus {
+			style = style.Reverse(true)
+		}
+		SetCells(x, y, s, style)
 		return
 	}
 
@@ -53,18 +61,34 @@ func (e *highlightContent) Draw(x, y, width int, lk look.Look) {
 		s = runewidth.Truncate(s, width, "...")
 		if width < runewidth.StringWidth(s) {
 			width -= runewidth.StringWidth(s)
-			x = SetCells(x, y, s, lk)
+			style := look.Default()
+			if focus {
+				style = style.Reverse(true)
+			}
+			x = SetCells(x, y, s, style)
 			break
 		}
 		width -= runewidth.StringWidth(s)
 		if s != e.highlight {
-			x = SetCells(x, y, s, lk)
+			style := look.Default()
+			if focus {
+				style = style.Reverse(true)
+			}
+			x = SetCells(x, y, s, style)
 		} else {
-			x = SetCells(x, y, s, lk.And(look.Highlight()))
+			style := look.Highlight()
+			if focus {
+				style = style.Reverse(true)
+			}
+			x = SetCells(x, y, s, style)
 		}
 	}
 	s := runewidth.FillRight("", width)
-	SetCells(x, y, s, lk)
+	style := look.Default()
+	if focus {
+		style = style.Reverse(true)
+	}
+	x = SetCells(x, y, s, style)
 }
 
 // ListBox is a scrollable window listing contents.
@@ -376,7 +400,6 @@ func (b *ListBox) ScrollRate() string {
 func (b *ListBox) drawHeader() {
 	title := fmt.Sprintf("%s [%d/%d] %s", b.title, b.cursor+1, b.Upper(), b.ScrollRate())
 	x, y := b.LeftTop()
-	x += 2
 	SetCells(x, y, title, look.Title())
 }
 
@@ -391,7 +414,6 @@ func (b *ListBox) drawScrollbar() {
 	}
 
 	x, y := b.RightTop()
-	x--
 	y++
 	for i := 0; i < height; i++ {
 		if i == offset {
@@ -416,7 +438,7 @@ func (b *ListBox) Draw() {
 	b.drawHeader()
 	b.drawScrollbar()
 
-	width, height := b.Width()-4, b.Height()-2
+	width, height := b.Width()-2, b.Height()-2
 	colwidth := width / b.column
 	row, col := 1, 0
 	for i := b.offset; i < b.Upper(); i++ {
@@ -428,12 +450,12 @@ func (b *ListBox) Draw() {
 			}
 		}
 		x, y := b.LeftTop()
-		x += col*colwidth + 2
+		x += col*colwidth + 1
 		y += row
 		if i != b.cursor {
-			b.list[i].Draw(x, y, colwidth, look.Default())
+			b.list[i].Draw(x, y, colwidth, false)
 		} else {
-			b.list[i].Draw(x, y, colwidth, look.Selected())
+			b.list[i].Draw(x, y, colwidth, true)
 		}
 		col++
 	}

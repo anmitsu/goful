@@ -9,7 +9,6 @@ import (
 	"github.com/anmitsu/goful/message"
 	"github.com/anmitsu/goful/utils"
 	"github.com/anmitsu/goful/widget"
-	"github.com/nsf/termbox-go"
 )
 
 // Spawn a process by the shell or the terminal.
@@ -47,7 +46,7 @@ func spawn(cmd *exec.Cmd) error {
 	return nil
 }
 
-// SpawnSuspend spawns a process and suspends termbox.
+// SpawnSuspend spawns a process and suspends screen.
 func (g *Goful) SpawnSuspend(cmd string) {
 	cmd, _ = g.expandMacro(cmd)
 	args := g.shell(cmd)
@@ -55,10 +54,9 @@ func (g *Goful) SpawnSuspend(cmd string) {
 	execCmd.Stdin = os.Stdin
 	execCmd.Stdout = os.Stdout
 	execCmd.Stderr = os.Stderr
-	termbox.Close()
+	widget.Fini()
 	defer func(cmd string) {
-		termbox.Init()
-		termbox.SetInputMode(termbox.InputAlt)
+		widget.Init()
 		message.Info(cmd)
 	}(strings.Join(execCmd.Args, " "))
 	execCmd.Run()

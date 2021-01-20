@@ -10,8 +10,8 @@ import (
 	"github.com/anmitsu/goful/look"
 	"github.com/anmitsu/goful/utils"
 	"github.com/anmitsu/goful/widget"
+	"github.com/gdamore/tcell/v2"
 	"github.com/mattn/go-runewidth"
-	"github.com/nsf/termbox-go"
 )
 
 // Info notifies an information message.
@@ -70,7 +70,7 @@ func SetErrorLog(path string) {
 
 // Init initializes the message works asynchronously.
 func Init() {
-	width, height := termbox.Size()
+	width, height := widget.Size()
 	messenger = &message{
 		Window:  widget.NewWindow(0, height-2, width, 1),
 		buf:     make(chan buffer, 20),
@@ -86,7 +86,7 @@ var messenger *message
 
 type buffer struct {
 	string
-	look.Look
+	tcell.Style
 }
 
 type message struct {
@@ -134,18 +134,17 @@ func (m *message) log(path, s string) error {
 	return nil
 }
 
-func (m *message) add(msg string, l look.Look) {
-	go func() { m.buf <- buffer{msg, l} }()
+func (m *message) add(msg string, s tcell.Style) {
+	go func() { m.buf <- buffer{msg, s} }()
 }
 
 func (m *message) run() {
 	for {
 		buf := <-m.buf
 		x, y := m.LeftTop()
-		x++
 		display := fmt.Sprintf("[%d] %s", len(m.buf)+1, buf.string)
 		display = runewidth.Truncate(display, m.Width(), "")
-		widget.SetCells(x, y, display, buf.Look)
+		widget.SetCells(x, y, display, buf.Style)
 
 		m.display = true
 		widget.Flush()

@@ -9,7 +9,6 @@ import (
 	"github.com/anmitsu/goful/utils"
 	"github.com/anmitsu/goful/widget"
 	"github.com/mattn/go-runewidth"
-	"github.com/nsf/termbox-go"
 )
 
 var progress *progressWindow
@@ -51,7 +50,7 @@ func Resize(x, y, width, height int) {
 
 // Init initializes the progress window and gauge at the bottom position.
 func Init() {
-	width, height := termbox.Size()
+	width, height := widget.Size()
 	progress = &progressWindow{
 		widget.NewWindow(0, height-4, width, 1),
 		widget.NewProgressGauge(0, height-3, width, 1),

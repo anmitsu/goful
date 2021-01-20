@@ -469,8 +469,7 @@ func (d *Directory) MarkfileQuotedPaths() []string {
 
 func (d *Directory) drawHeader() {
 	x, y := d.LeftTop()
-	x += 2
-	s := runewidth.Truncate(d.Title(), d.Width()-2, "")
+	s := runewidth.Truncate(d.Title(), d.Width()-1, "")
 	widget.SetCells(x, y, s, look.Title())
 }
 
@@ -479,7 +478,6 @@ func (d *Directory) drawFooter() {
 	p := d.ScrollRate()
 	s := fmt.Sprintf("[%d/%d] %s(%d) %s %s", d.MarkCount(), size, p, d.Cursor(), d.SortKind, d.reader.String())
 	x, y := d.LeftBottom()
-	x += 2
 	widget.SetCells(x, y, s, look.Default())
 }
 
@@ -491,12 +489,11 @@ func (d *Directory) drawFiles(focus bool) {
 			break
 		}
 		x, y := d.LeftTop()
-		x++
 		y += row
 		if focus && i == d.Cursor() {
-			d.List()[i].Draw(x, y, d.Width()-2, look.Selected())
+			d.List()[i].Draw(x, y, d.Width()-1, true)
 		} else {
-			d.List()[i].Draw(x, y, d.Width()-2, look.Blank())
+			d.List()[i].Draw(x, y, d.Width()-1, false)
 		}
 		row++
 	}

@@ -8,7 +8,6 @@ import (
 	"github.com/anmitsu/goful/message"
 	"github.com/anmitsu/goful/widget"
 	"github.com/mattn/go-runewidth"
-	"github.com/nsf/termbox-go"
 )
 
 // Finder represents textbox for filtering files in the directory.
@@ -125,7 +124,7 @@ func (f *Finder) Draw() {
 	if spacewidth > 0 {
 		widget.SetCells(x, y, strings.Repeat(" ", spacewidth), look.Finder())
 	}
-	termbox.SetCursor(x, y)
+	widget.ShowCursor(x, y)
 }
 
 // Exit the finder and reload the directory to clear filtering.
@@ -145,5 +144,5 @@ func (f *Finder) exitNotRead() {
 	f.names = nil
 	f.dir.finder = nil
 	f.addHistory()
-	termbox.HideCursor()
+	widget.HideCursor()
 }
