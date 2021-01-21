@@ -21,9 +21,6 @@ func main() {
 	widget.Init()
 	defer widget.Fini()
 
-	// TODO
-	runewidth.DefaultCondition = &runewidth.Condition{EastAsianWidth: false}
-
 	// Set a title if in a terminal such as screen and tmux.
 	if strings.Contains(os.Getenv("TERM"), "screen") {
 		os.Stdout.WriteString("\033kgoful\033\\")
@@ -49,8 +46,7 @@ func main() {
 func config(g *goful.Goful) {
 	look.Set("default") // default, midnight, black, white
 
-	// TODO
-	if runtime.GOOS == "windows" {
+	if runewidth.IsEastAsian() {
 		widget.SetBorder('|', '-', '+', '+', '+', '+') // not ambiguous runes for layout collapsing
 	} else {
 		widget.SetBorder('│', '─', '┌', '┐', '└', '┘') // 0x2502, 0x2500, 0x250c, 0x2510, 0x2514, 0x2518

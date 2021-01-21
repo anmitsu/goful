@@ -59,24 +59,38 @@ func (w *Window) LeftBottom() (x, y int) { return w.x, w.y + w.height - 1 }
 // RightTop returns right top coordinates of the window.
 func (w *Window) RightTop() (x, y int) { return w.x + w.width - 1, w.y }
 
-// Border draws a frame with runes represent lines and corners.
+// Border draws a rectangular frame.
 func (w *Window) Border() {
+	w.BorderUL()
+	w.BorderLR()
+}
+
+// BorderUL draws upper and lower frames.
+func (w *Window) BorderUL() {
 	xend, yend := w.RightBottom()
+	for x := w.x; x <= xend; x++ {
+		screen.SetContent(x, w.y, hLine, nil, look.Default())  // top side
+		screen.SetContent(x, yend, hLine, nil, look.Default()) // bottom side
+	}
+}
+
+// BorderLR draws left and right frames.
+func (w *Window) BorderLR() {
+	xend, yend := w.RightBottom()
+	for y := w.y + 1; y < yend; y++ {
+		screen.SetContent(w.x, y, vLine, nil, look.Default())  // left side
+		screen.SetContent(xend, y, vLine, nil, look.Default()) // right side
+	}
+	screen.SetContent(w.x, w.y, ulCorner, nil, look.Default())
+	screen.SetContent(w.x, yend, llCorner, nil, look.Default())
 	screen.SetContent(xend, w.y, urCorner, nil, look.Default())
 	screen.SetContent(xend, yend, lrCorner, nil, look.Default())
-	for x := w.x; x < xend; x++ {
-		screen.SetContent(x, w.y, hLine, nil, look.Default())
-		screen.SetContent(x, yend, hLine, nil, look.Default())
-	}
-	for y := w.y + 1; y < yend; y++ {
-		screen.SetContent(xend, y, vLine, nil, look.Default())
-	}
 }
 
 // Draw the window to cells.
 func (w *Window) Draw() {
 	w.Clear()
-	w.Border()
+	w.BorderUL()
 }
 
 // Clear the window with blanks.
@@ -104,12 +118,12 @@ func (w *Window) ResizeRelative(x, y, width, height int) {
 }
 
 var (
-	vLine    rune = 0x2502 // │
-	hLine    rune = 0x2500 // ─
-	ulCorner rune = 0x250c // ┌
-	urCorner rune = 0x2510 // ┐
-	llCorner rune = 0x2514 // └
-	lrCorner rune = 0x2518 // ┘
+	vLine    rune = tcell.RuneVLine
+	hLine    rune = tcell.RuneHLine
+	ulCorner rune = tcell.RuneULCorner
+	urCorner rune = tcell.RuneURCorner
+	llCorner rune = tcell.RuneLLCorner
+	lrCorner rune = tcell.RuneLRCorner
 )
 
 // SetBorder sets window border runes.
@@ -252,10 +266,6 @@ func SetCells(x, y int, s string, style tcell.Style) (pos int) {
 	pos = x
 	for _, r := range s {
 		screen.SetContent(pos, y, r, nil, style)
-		// TODO
-		if runewidth.EastAsianWidth && runewidth.IsAmbiguousWidth(r) {
-			screen.SetContent(pos+1, y, ' ', nil, style)
-		}
 		pos += runewidth.RuneWidth(r)
 	}
 	return

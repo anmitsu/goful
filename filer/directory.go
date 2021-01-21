@@ -491,9 +491,9 @@ func (d *Directory) drawFiles(focus bool) {
 		x, y := d.LeftTop()
 		y += row
 		if focus && i == d.Cursor() {
-			d.List()[i].Draw(x, y, d.Width()-1, true)
+			d.List()[i].Draw(x, y, d.Width(), true)
 		} else {
-			d.List()[i].Draw(x, y, d.Width()-1, false)
+			d.List()[i].Draw(x, y, d.Width(), false)
 		}
 		row++
 	}
@@ -502,7 +502,7 @@ func (d *Directory) drawFiles(focus bool) {
 func (d *Directory) draw(focus bool) {
 	d.AdjustCursor()
 	d.AdjustOffset()
-	d.Border()
+	d.BorderUL()
 	d.drawHeader()
 	d.drawFiles(focus)
 	d.drawFooter()

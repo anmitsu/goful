@@ -434,7 +434,7 @@ func (b *ListBox) Draw() {
 	b.AdjustCursor()
 	b.AdjustOffset()
 	b.Clear()
-	b.Border()
+	b.BorderUL()
 	b.drawHeader()
 	b.drawScrollbar()
 
