@@ -206,19 +206,19 @@ func (w *Workspace) LayoutTileTop() {
 	x, y := w.LeftTop()
 	if dlen < 2 {
 		w.Dirs[0].Resize(x, y, w.Width(), w.Height())
+		return
 	}
 	height := w.Height() / 2
 	hodd := w.Height() % 2
-	w.Dirs[0].Resize(x, y+height, w.Width(), height+hodd)
 
 	k := dlen - 1
 	width := w.Width() / k
-	for i, d := range w.Dirs[1 : dlen-1] {
+	for i, d := range w.Dirs[:dlen-1] {
 		d.Resize(x+width*i, y, width, height)
 	}
 
 	wodd := w.Width() % 2
-	w.Dirs[dlen-1].Resize(x+width*(k-1), y, width+wodd, height)
+	w.Dirs[dlen-1].Resize(x, y+height, w.Width()+wodd, height+hodd)
 }
 
 // LayoutTileBottom allocates to the tile bottom layout.
