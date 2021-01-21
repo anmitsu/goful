@@ -47,7 +47,7 @@ func main() {
 }
 
 func config(g *goful.Goful) {
-	look.Set("default") // TODO
+	look.Set("default") // default, midnight, black, white
 
 	// TODO
 	if runtime.GOOS == "windows" {
@@ -139,8 +139,8 @@ func config(g *goful.Goful) {
 	menu.Add("look",
 		"default      ", "D", func() { look.Set("default") },
 		"midnight     ", "n", func() { look.Set("midnight") },
-		"dark         ", "d", func() { look.Set("dark") },
-		"gray         ", "g", func() { look.Set("gray") },
+		"black        ", "b", func() { look.Set("black") },
+		"white        ", "w", func() { look.Set("white") },
 	)
 	g.AddKeymap("L", func() { g.Menu("look") })
 

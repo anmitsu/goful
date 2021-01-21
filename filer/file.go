@@ -195,11 +195,9 @@ func (f *FileStat) look() tcell.Style {
 
 // Draw the file name and file stats.
 func (f *FileStat) Draw(x, y, width int, focus bool) {
-	var style tcell.Style
+	style := f.look()
 	if focus {
-		style = f.look().Reverse(true)
-	} else {
-		style = f.look()
+		style = style.Reverse(true)
 	}
 	states := f.states()
 	width -= len(states)
