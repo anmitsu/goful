@@ -317,8 +317,9 @@ func (w *Workspace) Draw() {
 		for i, d := range w.Dirs {
 			if i != w.Focus {
 				d.draw(false)
+			} else {
+				d.draw(true)
 			}
 		}
-		w.Dir().draw(true)
 	}
 }
