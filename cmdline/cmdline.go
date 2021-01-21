@@ -138,9 +138,7 @@ func (c *Cmdline) Input(key string) {
 	} else if cb, ok := keymap(c)[key]; ok {
 		cb()
 	} else {
-		if key == "space" {
-			c.InsertChar(' ')
-		} else if utf8.RuneCountInString(key) == 1 {
+		if utf8.RuneCountInString(key) == 1 {
 			r, _ := utf8.DecodeRuneInString(key)
 			c.InsertChar(r)
 		}
