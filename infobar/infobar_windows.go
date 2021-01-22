@@ -14,7 +14,7 @@ import (
 func (w *infoWindow) draw(fi os.FileInfo) {
 	w.Clear()
 	x, y := w.LeftTop()
-	x++
+
 	perm := fi.Mode().String()
 	size := fi.Size()
 	mtime := fi.ModTime().String()

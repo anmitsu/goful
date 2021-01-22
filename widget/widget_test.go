@@ -8,39 +8,50 @@ import (
 	"time"
 
 	"github.com/anmitsu/goful/look"
-	"github.com/nsf/termbox-go"
+	"github.com/gdamore/tcell/v2"
 )
 
 func TestEventToString(t *testing.T) {
-	if err := termbox.Init(); err != nil {
-		t.Fatal(err)
-	}
-	defer termbox.Close()
-	termbox.SetInputMode(termbox.InputAlt)
+	Init()
+	defer Fini()
 
-	fmt.Println("Exit by q")
+	fmt.Print("Exit by q; ")
 	for {
-		ev := termbox.PollEvent()
-		key := EventToString(&ev)
-		switch key {
+		ev := PollEvent()
+		key := EventToString(ev)
+		if key == "q" {
+			return
+		}
+		switch ev := ev.(type) {
+		case *tcell.EventKey:
+			fmt.Printf("key %d rune %c name %s -> %s; ",
+				ev.Key(), ev.Rune(), ev.Name(), key)
+		}
+	}
+}
+
+func testWait() {
+	for {
+		ev := PollEvent()
+		switch EventToString(ev) {
 		case "q":
 			return
-		default:
-			fmt.Printf("%c %d %s; ", ev.Ch, ev.Key, key)
+		case "C-c":
+			return
+		case "C-m":
+			return
 		}
 	}
 }
 
 func TestGauge(t *testing.T) {
-	if err := termbox.Init(); err != nil {
-		t.Fatal(err)
-	}
-	defer termbox.Close()
+	Init()
+	defer Fini()
 
 	look.Set("default")
 	maxval := 200 * 1024 * 1024
 
-	width, _ := termbox.Size()
+	width, _ := Size()
 	gauge := NewProgressGauge(0, 0, width/2, 1)
 	gauge.Start(float64(maxval))
 	ticker := time.NewTicker(10 * time.Millisecond)
@@ -58,18 +69,16 @@ func TestGauge(t *testing.T) {
 		Flush()
 		<-ticker.C
 	}
-	termbox.PollEvent()
+	testWait()
 }
 
 func TestListBox(t *testing.T) {
-	if err := termbox.Init(); err != nil {
-		t.Fatal(err)
-	}
-	defer termbox.Close()
+	Init()
+	defer Fini()
 
 	look.Set("default")
 	x, y := 0, 0
-	width, height := termbox.Size()
+	width, height := Size()
 	lb := NewListBox(x, y, width/2, height/2, "test")
 	lb2 := NewListBox(int(float64(width)*0.7), y, int(float64(width)*0.3), height/2/2, "test2")
 	lb3 := NewListBox(x, height/2, width/2, height/2, "test3")
@@ -122,7 +131,7 @@ func TestListBox(t *testing.T) {
 	lb3.Draw()
 	lb4.Draw()
 	Flush()
-	termbox.PollEvent()
+	testWait()
 }
 
 func TestInsertBytes(t *testing.T) {

@@ -5,7 +5,6 @@ import (
 	"os"
 
 	"github.com/anmitsu/goful/widget"
-	"github.com/nsf/termbox-go"
 )
 
 var infobar *infoWindow
@@ -28,7 +27,7 @@ func ResizeRelative(x, y, width, height int) {
 
 // Init the information bar at the bottom position.
 func Init() {
-	width, height := termbox.Size()
+	width, height := widget.Size()
 	infobar = &infoWindow{widget.NewWindow(0, height-1, width, 1)}
 }
 

@@ -247,7 +247,7 @@ func (f *Filer) drawHeader() {
 		if f.Current != i {
 			x = widget.SetCells(x, y, s, look.Default())
 		} else {
-			x = widget.SetCells(x, y, s, look.Selected())
+			x = widget.SetCells(x, y, s, look.Default().Reverse(true))
 		}
 	}
 	x = widget.SetCells(x, y, " | ", look.Default())
@@ -261,7 +261,7 @@ func (f *Filer) drawHeader() {
 		if ws.Focus != i {
 			x = widget.SetCells(x, y, s, look.Default())
 		} else {
-			x = widget.SetCells(x, y, s, look.Selected())
+			x = widget.SetCells(x, y, s, look.Default().Reverse(true))
 		}
 	}
 }

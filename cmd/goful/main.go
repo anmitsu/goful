@@ -14,15 +14,12 @@ import (
 	"github.com/anmitsu/goful/message"
 	"github.com/anmitsu/goful/progress"
 	"github.com/anmitsu/goful/widget"
-	"github.com/nsf/termbox-go"
+	"github.com/mattn/go-runewidth"
 )
 
 func main() {
-	if err := termbox.Init(); err != nil {
-		panic(err)
-	}
-	defer termbox.Close()
-	termbox.SetInputMode(termbox.InputAlt)
+	widget.Init()
+	defer widget.Fini()
 
 	// Set a title if in a terminal such as screen and tmux.
 	if strings.Contains(os.Getenv("TERM"), "screen") {
@@ -47,13 +44,17 @@ func main() {
 }
 
 func config(g *goful.Goful) {
-	look.Set("default") // default, midnight, dark or gray
+	look.Set("default") // default, midnight, black, white
 
-	if runtime.GOOS == "windows" {
-		widget.SetBorder('|', '-', '+', '+', '+', '+') // not ambiguous runes for layout collapsing
+	if runewidth.EastAsianWidth {
+		// Because layout collapsing for ambiguous runes if LANG=ja_JP.
+		widget.SetBorder('|', '-', '+', '+', '+', '+')
 	} else {
+		// Look good if environment variable RUNEWIDTH_EASTASIAN=0 and
+		// ambiguous char setting is half-width for gnome-terminal.
 		widget.SetBorder('│', '─', '┌', '┐', '└', '┘') // 0x2502, 0x2500, 0x250c, 0x2510, 0x2514, 0x2518
 	}
+	g.SetBorderStyle(widget.AllBorder) // AllBorder, ULBorder, NoBorder
 
 	message.SetInfoLog("~/.goful/log/info.log")   // "" is not logging
 	message.SetErrorLog("~/.goful/log/error.log") // "" is not logging
@@ -136,10 +137,13 @@ func config(g *goful.Goful) {
 	g.AddKeymap("V", func() { g.Menu("view") })
 
 	menu.Add("look",
-		"default      ", "D", func() { look.Set("default") },
+		"default      ", "d", func() { look.Set("default") },
 		"midnight     ", "n", func() { look.Set("midnight") },
-		"dark         ", "d", func() { look.Set("dark") },
-		"gray         ", "g", func() { look.Set("gray") },
+		"black        ", "b", func() { look.Set("black") },
+		"white        ", "w", func() { look.Set("white") },
+		"all border   ", "a", func() { g.SetBorderStyle(widget.AllBorder) },
+		"ul border    ", "u", func() { g.SetBorderStyle(widget.ULBorder) },
+		"no border    ", "0", func() { g.SetBorderStyle(widget.NoBorder) },
 	)
 	g.AddKeymap("L", func() { g.Menu("look") })
 
@@ -285,7 +289,7 @@ func filerKeymap(g *goful.Goful) widget.Keymap {
 		"M-C-w":     func() { g.CloseWorkspace() },
 		"M-f":       func() { g.MoveWorkspace(1) },
 		"M-b":       func() { g.MoveWorkspace(-1) },
-		"M-C-m":     func() { g.Workspace().CreateDir() },
+		"M-c":       func() { g.Workspace().CreateDir() },
 		"C-w":       func() { g.Workspace().CloseDir() },
 		"C-l":       func() { g.Workspace().ReloadAll() },
 		"C-f":       func() { g.Workspace().MoveFocus(1) },
@@ -315,9 +319,10 @@ func filerKeymap(g *goful.Goful) widget.Keymap {
 		"M-v":       func() { g.Dir().PageUp() },
 		"pgdn":      func() { g.Dir().PageDown() },
 		"pgup":      func() { g.Dir().PageUp() },
-		"space":     func() { g.Dir().ToggleMark() },
+		" ":         func() { g.Dir().ToggleMark() },
 		"M-*":       func() { g.Dir().ToggleMarkAll() },
 		"C-g":       func() { g.Dir().Reset() },
+		"C-[":       func() { g.Dir().Reset() },
 		"f":         func() { g.Dir().Finder() },
 		"/":         func() { g.Dir().Finder() },
 		"q":         func() { g.Quit() },
@@ -345,6 +350,7 @@ func finderKeymap(w *filer.Finder) widget.Keymap {
 		"M-p":       func() { w.MoveHistory(1) },
 		"M-n":       func() { w.MoveHistory(-1) },
 		"C-g":       func() { w.Exit() },
+		"C-[":       func() { w.Exit() },
 	}
 }
 
@@ -368,6 +374,7 @@ func cmdlineKeymap(w *cmdline.Cmdline) widget.Keymap {
 		"C-i":       func() { w.StartCompletion() },
 		"C-m":       func() { w.Run() },
 		"C-g":       func() { w.Exit() },
+		"C-[":       func() { w.Exit() },
 		"C-n":       func() { w.History.CursorDown() },
 		"C-p":       func() { w.History.CursorUp() },
 		"down":      func() { w.History.CursorDown() },
@@ -407,6 +414,7 @@ func completionKeymap(w *cmdline.Completion) widget.Keymap {
 		"M-p":   func() { w.Scroll(-1) },
 		"C-m":   func() { w.InsertCompletion() },
 		"C-g":   func() { w.Exit() },
+		"C-[":   func() { w.Exit() },
 	}
 }
 
@@ -422,5 +430,6 @@ func menuKeymap(w *menu.Menu) widget.Keymap {
 		"M-<":  func() { w.MoveTop() },
 		"C-m":  func() { w.Exec() },
 		"C-g":  func() { w.Exit() },
+		"C-[":  func() { w.Exit() },
 	}
 }

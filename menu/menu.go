@@ -51,15 +51,16 @@ func New(name string, filer widget.Widget) (*Menu, error) {
 		return nil, fmt.Errorf("Not found menu `%s'", name)
 	}
 	x, y := filer.LeftBottom()
-	width := filer.Width() / 3
+	width := filer.Width() / 2
 	height := len(items) + 2
 	if max := filer.Height() / 2; height > max {
 		height = max
 	}
 	menu := &Menu{
-		ListBox: widget.NewListBox(x, y-height, width, height, name),
+		ListBox: widget.NewListBox(x, y-height+1, width, height, name),
 		filer:   filer,
 	}
+	menu.SetBorderStyle(widget.AllBorder)
 	for _, item := range items {
 		s := fmt.Sprintf("(%s) %s", item.accel, item.label)
 		menu.AppendString(s)
@@ -69,12 +70,12 @@ func New(name string, filer widget.Widget) (*Menu, error) {
 
 // Resize the menu window.
 func (w *Menu) Resize(x, y, width, height int) {
-	width = width / 3
+	width = width / 2
 	h := len(menusMap[w.Title()]) + 2
 	if max := height / 2; h > max {
 		h = max
 	}
-	w.ListBox.Resize(x, height-h-1, width, h)
+	w.ListBox.Resize(x, height-h+1, width, h)
 }
 
 // Exec executes a menu item on the cursor and exits the menu.

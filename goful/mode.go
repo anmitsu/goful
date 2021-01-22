@@ -13,7 +13,6 @@ import (
 	"github.com/anmitsu/goful/message"
 	"github.com/anmitsu/goful/utils"
 	"github.com/anmitsu/goful/widget"
-	"github.com/nsf/termbox-go"
 )
 
 // match shell separators, macros, options and spaces.
@@ -34,7 +33,7 @@ func (g *Goful) Shell(cmd string, offset ...int) {
 	g.next = c
 }
 
-// ShellSuspend starts the shell mode and suspends termbox after running.
+// ShellSuspend starts the shell mode and suspends screen after running.
 // The head of variadic arguments is used for cursor positioning.
 func (g *Goful) ShellSuspend(cmd string, offset ...int) {
 	commands, err := utils.SearchCommands()
@@ -65,9 +64,8 @@ func (m *shellMode) Prompt() string {
 func (m *shellMode) Draw(c *cmdline.Cmdline) {
 	c.Clear()
 	x, y := c.LeftTop()
-	x++
 	x = widget.SetCells(x, y, m.Prompt(), look.Prompt())
-	termbox.SetCursor(x+c.Cursor(), y)
+	widget.ShowCursor(x+c.Cursor(), y)
 	m.drawCommand(x, y, c.String())
 }
 

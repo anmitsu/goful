@@ -9,6 +9,7 @@ import (
 	"github.com/anmitsu/goful/message"
 	"github.com/anmitsu/goful/utils"
 	"github.com/anmitsu/goful/widget"
+	"github.com/gdamore/tcell/v2"
 	"github.com/mattn/go-runewidth"
 )
 
@@ -174,7 +175,7 @@ func (f *FileStat) states() string {
 	return ret
 }
 
-func (f *FileStat) look() look.Look {
+func (f *FileStat) look() tcell.Style {
 	switch {
 	case f.IsMarked():
 		return look.Marked()
@@ -193,8 +194,11 @@ func (f *FileStat) look() look.Look {
 }
 
 // Draw the file name and file stats.
-func (f *FileStat) Draw(x, y, width int, lk look.Look) {
-	lk = lk.And(f.look())
+func (f *FileStat) Draw(x, y, width int, focus bool) {
+	style := f.look()
+	if focus {
+		style = style.Reverse(true)
+	}
 	states := f.states()
 	width -= len(states)
 	pre := " "
@@ -204,6 +208,6 @@ func (f *FileStat) Draw(x, y, width int, lk look.Look) {
 	s := pre + f.display + f.suffix()
 	s = runewidth.Truncate(s, width, "...")
 	s = runewidth.FillRight(s, width)
-	x = widget.SetCells(x, y, s, lk)
-	widget.SetCells(x, y, states, lk)
+	x = widget.SetCells(x, y, s, style)
+	widget.SetCells(x, y, states, style)
 }

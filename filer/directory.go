@@ -93,6 +93,14 @@ func (s globDirPattern) Read(callback func(string)) {
 	})
 }
 
+// default border style
+var borderStyle widget.BorderStyle = widget.ULBorder
+
+// SetBorderStyle sets a directory default border style.
+func SetBorderStyle(style widget.BorderStyle) {
+	borderStyle = style
+}
+
 // Directory is a list box to store file stats.
 type Directory struct {
 	*widget.ListBox
@@ -106,8 +114,10 @@ type Directory struct {
 // NewDirectory creates a new directory based on specified size and coordinates.
 func NewDirectory(x, y, width, height int) *Directory {
 	path, _ := filepath.Abs(".")
+	listbox := widget.NewListBox(x, y, width, height, path)
+	listbox.SetBorderStyle(borderStyle)
 	return &Directory{
-		ListBox:  widget.NewListBox(x, y, width, height, path),
+		ListBox:  listbox,
 		reader:   defaultReader("."),
 		history:  map[string]string{},
 		Path:     path,
@@ -127,7 +137,7 @@ func (d *Directory) init4json() {
 func (d *Directory) Resize(x, y, width, height int) {
 	d.ListBox.Resize(x, y, width, height)
 	if d.finder != nil {
-		d.finder.Resize(x+1, y+d.Height()-1, d.Width()-1, 1)
+		d.finder.Resize(x, y+d.Height()-1, d.Width(), 1)
 		d.ResizeRelative(0, 0, 0, -1)
 	}
 }
@@ -135,7 +145,7 @@ func (d *Directory) Resize(x, y, width, height int) {
 // Finder starts a finder in the directory for filtering files.
 func (d *Directory) Finder() {
 	x, y := d.LeftTop()
-	d.finder = NewFinder(d, x+1, y+d.Height()-1, d.Width()-1, 1)
+	d.finder = NewFinder(d, x, y+d.Height()-1, d.Width(), 1)
 	d.ResizeRelative(0, 0, 0, -1)
 }
 
@@ -469,8 +479,7 @@ func (d *Directory) MarkfileQuotedPaths() []string {
 
 func (d *Directory) drawHeader() {
 	x, y := d.LeftTop()
-	x += 2
-	s := runewidth.Truncate(d.Title(), d.Width()-2, "")
+	s := runewidth.Truncate(d.Title(), d.Width()-1, "")
 	widget.SetCells(x, y, s, look.Title())
 }
 
@@ -479,24 +488,29 @@ func (d *Directory) drawFooter() {
 	p := d.ScrollRate()
 	s := fmt.Sprintf("[%d/%d] %s(%d) %s %s", d.MarkCount(), size, p, d.Cursor(), d.SortKind, d.reader.String())
 	x, y := d.LeftBottom()
-	x += 2
 	widget.SetCells(x, y, s, look.Default())
 }
 
 func (d *Directory) drawFiles(focus bool) {
 	height := d.Height() - 2
 	row := 1
+	shift := 0
+	width := d.Width() - 1
+	if d.BorderStyle() == widget.AllBorder {
+		shift++
+		width--
+	}
 	for i := d.Offset(); i < d.Upper(); i++ {
 		if row > height {
 			break
 		}
 		x, y := d.LeftTop()
-		x++
 		y += row
+		x += shift
 		if focus && i == d.Cursor() {
-			d.List()[i].Draw(x, y, d.Width()-2, look.Selected())
+			d.List()[i].Draw(x, y, width, true)
 		} else {
-			d.List()[i].Draw(x, y, d.Width()-2, look.Blank())
+			d.List()[i].Draw(x, y, width, false)
 		}
 		row++
 	}

@@ -17,7 +17,6 @@ import (
 func (w *infoWindow) draw(fi os.FileInfo) {
 	w.Clear()
 	x, y := w.LeftTop()
-	x++
 
 	var statfs syscall.Statfs_t
 	syscall.Statfs(".", &statfs)
