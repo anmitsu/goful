@@ -93,6 +93,14 @@ func (s globDirPattern) Read(callback func(string)) {
 	})
 }
 
+// default border style
+var borderStyle widget.BorderStyle = widget.ULBorder
+
+// SetBorderStyle sets a directory default border style.
+func SetBorderStyle(style widget.BorderStyle) {
+	borderStyle = style
+}
+
 // Directory is a list box to store file stats.
 type Directory struct {
 	*widget.ListBox
@@ -106,8 +114,10 @@ type Directory struct {
 // NewDirectory creates a new directory based on specified size and coordinates.
 func NewDirectory(x, y, width, height int) *Directory {
 	path, _ := filepath.Abs(".")
+	listbox := widget.NewListBox(x, y, width, height, path)
+	listbox.SetBorderStyle(borderStyle)
 	return &Directory{
-		ListBox:  widget.NewListBox(x, y, width, height, path),
+		ListBox:  listbox,
 		reader:   defaultReader("."),
 		history:  map[string]string{},
 		Path:     path,

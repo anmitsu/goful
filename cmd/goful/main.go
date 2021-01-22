@@ -51,6 +51,7 @@ func config(g *goful.Goful) {
 	} else {
 		widget.SetBorder('│', '─', '┌', '┐', '└', '┘') // 0x2502, 0x2500, 0x250c, 0x2510, 0x2514, 0x2518
 	}
+	g.SetBorderStyle(widget.ULBorder)
 
 	message.SetInfoLog("~/.goful/log/info.log")   // "" is not logging
 	message.SetErrorLog("~/.goful/log/error.log") // "" is not logging
@@ -137,6 +138,9 @@ func config(g *goful.Goful) {
 		"midnight     ", "n", func() { look.Set("midnight") },
 		"black        ", "b", func() { look.Set("black") },
 		"white        ", "w", func() { look.Set("white") },
+		"all border   ", "a", func() { g.SetBorderStyle(widget.AllBorder) },
+		"ul border    ", "u", func() { g.SetBorderStyle(widget.ULBorder) },
+		"no border    ", "0", func() { g.SetBorderStyle(widget.NoBorder) },
 	)
 	g.AddKeymap("L", func() { g.Menu("look") })
 

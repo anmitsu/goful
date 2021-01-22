@@ -149,3 +149,13 @@ func (g *Goful) eventHandler(ev tcell.Event) {
 		}
 	}
 }
+
+// SetBorderStyle sets the filer border style.
+func (g *Goful) SetBorderStyle(style widget.BorderStyle) {
+	filer.SetBorderStyle(style)
+	for _, ws := range g.Workspaces {
+		for _, d := range ws.Dirs {
+			d.SetBorderStyle(style)
+		}
+	}
+}
