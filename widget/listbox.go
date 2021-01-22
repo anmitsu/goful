@@ -88,7 +88,7 @@ func (e *highlightContent) Draw(x, y, width int, focus bool) {
 	if focus {
 		style = style.Reverse(true)
 	}
-	x = SetCells(x, y, s, style)
+	SetCells(x, y, s, style)
 }
 
 // ListBox is a scrollable window listing contents.
