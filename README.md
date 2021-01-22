@@ -38,7 +38,7 @@ Goful is a CUI file manager implemented by Go.
 | ~              | Change to home directory |
 | \              | Change to root directory |
 | w              | Change to neighbor directory |
-| M-C-m          | New directory window |
+| M-c            | New directory window |
 | C-w            | Close directory window |
 | M-f            | Move next workspace |
 | M-b            | Move previous workspace |
@@ -67,7 +67,7 @@ Goful is a CUI file manager implemented by Go.
 | d              | Change directory |
 | g              | Glob file |
 | G              | Glob directory |
-| C-g            | Cancel |
+| C-g, esc       | Cancel |
 | q, Q           | Quit application |
 
 ### For more see [cmd/goful/main.go](cmd/goful/main.go)

@@ -289,7 +289,7 @@ func filerKeymap(g *goful.Goful) widget.Keymap {
 		"M-C-w":     func() { g.CloseWorkspace() },
 		"M-f":       func() { g.MoveWorkspace(1) },
 		"M-b":       func() { g.MoveWorkspace(-1) },
-		"M-C-m":     func() { g.Workspace().CreateDir() },
+		"M-c":       func() { g.Workspace().CreateDir() },
 		"C-w":       func() { g.Workspace().CloseDir() },
 		"C-l":       func() { g.Workspace().ReloadAll() },
 		"C-f":       func() { g.Workspace().MoveFocus(1) },
