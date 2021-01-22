@@ -484,16 +484,23 @@ func (d *Directory) drawFooter() {
 func (d *Directory) drawFiles(focus bool) {
 	height := d.Height() - 2
 	row := 1
+	shift := 0
+	width := d.Width() - 1
+	if d.BorderStyle() == widget.AllBorder {
+		shift++
+		width--
+	}
 	for i := d.Offset(); i < d.Upper(); i++ {
 		if row > height {
 			break
 		}
 		x, y := d.LeftTop()
 		y += row
+		x += shift
 		if focus && i == d.Cursor() {
-			d.List()[i].Draw(x, y, d.Width(), true)
+			d.List()[i].Draw(x, y, width, true)
 		} else {
-			d.List()[i].Draw(x, y, d.Width(), false)
+			d.List()[i].Draw(x, y, width, false)
 		}
 		row++
 	}
@@ -502,7 +509,7 @@ func (d *Directory) drawFiles(focus bool) {
 func (d *Directory) draw(focus bool) {
 	d.AdjustCursor()
 	d.AdjustOffset()
-	d.BorderUL()
+	d.Border()
 	d.drawHeader()
 	d.drawFiles(focus)
 	d.drawFooter()

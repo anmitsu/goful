@@ -418,8 +418,6 @@ func (b *ListBox) drawScrollbar() {
 	for i := 0; i < height; i++ {
 		if i == offset {
 			SetCells(x, y+i, "=", look.Default())
-		} else if i == 0 || i == height-1 {
-			SetCells(x, y+i, "+", look.Default())
 		} else {
 			SetCells(x, y+i, "|", look.Default())
 		}
@@ -434,12 +432,16 @@ func (b *ListBox) Draw() {
 	b.AdjustCursor()
 	b.AdjustOffset()
 	b.Clear()
-	b.BorderUL()
+	b.Border()
 	b.drawHeader()
 	b.drawScrollbar()
 
 	width, height := b.Width()-2, b.Height()-2
-	colwidth := width / b.column
+	shift := 1
+	if b.border == AllBorder {
+		shift++
+	}
+	colwidth := width/b.column - shift + 1
 	row, col := 1, 0
 	for i := b.offset; i < b.Upper(); i++ {
 		if col >= b.column {
@@ -450,7 +452,7 @@ func (b *ListBox) Draw() {
 			}
 		}
 		x, y := b.LeftTop()
-		x += col*colwidth + 1
+		x += col*colwidth + shift
 		y += row
 		if i != b.cursor {
 			b.list[i].Draw(x, y, colwidth, false)

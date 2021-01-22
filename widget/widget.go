@@ -36,10 +36,11 @@ type Window struct {
 	y      int // a vertical coordinate of the window left top
 	width  int
 	height int
+	border BorderStyle
 }
 
 // NewWindow creates a new window specified coordinates and sizes.
-func NewWindow(x, y, width, height int) *Window { return &Window{x, y, width, height} }
+func NewWindow(x, y, width, height int) *Window { return &Window{x, y, width, height, ULBorder} }
 
 // Width returns the window width.
 func (w *Window) Width() int { return w.width }
@@ -61,8 +62,13 @@ func (w *Window) RightTop() (x, y int) { return w.x + w.width - 1, w.y }
 
 // Border draws a rectangular frame.
 func (w *Window) Border() {
-	w.BorderUL()
-	w.BorderLR()
+	switch w.border {
+	case AllBorder:
+		w.BorderUL()
+		w.BorderLR()
+	case ULBorder:
+		w.BorderUL()
+	}
 }
 
 // BorderUL draws upper and lower frames.
@@ -90,7 +96,7 @@ func (w *Window) BorderLR() {
 // Draw the window to cells.
 func (w *Window) Draw() {
 	w.Clear()
-	w.BorderUL()
+	w.Border()
 }
 
 // Clear the window with blanks.
@@ -115,6 +121,28 @@ func (w *Window) ResizeRelative(x, y, width, height int) {
 	w.y += y
 	w.width += width
 	w.height += height
+}
+
+// BorderStyle is a window border style.
+type BorderStyle int
+
+const (
+	// AllBorder is a style draws all lines and corners.
+	AllBorder BorderStyle = iota
+	// ULBorder is a style draws upper and lower lines.
+	ULBorder
+	// NoBorder dose not draw borders.
+	NoBorder
+)
+
+// SetBorderStyle sets the border style.
+func (w *Window) SetBorderStyle(style BorderStyle) {
+	w.border = style
+}
+
+// BorderStyle returns the border style.
+func (w *Window) BorderStyle() BorderStyle {
+	return w.border
 }
 
 var (
