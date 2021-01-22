@@ -60,6 +60,7 @@ func New(name string, filer widget.Widget) (*Menu, error) {
 		ListBox: widget.NewListBox(x, y-height+1, width, height, name),
 		filer:   filer,
 	}
+	menu.SetBorderStyle(widget.AllBorder)
 	for _, item := range items {
 		s := fmt.Sprintf("(%s) %s", item.accel, item.label)
 		menu.AppendString(s)
