@@ -26,6 +26,9 @@ type Goful struct {
 
 // New creates a new goful client based recording a previous state.
 func New(path string) *Goful {
+	message.Init()
+	infobar.Init()
+	progress.Init()
 	width, height := widget.Size()
 	goful := &Goful{
 		Filer:     filer.NewFromState(path, 0, 0, width, height-2),
@@ -143,7 +146,7 @@ func (g *Goful) eventHandler(ev tcell.Event) {
 		g.Input(key)
 	case *tcell.EventResize:
 		width, height := ev.Size()
-			g.Resize(0, 0, width, height)
+		g.Resize(0, 0, width, height)
 	}
 }
 

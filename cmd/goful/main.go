@@ -8,11 +8,9 @@ import (
 	"github.com/anmitsu/goful/cmdline"
 	"github.com/anmitsu/goful/filer"
 	"github.com/anmitsu/goful/goful"
-	"github.com/anmitsu/goful/infobar"
 	"github.com/anmitsu/goful/look"
 	"github.com/anmitsu/goful/menu"
 	"github.com/anmitsu/goful/message"
-	"github.com/anmitsu/goful/progress"
 	"github.com/anmitsu/goful/widget"
 	"github.com/mattn/go-runewidth"
 )
@@ -25,10 +23,6 @@ func main() {
 	if strings.Contains(os.Getenv("TERM"), "screen") {
 		os.Stdout.WriteString("\033kgoful\033\\")
 	}
-
-	message.Init()
-	infobar.Init()
-	progress.Init()
 
 	const state = "~/.goful/state.json"
 	const history = "~/.goful/history/shell"
