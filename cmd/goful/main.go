@@ -46,12 +46,15 @@ func main() {
 func config(g *goful.Goful) {
 	look.Set("default") // default, midnight, black, white
 
-	if runewidth.IsEastAsian() {
-		widget.SetBorder('|', '-', '+', '+', '+', '+') // not ambiguous runes for layout collapsing
+	if runewidth.EastAsianWidth {
+		// Because layout collapsing for ambiguous runes if LANG=ja_JP.
+		widget.SetBorder('|', '-', '+', '+', '+', '+')
 	} else {
+		// Look good if environment variable RUNEWIDTH_EASTASIAN=0 and
+		// ambiguous char setting is half-width for gnome-terminal.
 		widget.SetBorder('│', '─', '┌', '┐', '└', '┘') // 0x2502, 0x2500, 0x250c, 0x2510, 0x2514, 0x2518
 	}
-	g.SetBorderStyle(widget.ULBorder)
+	g.SetBorderStyle(widget.AllBorder) // AllBorder, ULBorder, NoBorder
 
 	message.SetInfoLog("~/.goful/log/info.log")   // "" is not logging
 	message.SetErrorLog("~/.goful/log/error.log") // "" is not logging
