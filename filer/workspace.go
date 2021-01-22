@@ -182,66 +182,68 @@ func (w *Workspace) SetTitle(title string) {
 func (w *Workspace) LayoutTile() {
 	w.Layout = layoutTile
 	x, y := w.LeftTop()
-	dlen := len(w.Dirs)
-	if dlen < 2 {
+	k := len(w.Dirs) - 1
+	if k < 1 {
 		w.Dirs[0].Resize(x, y, w.Width(), w.Height())
 		return
 	}
 	width := w.Width() / 2
 	w.Dirs[0].Resize(x, y, width, w.Height())
-	k := dlen - 1
 	height := w.Height() / k
 	hodd := w.Height() % k
 	wodd := w.Width() % 2
-	for i, d := range w.Dirs[1 : dlen-1] {
+	for i, d := range w.Dirs[1:k] {
 		d.Resize(x+width, y+height*i, width+wodd, height)
 	}
-	w.Dirs[dlen-1].Resize(x+width, y+height*(k-1), width+wodd, height+hodd)
+	w.Dirs[k].Resize(x+width, y+height*(k-1), width+wodd, height+hodd)
 }
 
 // LayoutTileTop allocates to the tile top layout.
 func (w *Workspace) LayoutTileTop() {
 	w.Layout = layoutTileTop
-	dlen := len(w.Dirs)
 	x, y := w.LeftTop()
-	if dlen < 2 {
+	k := len(w.Dirs) - 1
+	if k < 1 {
 		w.Dirs[0].Resize(x, y, w.Width(), w.Height())
 		return
 	}
 	height := w.Height() / 2
 	hodd := w.Height() % 2
 
-	k := dlen - 1
 	width := w.Width() / k
-	for i, d := range w.Dirs[:dlen-1] {
-		d.Resize(x+width*i, y, width, height)
-	}
-
 	wodd := w.Width() % 2
-	w.Dirs[dlen-1].Resize(x, y+height, w.Width()+wodd, height+hodd)
+
+	w.Dirs[0].Resize(x, y, width, height)
+	w.Dirs[k].Resize(x, y+height, w.Width(), height+hodd)
+	if k < 2 {
+		return
+	}
+	for i, d := range w.Dirs[1 : k-1] {
+		d.Resize(x+width*(i+1), y, width, height)
+	}
+	w.Dirs[k-1].Resize(x+width*(k-1), y, width+wodd, height)
 }
 
 // LayoutTileBottom allocates to the tile bottom layout.
 func (w *Workspace) LayoutTileBottom() {
 	w.Layout = layoutTileBottom
-	dlen := len(w.Dirs)
 	x, y := w.LeftTop()
-	if dlen < 2 {
+	k := len(w.Dirs) - 1
+	if k < 1 {
 		w.Dirs[0].Resize(x, y, w.Width(), w.Height())
 		return
 	}
 	height := w.Height() / 2
+	hodd := w.Height() % 2
+
 	w.Dirs[0].Resize(x, y, w.Width(), height)
 
-	k := dlen - 1
 	width := w.Width() / k
-	hodd := w.Height() % 2
-	for i, d := range w.Dirs[1 : dlen-1] {
+	for i, d := range w.Dirs[1:k] {
 		d.Resize(x+width*i, y+height, width, height+hodd)
 	}
-
 	wodd := w.Width() % 2
-	w.Dirs[dlen-1].Resize(x+width*(k-1), y+height, width+wodd, height+hodd)
+	w.Dirs[k].Resize(x+width*(k-1), y+height, width+wodd, height+hodd)
 }
 
 // LayoutOneline allocates to the one line layout.
