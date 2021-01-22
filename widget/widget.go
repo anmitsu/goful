@@ -2,8 +2,6 @@
 package widget
 
 import (
-	"sync"
-
 	"github.com/anmitsu/goful/look"
 	"github.com/gdamore/tcell/v2"
 	"github.com/mattn/go-runewidth"
@@ -159,15 +157,6 @@ func SetBorder(v, h, ul, ur, ll, lr rune) {
 	vLine, hLine, ulCorner, urCorner, llCorner, lrCorner = v, h, ul, ur, ll, lr
 }
 
-var mutex sync.Mutex
-
-// Flush is to a terminal refresh with a single thread.
-func Flush() {
-	mutex.Lock()
-	screen.Show()
-	mutex.Unlock()
-}
-
 type (
 	// Keymap represents callback functions for the widget input event.
 	Keymap map[string]func()
@@ -287,6 +276,11 @@ func HideCursor() {
 // PollEvent polls input events.
 func PollEvent() tcell.Event {
 	return screen.PollEvent()
+}
+
+// Show setted cells.
+func Show() {
+	screen.Show()
 }
 
 // SetCells sets a string to cells in a window and returns the last x position.

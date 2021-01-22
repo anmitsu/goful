@@ -147,10 +147,10 @@ func (m *message) run() {
 		widget.SetCells(x, y, display, buf.Style)
 
 		m.display = true
-		widget.Flush()
+		widget.Show()
 		<-time.NewTimer(m.sec * time.Second).C
 		m.Clear()
-		widget.Flush()
+		widget.Show()
 		m.display = false
 	}
 }

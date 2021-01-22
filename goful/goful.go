@@ -110,6 +110,7 @@ func (g *Goful) Menu(name string) {
 // Run the goful client.
 func (g *Goful) Run() {
 	message.Info("Welcome to goful")
+	g.Workspace().ReloadAll()
 
 	go func() {
 		for {
@@ -117,11 +118,9 @@ func (g *Goful) Run() {
 		}
 	}()
 
-	g.Workspace().ReloadAll()
-	g.Draw()
-	widget.Flush()
-
 	for !g.exit {
+		g.Draw()
+		widget.Show()
 		select {
 		case ev := <-g.event:
 			g.eventHandler(ev)
@@ -130,8 +129,6 @@ func (g *Goful) Run() {
 		case callback := <-g.callback:
 			callback()
 		}
-		g.Draw()
-		widget.Flush()
 	}
 }
 

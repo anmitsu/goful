@@ -119,16 +119,13 @@ func (g *Goful) dialog(message string, options ...string) string {
 	dialog := &dialogMode{message, options, ""}
 	g.next = cmdline.New(dialog, g)
 
-	g.Draw()
-	widget.Flush()
-
 	for g.Next() != nil {
+		g.Draw()
+		widget.Show()
 		select {
 		case ev := <-g.event:
 			g.eventHandler(ev)
 		}
-		g.Draw()
-		widget.Flush()
 	}
 	g.next = tmp
 	return dialog.result

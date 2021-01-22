@@ -200,7 +200,7 @@ func (g *Goful) goWalk(walker *walker, dst string, src ...string) {
 	progress.Finish()
 
 	g.ResizeRelative(0, 0, 0, 2)
-	widget.Flush()
+	widget.Show()
 }
 
 func calcSizeCount(src ...string) (float64, int) {
@@ -508,7 +508,7 @@ func letCopy(srcfile, dstfile *os.File) error {
 			select {
 			case <-ticker.C:
 				progress.Draw()
-				widget.Flush()
+				widget.Show()
 			case <-quit:
 				return
 			}
