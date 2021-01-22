@@ -137,7 +137,7 @@ func (d *Directory) init4json() {
 func (d *Directory) Resize(x, y, width, height int) {
 	d.ListBox.Resize(x, y, width, height)
 	if d.finder != nil {
-		d.finder.Resize(x+1, y+d.Height()-1, d.Width()-1, 1)
+		d.finder.Resize(x, y+d.Height()-1, d.Width(), 1)
 		d.ResizeRelative(0, 0, 0, -1)
 	}
 }
@@ -145,7 +145,7 @@ func (d *Directory) Resize(x, y, width, height int) {
 // Finder starts a finder in the directory for filtering files.
 func (d *Directory) Finder() {
 	x, y := d.LeftTop()
-	d.finder = NewFinder(d, x+1, y+d.Height()-1, d.Width()-1, 1)
+	d.finder = NewFinder(d, x, y+d.Height()-1, d.Width(), 1)
 	d.ResizeRelative(0, 0, 0, -1)
 }
 
