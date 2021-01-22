@@ -15,7 +15,7 @@ func TestEventToString(t *testing.T) {
 	Init()
 	defer Fini()
 
-	fmt.Println("Exit by q")
+	fmt.Print("Exit by q; ")
 	for {
 		ev := PollEvent()
 		key := EventToString(ev)
@@ -24,7 +24,22 @@ func TestEventToString(t *testing.T) {
 		}
 		switch ev := ev.(type) {
 		case *tcell.EventKey:
-			fmt.Printf("%c %s; ", ev.Rune(), key)
+			fmt.Printf("key %d rune %c name %s -> %s; ",
+				ev.Key(), ev.Rune(), ev.Name(), key)
+		}
+	}
+}
+
+func testWait() {
+	for {
+		ev := PollEvent()
+		switch EventToString(ev) {
+		case "q":
+			return
+		case "C-c":
+			return
+		case "C-m":
+			return
 		}
 	}
 }
@@ -54,7 +69,7 @@ func TestGauge(t *testing.T) {
 		Flush()
 		<-ticker.C
 	}
-	PollEvent()
+	testWait()
 }
 
 func TestListBox(t *testing.T) {
@@ -116,7 +131,7 @@ func TestListBox(t *testing.T) {
 	lb3.Draw()
 	lb4.Draw()
 	Flush()
-	PollEvent()
+	testWait()
 }
 
 func TestInsertBytes(t *testing.T) {
