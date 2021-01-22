@@ -112,7 +112,7 @@ func setDefault() {
 	executable = d.Foreground(tcell.ColorRed).Bold(true)
 	marked = d.Foreground(tcell.ColorYellow).Bold(true)
 	finder = d.Foreground(tcell.ColorBlack).Background(tcell.ColorAqua)
-	progress = d.Background(tcell.ColorBlue)
+	progress = d.Background(tcell.ColorNavy)
 }
 
 func setMidnight() {
@@ -156,7 +156,7 @@ func setBlack() {
 	executable = d.Foreground(tcell.ColorRed).Background(bg).Bold(true)
 	marked = d.Foreground(tcell.ColorYellow).Background(bg).Bold(true)
 	finder = d.Foreground(tcell.ColorBlack).Background(tcell.ColorAqua)
-	progress = d.Foreground(tcell.ColorWhite).Background(tcell.ColorBlue)
+	progress = d.Foreground(tcell.ColorWhite).Background(tcell.ColorNavy)
 }
 
 func setWhite() {
@@ -178,5 +178,5 @@ func setWhite() {
 	executable = d.Foreground(tcell.ColorRed).Background(bg).Bold(true)
 	marked = d.Foreground(tcell.ColorOlive).Background(bg).Bold(true)
 	finder = d.Foreground(tcell.ColorBlack).Background(tcell.ColorAqua)
-	progress = d.Foreground(tcell.ColorWhite).Background(tcell.ColorBlue)
+	progress = d.Foreground(tcell.ColorWhite).Background(tcell.ColorNavy)
 }

@@ -93,7 +93,6 @@ func (w *progressWindow) drawTask() {
 	size := utils.FormatSize(w.task.Size())
 
 	x, y := w.LeftTop()
-	x++
 	name := w.task.Name()
 	s := fmt.Sprintf("Progress %d/%d (%sB): %s", w.done+1, w.taskCount, size, name)
 	s = runewidth.Truncate(s, w.Width(), "...")
