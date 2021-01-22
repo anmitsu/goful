@@ -74,7 +74,7 @@ func (w *Menu) Resize(x, y, width, height int) {
 	if max := height / 2; h > max {
 		h = max
 	}
-	w.ListBox.Resize(x, height-h, width, h)
+	w.ListBox.Resize(x, height-h-1, width, h)
 }
 
 // Exec executes a menu item on the cursor and exits the menu.
