@@ -220,24 +220,18 @@ var keyToSting = map[tcell.Key]string{
 
 // EventToString converts the keyboard intput event to string.
 // A meta key input event returns prefixed `M-'.
-func EventToString(ev tcell.Event) string {
+func EventToString(ev *tcell.EventKey) string {
 	const meta = "M-"
-	switch ev := ev.(type) {
-	case *tcell.EventKey:
-		if ev.Modifiers() == tcell.ModAlt {
-			if ev.Key() < 128 {
-				return meta + keyToSting[ev.Key()]
-			}
-			return meta + string(ev.Rune())
+	if ev.Modifiers() == tcell.ModAlt {
+		if ev.Key() < 128 {
+			return meta + keyToSting[ev.Key()]
 		}
-		if key, ok := keyToSting[ev.Key()]; ok {
-			return key
-		}
-		return string(ev.Rune())
-	case *tcell.EventResize:
-		return "resize"
+		return meta + string(ev.Rune())
 	}
-	return ""
+	if key, ok := keyToSting[ev.Key()]; ok {
+		return key
+	}
+	return string(ev.Rune())
 }
 
 var screen tcell.Screen

@@ -137,13 +137,13 @@ func (g *Goful) syncCallback(callback func()) {
 }
 
 func (g *Goful) eventHandler(ev tcell.Event) {
-	if key := widget.EventToString(ev); key != "" {
-		if key == "resize" {
-			width, height := ev.(*tcell.EventResize).Size()
+	switch ev := ev.(type) {
+	case *tcell.EventKey:
+		key := widget.EventToString(ev)
+		g.Input(key)
+	case *tcell.EventResize:
+		width, height := ev.Size()
 			g.Resize(0, 0, width, height)
-		} else {
-			g.Input(key)
-		}
 	}
 }
 
