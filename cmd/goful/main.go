@@ -134,7 +134,7 @@ func config(g *goful.Goful) {
 	g.AddKeymap("V", func() { g.Menu("view") })
 
 	menu.Add("look",
-		"default      ", "D", func() { look.Set("default") },
+		"default      ", "d", func() { look.Set("default") },
 		"midnight     ", "n", func() { look.Set("midnight") },
 		"black        ", "b", func() { look.Set("black") },
 		"white        ", "w", func() { look.Set("white") },
@@ -347,6 +347,7 @@ func finderKeymap(w *filer.Finder) widget.Keymap {
 		"M-p":       func() { w.MoveHistory(1) },
 		"M-n":       func() { w.MoveHistory(-1) },
 		"C-g":       func() { w.Exit() },
+		"C-[":       func() { w.Exit() },
 	}
 }
 
@@ -370,6 +371,7 @@ func cmdlineKeymap(w *cmdline.Cmdline) widget.Keymap {
 		"C-i":       func() { w.StartCompletion() },
 		"C-m":       func() { w.Run() },
 		"C-g":       func() { w.Exit() },
+		"C-[":       func() { w.Exit() },
 		"C-n":       func() { w.History.CursorDown() },
 		"C-p":       func() { w.History.CursorUp() },
 		"down":      func() { w.History.CursorDown() },
@@ -409,6 +411,7 @@ func completionKeymap(w *cmdline.Completion) widget.Keymap {
 		"M-p":   func() { w.Scroll(-1) },
 		"C-m":   func() { w.InsertCompletion() },
 		"C-g":   func() { w.Exit() },
+		"C-[":   func() { w.Exit() },
 	}
 }
 
@@ -424,5 +427,6 @@ func menuKeymap(w *menu.Menu) widget.Keymap {
 		"M-<":  func() { w.MoveTop() },
 		"C-m":  func() { w.Exec() },
 		"C-g":  func() { w.Exit() },
+		"C-[":  func() { w.Exit() },
 	}
 }
