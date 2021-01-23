@@ -24,56 +24,56 @@ Goful is a CUI file manager implemented by Go.
 
 ## Usage
 
-| key            | function |
------------------|-------
-| C-n, down, j   | Move cursor down |
-| C-p, up, k     | Move cursor up |
-| C-a, home, ^   | Move cursor top |
-| C-e, end, $    | Move cursor bottom |
-| C-f, C-i, right, l| Move cursor right |
-| C-b, left, h   | Move cursor left |
-| C-d            | More move cursor down |
-| C-u            | More move cursor up |
-| M-v, pgdn      | Page down |
-| M-p, pgup      | Page up |
-| M-n            | Scroll down |
-| M-p            | Scroll up |
-| C-h, backspace | Change to upper directory |
-| ~              | Change to home directory |
-| \              | Change to root directory |
-| w              | Change to neighbor directory |
-| C-o            | New directory window |
-| C-w            | Close directory window |
-| M-f            | Move next workspace |
-| M-b            | Move previous workspace |
-| M-C-o          | New workspace |
-| M-C-w          | Close workspace |
-| space          | Mark file on cursor |
-| C-space        | Toggle mark all files |
-| C-l            | Reload files |
-| C-m            | Open |
-| s              | Sort menu |
-| V              | View menu |
-| b              | Bookmark menu |
-| e              | Editor menu |
-| M-x            | Command menu |
-| x              | External command menu |
-| A              | Archive menu |
-| f, /           | Find files |
-| :              | Start shell mode |
-| ;              | Start shell suspend mode |
-| n              | Create new file |
-| K              | Create new directory |
-| c              | Copy file |
-| m              | Move file |
-| r              | Rename file |
-| R              | Bulk rename by regexp |
-| D              | Remove file |
-| d              | Change directory |
-| g              | Glob file |
-| G              | Glob directory |
-| C-g, esc       | Cancel |
-| q, Q           | Quit application |
+| key                  | function |
+-----------------------|-----------
+| `C-n`, `down`, `j`   | Move cursor down |
+| `C-p`, `up`, `k`     | Move cursor up |
+| `C-a`, `home`, `^`   | Move cursor top |
+| `C-e`, `end`, `$`    | Move cursor bottom |
+| `C-f`, `C-i`, `right`, `l`| Move cursor right |
+| `C-b`, `left`, `h`   | Move cursor left |
+| `C-d`                | More move cursor down |
+| `C-u`                | More move cursor up |
+| `M-v`, `pgdn`        | Page down |
+| `M-p`, `pgup`        | Page up |
+| `M-n`                | Scroll down |
+| `M-p`                | Scroll up |
+| `C-h`, `backspace`   | Change to upper directory |
+| `~`                  | Change to home directory |
+| `\`                  | Change to root directory |
+| `w`                  | Change to neighbor directory |
+| `C-o`                | New directory window |
+| `C-w`                | Close directory window |
+| `M-f`                | Move next workspace |
+| `M-b`                | Move previous workspace |
+| `M-C-o`              | New workspace |
+| `M-C-w`              | Close workspace |
+| `space`              | Mark file on cursor |
+| `C-space`            | Toggle mark all files |
+| `C-l`                | Reload files |
+| `C-m`                | Open |
+| `s`                  | Sort menu |
+| `V`                  | View menu |
+| `b`                  | Bookmark menu |
+| `e`                  | Editor menu |
+| `M-x`                | Command menu |
+| `x`                  | External command menu |
+| `A`                  | Archive menu |
+| `f`, `/`             | Find files |
+| `:`                  | Start shell mode |
+| `;`                  | Start shell suspend mode |
+| `n`                  | Create new file |
+| `K`                  | Create new directory |
+| `c`                  | Copy file |
+| `m`                  | Move file |
+| `r`                  | Rename file |
+| `R`                  | Bulk rename by regexp |
+| `D`                  | Remove file |
+| `d`                  | Change directory |
+| `g`                  | Glob file |
+| `G`                  | Glob directory |
+| `C-g`, `esc`         | Cancel |
+| `q`, `Q`             | Quit application |
 
 ### For more see [cmd/goful/main.go](cmd/goful/main.go)
 
