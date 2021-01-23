@@ -46,49 +46,33 @@ func newHighlightContent(name, highlight string) *highlightContent {
 func (e *highlightContent) Name() string { return e.name }
 
 func (e *highlightContent) Draw(x, y, width int, focus bool) {
+	style := look.Default()
+	if focus {
+		style = style.Reverse(true)
+	}
 	if e.highlight == "" {
 		s := runewidth.Truncate(e.Name(), width, "...")
 		s = runewidth.FillRight(s, width)
-		style := look.Default()
-		if focus {
-			style = style.Reverse(true)
-		}
 		SetCells(x, y, s, style)
 		return
 	}
 
-	for _, s := range utils.SplitWithSep(e.name, e.highlight) {
-		s = runewidth.Truncate(s, width, "...")
-		if width < runewidth.StringWidth(s) {
-			width -= runewidth.StringWidth(s)
-			style := look.Default()
-			if focus {
-				style = style.Reverse(true)
-			}
-			x = SetCells(x, y, s, style)
-			break
-		}
-		width -= runewidth.StringWidth(s)
-		if s != e.highlight {
-			style := look.Default()
-			if focus {
-				style = style.Reverse(true)
-			}
-			x = SetCells(x, y, s, style)
-		} else {
+	name := runewidth.Truncate(e.Name(), width, "...")
+	for _, s := range utils.SplitWithSep(name, e.highlight) {
+		if s == e.highlight {
 			style := look.Highlight()
 			if focus {
 				style = style.Reverse(true)
 			}
 			x = SetCells(x, y, s, style)
+		} else {
+			x = SetCells(x, y, s, style)
 		}
 	}
-	s := runewidth.FillRight("", width)
-	style := look.Default()
-	if focus {
-		style = style.Reverse(true)
+	if w := runewidth.StringWidth(e.Name()); w < width {
+		s := runewidth.FillRight("", width-w)
+		SetCells(x, y, s, style)
 	}
-	SetCells(x, y, s, style)
 }
 
 // ListBox is a scrollable window listing contents.
