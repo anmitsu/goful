@@ -218,7 +218,7 @@ func (f *Filer) Input(key string) {
 		if callback, ok := finderKeymap(finder)[key]; ok {
 			callback()
 			return
-		} else if utf8.RuneCountInString(key) == 1 {
+		} else if utf8.RuneCountInString(key) == 1 && key != " " {
 			r, _ := utf8.DecodeRuneInString(key)
 			finder.InsertChar(r)
 			return

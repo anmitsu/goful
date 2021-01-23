@@ -5,7 +5,6 @@ import (
 	"strings"
 
 	"github.com/anmitsu/goful/look"
-	"github.com/anmitsu/goful/message"
 	"github.com/anmitsu/goful/widget"
 	"github.com/mattn/go-runewidth"
 )
@@ -92,7 +91,6 @@ func (f *Finder) find(callback func(name string)) {
 	}
 	re, err := regexp.Compile(expr)
 	if err != nil {
-		message.Error(err)
 		return
 	}
 
