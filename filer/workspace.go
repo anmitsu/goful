@@ -246,8 +246,8 @@ func (w *Workspace) LayoutTileBottom() {
 	w.Dirs[k].Resize(x+width*(k-1), y+height, width+wodd, height+hodd)
 }
 
-// LayoutOneline allocates to the one line layout.
-func (w *Workspace) LayoutOneline() {
+// LayoutOnerow allocates to the one line layout.
+func (w *Workspace) LayoutOnerow() {
 	w.Layout = layoutOneline
 	x, y := w.LeftTop()
 	k := len(w.Dirs)
@@ -290,7 +290,7 @@ func (w *Workspace) allocate() {
 	case layoutTileBottom:
 		w.LayoutTileBottom()
 	case layoutOneline:
-		w.LayoutOneline()
+		w.LayoutOnerow()
 	case layoutOneColumn:
 		w.LayoutOnecolumn()
 	case layoutFullscreen:

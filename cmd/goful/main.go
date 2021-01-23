@@ -111,28 +111,28 @@ func config(g *goful.Goful) {
 	)
 	g.AddKeymap("s", func() { g.Menu("sort") })
 
-	menu.Add("view-layout-look",
-		"view menu    ", "v", func() { g.Menu("view") },
+	menu.Add("view",
+		"stat menu    ", "s", func() { g.Menu("stat") },
 		"layout menu  ", "l", func() { g.Menu("layout") },
 		"look menu    ", "L", func() { g.Menu("look") },
 	)
-	g.AddKeymap("V", func() { g.Menu("view-layout-look") })
+	g.AddKeymap("V", func() { g.Menu("view") })
 
 	menu.Add("layout",
 		"tile       ", "t", func() { g.Workspace().LayoutTile() },
 		"tile-top   ", "T", func() { g.Workspace().LayoutTileTop() },
 		"tile-bottom", "b", func() { g.Workspace().LayoutTileBottom() },
-		"oneline    ", "l", func() { g.Workspace().LayoutOneline() },
-		"onecolumn  ", "c", func() { g.Workspace().LayoutOnecolumn() },
+		"one-row    ", "r", func() { g.Workspace().LayoutOnerow() },
+		"one-column ", "c", func() { g.Workspace().LayoutOnecolumn() },
 		"fullscreen ", "f", func() { g.Workspace().LayoutFullscreen() },
 	)
 
-	menu.Add("view",
+	menu.Add("stat",
 		"toggle size  ", "s", func() { filer.ToggleSizeView() },
 		"toggle perm  ", "p", func() { filer.TogglePermView() },
 		"toggle time  ", "t", func() { filer.ToggleTimeView() },
-		"all state    ", "1", func() { filer.SetStatView(true, true, true) },
-		"no state     ", "0", func() { filer.SetStatView(false, false, false) },
+		"all stat     ", "1", func() { filer.SetStatView(true, true, true) },
+		"no stat      ", "0", func() { filer.SetStatView(false, false, false) },
 	)
 
 	menu.Add("look",
