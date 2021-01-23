@@ -111,6 +111,13 @@ func config(g *goful.Goful) {
 	)
 	g.AddKeymap("s", func() { g.Menu("sort") })
 
+	menu.Add("view-layout-look",
+		"view menu    ", "v", func() { g.Menu("view") },
+		"layout menu  ", "l", func() { g.Menu("layout") },
+		"look menu    ", "L", func() { g.Menu("look") },
+	)
+	g.AddKeymap("V", func() { g.Menu("view-layout-look") })
+
 	menu.Add("layout",
 		"tile       ", "t", func() { g.Workspace().LayoutTile() },
 		"tile-top   ", "T", func() { g.Workspace().LayoutTileTop() },
@@ -119,7 +126,6 @@ func config(g *goful.Goful) {
 		"onecolumn  ", "c", func() { g.Workspace().LayoutOnecolumn() },
 		"fullscreen ", "f", func() { g.Workspace().LayoutFullscreen() },
 	)
-	g.AddKeymap("l", func() { g.Menu("layout") })
 
 	menu.Add("view",
 		"toggle size  ", "s", func() { filer.ToggleSizeView() },
@@ -128,7 +134,6 @@ func config(g *goful.Goful) {
 		"all state    ", "1", func() { filer.SetStatView(true, true, true) },
 		"no state     ", "0", func() { filer.SetStatView(false, false, false) },
 	)
-	g.AddKeymap("V", func() { g.Menu("view") })
 
 	menu.Add("look",
 		"default      ", "d", func() { look.Set("default") },
@@ -139,7 +144,6 @@ func config(g *goful.Goful) {
 		"ul border    ", "u", func() { g.SetBorderStyle(widget.ULBorder) },
 		"no border    ", "0", func() { g.SetBorderStyle(widget.NoBorder) },
 	)
-	g.AddKeymap("L", func() { g.Menu("look") })
 
 	menu.Add("command",
 		"copy         ", "c", func() { g.Copy() },
@@ -195,7 +199,7 @@ func config(g *goful.Goful) {
 	)
 	g.AddKeymap("A", func() { g.Menu("archive") })
 
-	menu.Add("jump",
+	menu.Add("bookmark",
 		"/etc       ", "e", func() { g.Dir().Chdir("/etc") },
 		"/usr       ", "u", func() { g.Dir().Chdir("/usr") },
 		"/media     ", "M", func() { g.Dir().Chdir("/media") },
@@ -206,7 +210,7 @@ func config(g *goful.Goful) {
 		"~/Pictures ", "p", func() { g.Dir().Chdir("~/Pictures") },
 		"~/Videos   ", "v", func() { g.Dir().Chdir("~/Videos") },
 	)
-	g.AddKeymap("j", func() { g.Menu("jump") })
+	g.AddKeymap("b", func() { g.Menu("bookmark") })
 
 	menu.Add("editor",
 		"vscode        ", "c", func() { g.Spawn("code %f %&") },
@@ -279,17 +283,18 @@ func config(g *goful.Goful) {
 
 func filerKeymap(g *goful.Goful) widget.Keymap {
 	return widget.Keymap{
-		"M-C-c":     func() { g.CreateWorkspace() },
+		"M-C-o":     func() { g.CreateWorkspace() },
 		"M-C-w":     func() { g.CloseWorkspace() },
 		"M-f":       func() { g.MoveWorkspace(1) },
 		"M-b":       func() { g.MoveWorkspace(-1) },
-		"M-c":       func() { g.Workspace().CreateDir() },
+		"C-o":       func() { g.Workspace().CreateDir() },
 		"C-w":       func() { g.Workspace().CloseDir() },
 		"C-l":       func() { g.Workspace().ReloadAll() },
 		"C-f":       func() { g.Workspace().MoveFocus(1) },
 		"C-b":       func() { g.Workspace().MoveFocus(-1) },
 		"right":     func() { g.Workspace().MoveFocus(1) },
 		"left":      func() { g.Workspace().MoveFocus(-1) },
+		"C-i":       func() { g.Workspace().MoveFocus(1) },
 		"F":         func() { g.Workspace().SwapNextDir() },
 		"B":         func() { g.Workspace().SwapPrevDir() },
 		"w":         func() { g.Workspace().ChdirNeighbor() },
@@ -314,9 +319,9 @@ func filerKeymap(g *goful.Goful) widget.Keymap {
 		"pgdn":      func() { g.Dir().PageDown() },
 		"pgup":      func() { g.Dir().PageUp() },
 		" ":         func() { g.Dir().ToggleMark() },
-		"M-*":       func() { g.Dir().ToggleMarkAll() },
+		"C-space":   func() { g.Dir().ToggleMarkAll() },
 		"C-g":       func() { g.Dir().Reset() },
-		"C-[":       func() { g.Dir().Reset() },
+		"C-[":       func() { g.Dir().Reset() }, // C-[ means ESC
 		"f":         func() { g.Dir().Finder() },
 		"/":         func() { g.Dir().Finder() },
 		"q":         func() { g.Quit() },
@@ -375,10 +380,12 @@ func cmdlineKeymap(w *cmdline.Cmdline) widget.Keymap {
 		"up":        func() { w.History.CursorUp() },
 		"C-v":       func() { w.History.PageDown() },
 		"M-v":       func() { w.History.PageUp() },
+		"pgdn":      func() { w.History.PageDown() },
+		"pgup":      func() { w.History.PageUp() },
 		"M-<":       func() { w.History.MoveTop() },
 		"M->":       func() { w.History.MoveBottom() },
-		"pgup":      func() { w.History.MoveTop() },
-		"pgdn":      func() { w.History.MoveBottom() },
+		"home":      func() { w.History.MoveTop() },
+		"end":       func() { w.History.MoveBottom() },
 		"M-n":       func() { w.History.Scroll(1) },
 		"M-p":       func() { w.History.Scroll(-1) },
 		"C-x":       func() { w.History.Delete() },
