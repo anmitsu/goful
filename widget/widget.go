@@ -258,6 +258,9 @@ func Fini() {
 
 // Size returns the tcell screen width and height.
 func Size() (width, height int) {
+	if screen == nil {
+		return 0, 0
+	}
 	return screen.Size()
 }
 
