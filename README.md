@@ -24,12 +24,14 @@ Goful is a CUI file manager implemented by Go.
 
 | key            | function |
 -----------------|-------
-| C-n, down      | Move cursor down |
-| C-p, up        | Move cursor up |
-| C-a, home      | Move cursor top |
-| C-e, end       | Move cursor bottom |
-| C-f, C-i, right| Move cursor right |
-| C-b, left      | Move cursor left |
+| C-n, down, j   | Move cursor down |
+| C-p, up, k     | Move cursor up |
+| C-a, home, ^   | Move cursor top |
+| C-e, end, $    | Move cursor bottom |
+| C-f, C-i, right, l| Move cursor right |
+| C-b, left, h   | Move cursor left |
+| C-d            | More move cursor down |
+| C-u            | More move cursor up |
 | M-v, pgdn      | Page down |
 | M-p, pgup      | Page up |
 | M-n            | Scroll down |
@@ -56,10 +58,10 @@ Goful is a CUI file manager implemented by Go.
 | x              | External command menu |
 | A              | Archive menu |
 | f, /           | Find files |
-| h              | Start shell mode |
-| H              | Start shell suspend mode |
+| :              | Start shell mode |
+| ;              | Start shell suspend mode |
 | n              | Create new file |
-| k              | Create new directory |
+| K              | Create new directory |
 | c              | Copy file |
 | m              | Move file |
 | r              | Rename file |
