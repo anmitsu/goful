@@ -195,6 +195,7 @@ var keyToSting = map[tcell.Key]string{
 	tcell.KeyCtrlLeftSq:     "C-[",
 	tcell.KeyCtrlBackslash:  "C-\\",
 	tcell.KeyCtrlRightSq:    "C-]",
+	tcell.KeyCtrlCarat:      "C-^",
 	tcell.KeyCtrlUnderscore: "C-_",
 	tcell.KeyBackspace2:     "backspace",
 	tcell.KeyF1:             "f1",
