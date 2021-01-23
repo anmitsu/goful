@@ -20,6 +20,8 @@ Goful is a CUI file manager implemented by Go.
 
 ![demo](.github/demo.gif)
 
+### For more [demos](.github/demo.md)
+
 ## Usage
 
 | key            | function |
@@ -51,7 +53,7 @@ Goful is a CUI file manager implemented by Go.
 | C-l            | Reload files |
 | C-m            | Open |
 | s              | Sort menu |
-| V              | View, layout, look menus |
+| V              | View menu |
 | b              | Bookmark menu |
 | e              | Editor menu |
 | M-x            | Command menu |
