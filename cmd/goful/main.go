@@ -181,19 +181,32 @@ func config(g *goful.Goful) {
 	)
 	g.AddKeymap("x", func() { g.Menu("command") })
 
-	menu.Add("external-command",
-		"copy %m to %D2    ", "c", func() { g.Shell("cp -vai %m %D2") },
-		"move %m to %D2    ", "m", func() { g.Shell("mv -vi %m %D2") },
-		"remove %m files   ", "D", func() { g.Shell("rm -vR %m") },
-		"make directory    ", "k", func() { g.Shell("mkdir -vp ./") },
-		"create newfile    ", "n", func() { g.Shell("touch ./") },
-		"time copy %f to %m", "T", func() { g.Shell("touch -r %f %m") },
-		"change mode %m    ", "M", func() { g.Shell("chmod 644 %m", -3) },
-		"move (rename) %f  ", "r", func() { g.Shell("mv -vi %f " + g.File().Name()) },
-		"bulk rename %m    ", "R", func() { g.Shell(`rename -v "s///" %m`, -6) },
-		"find . -name      ", "f", func() { g.Shell(`find . -name "*"`, -1) },
-		"archives menu     ", "A", func() { g.Menu("archive") },
-	)
+	if runtime.GOOS == "windows" {
+		menu.Add("external-command",
+			"copy %~f to %~D2 ", "c", func() { g.Shell("robocopy /e %~f %~D2") },
+			"move %~f to %~D2 ", "m", func() { g.Shell("move /-y %~f %~D2") },
+			"del /s %~m       ", "d", func() { g.Shell("del /s %~m") },
+			"rd /s /q %~m     ", "D", func() { g.Shell("rd /s /q %~m") },
+			"make directory   ", "k", func() { g.Shell("mkdir ") },
+			"create newfile   ", "n", func() { g.Shell("copy nul ") },
+			"move (rename) %f ", "r", func() { g.Shell("move /-y %~f ./") },
+			"where . *        ", "w", func() { g.Shell("where . *") },
+		)
+	} else {
+		menu.Add("external-command",
+			"copy %m to %D2    ", "c", func() { g.Shell("cp -vai %m %D2") },
+			"move %m to %D2    ", "m", func() { g.Shell("mv -vi %m %D2") },
+			"remove %m files   ", "D", func() { g.Shell("rm -vR %m") },
+			"make directory    ", "k", func() { g.Shell("mkdir -vp ./") },
+			"create newfile    ", "n", func() { g.Shell("touch ./") },
+			"time copy %f to %m", "T", func() { g.Shell("touch -r %f %m") },
+			"change mode %m    ", "M", func() { g.Shell("chmod 644 %m", -3) },
+			"move (rename) %f  ", "r", func() { g.Shell("mv -vi %f " + g.File().Name()) },
+			"bulk rename %m    ", "R", func() { g.Shell(`rename -v "s///" %m`, -6) },
+			"find . -name      ", "f", func() { g.Shell(`find . -name "*"`, -1) },
+			"archives menu     ", "A", func() { g.Menu("archive") },
+		)
+	}
 	g.AddKeymap("X", func() { g.Menu("external-command") })
 
 	menu.Add("archive",
