@@ -33,7 +33,7 @@ recursive `G`).
 Directory windows position are allocated by layouts of tile, tile-top,
 tile-bottom, one-row, one-column and fullscreen.
 
-View menu (default `V`), run layout menu and select layout:
+View menu (default `v`), run layout menu and select layout:
 
 ![demo_layout](demo_layout.gif)
 

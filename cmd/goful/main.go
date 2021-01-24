@@ -65,11 +65,33 @@ func config(g *goful.Goful) {
 
 	// Setup open command for C-m (when the enter key is pressed)
 	// The macro %f means expanded to a file name, for more see (spawn.go)
-	if runtime.GOOS == "windows" {
-		g.AddKeymap("C-m", func() { g.Spawn("explorer %~f %&") })
-	} else {
-		g.AddKeymap("C-m", func() { g.Spawn("xdg-open %f %&") })
+	opener := "xdg-open %f %&"
+	switch runtime.GOOS {
+	case "windows":
+		opener = "explorer %~f %&"
+	case "darwin":
+		opener = "open %f %&"
 	}
+	g.MergeKeymap(widget.Keymap{
+		"C-m": func() { g.Spawn(opener) },
+		"o":   func() { g.Spawn(opener) },
+	})
+
+	// Setup pager by $PAGER
+	pager := os.Getenv("PAGER")
+	if pager == "" {
+		if runtime.GOOS == "windows" {
+			pager = "more"
+		} else {
+			pager = "less"
+		}
+	}
+	if runtime.GOOS == "windows" {
+		pager += " %~f"
+	} else {
+		pager += " %f"
+	}
+	g.AddKeymap("i", func() { g.Spawn(pager) })
 
 	// Setup a shell and a terminal to execute external commands.
 	// The shell is called when execute on background by the macro %&.
@@ -92,8 +114,7 @@ func config(g *goful.Goful) {
 			if strings.Contains(os.Getenv("TERM"), "screen") { // such as screen and tmux
 				return []string{"tmux", "new-window", "-n", cmd, cmd + tail}
 			}
-			// To execute bash in gnome-terminal of a new window.
-			// Opts -x instead of -- to open in a new tab.
+			// To execute bash in gnome-terminal of a new window or tab.
 			return []string{"gnome-terminal", "--", "bash", "-c", cmd + tail}
 		})
 	}
@@ -116,7 +137,7 @@ func config(g *goful.Goful) {
 		"layout menu  ", "l", func() { g.Menu("layout") },
 		"look menu    ", "L", func() { g.Menu("look") },
 	)
-	g.AddKeymap("V", func() { g.Menu("view") })
+	g.AddKeymap("v", func() { g.Menu("view") })
 
 	menu.Add("layout",
 		"tile       ", "t", func() { g.Workspace().LayoutTile() },
@@ -158,7 +179,7 @@ func config(g *goful.Goful) {
 		"glob         ", "g", func() { g.Glob() },
 		"globdir      ", "G", func() { g.Globdir() },
 	)
-	g.AddKeymap("M-x", func() { g.Menu("command") })
+	g.AddKeymap("x", func() { g.Menu("command") })
 
 	menu.Add("external-command",
 		"copy %m to %D2    ", "c", func() { g.Shell("cp -vai %m %D2") },
@@ -173,7 +194,7 @@ func config(g *goful.Goful) {
 		"find . -name      ", "f", func() { g.Shell(`find . -name "*"`, -1) },
 		"archives menu     ", "A", func() { g.Menu("archive") },
 	)
-	g.AddKeymap("x", func() { g.Menu("external-command") })
+	g.AddKeymap("X", func() { g.Menu("external-command") })
 
 	menu.Add("archive",
 		"zip     ", "z", func() { g.Shell(`zip -roD %x.zip %m`, -7) },
@@ -197,19 +218,28 @@ func config(g *goful.Goful) {
 		"find . *.txz extract", "5", func() { g.Shell(`find . -name "*.txz" -type f -prune -print0 | xargs -n1 -0 tar xvfJ -C ./`) },
 		"find . *.rar extract", "6", func() { g.Shell(`find . -name "*.rar" -type f -prune -print0 | xargs -n1 -0 unrar x -C ./`) },
 	)
-	g.AddKeymap("A", func() { g.Menu("archive") })
 
 	menu.Add("bookmark",
-		"/etc       ", "e", func() { g.Dir().Chdir("/etc") },
-		"/usr       ", "u", func() { g.Dir().Chdir("/usr") },
-		"/media     ", "M", func() { g.Dir().Chdir("/media") },
 		"~/Desktop  ", "t", func() { g.Dir().Chdir("~/Desktop") },
-		"~/Documents", "D", func() { g.Dir().Chdir("~/Documents") },
+		"~/Documents", "c", func() { g.Dir().Chdir("~/Documents") },
 		"~/Downloads", "d", func() { g.Dir().Chdir("~/Downloads") },
 		"~/Music    ", "m", func() { g.Dir().Chdir("~/Music") },
 		"~/Pictures ", "p", func() { g.Dir().Chdir("~/Pictures") },
 		"~/Videos   ", "v", func() { g.Dir().Chdir("~/Videos") },
 	)
+	if runtime.GOOS == "windows" {
+		menu.Add("bookmark",
+			"C:/", "C", func() { g.Dir().Chdir("C:/") },
+			"D:/", "D", func() { g.Dir().Chdir("D:/") },
+			"E:/", "E", func() { g.Dir().Chdir("E:/") },
+		)
+	} else {
+		menu.Add("bookmark",
+			"/etc   ", "e", func() { g.Dir().Chdir("/etc") },
+			"/usr   ", "u", func() { g.Dir().Chdir("/usr") },
+			"/media ", "x", func() { g.Dir().Chdir("/media") },
+		)
+	}
 	g.AddKeymap("b", func() { g.Menu("bookmark") })
 
 	menu.Add("editor",
@@ -220,62 +250,54 @@ func config(g *goful.Goful) {
 	g.AddKeymap("e", func() { g.Menu("editor") })
 
 	menu.Add("image",
+		"default    ", "x", func() { g.Spawn(opener) },
 		"eog        ", "e", func() { g.Spawn("eog %f %&") },
 		"gimp       ", "g", func() { g.Spawn("gimp %m %&") },
-		"xdg-open   ", "x", func() { g.Spawn("xdg-open %f %&") },
 	)
 
 	menu.Add("media",
+		"default ", "x", func() { g.Spawn(opener) },
 		"mpv     ", "m", func() { g.Spawn("mpv %f") },
 		"vlc     ", "v", func() { g.Spawn("vlc %f %&") },
-		"xdg-open", "x", func() { g.Spawn("xdg-open %f %&") },
 	)
 
-	g.AddKeymap("v", func() { g.Spawn("less %f") })
+	associate := map[string]func(){
+		".dir":  func() { g.Dir().EnterDir() },
+		".exec": func() { g.Shell(" ./" + g.File().Name()) },
+
+		".zip": func() { g.Shell("unzip %f -d %D") },
+		".tar": func() { g.Shell("tar xvf %f -C %D") },
+		".gz":  func() { g.Shell("tar xvfz %f -C %D") },
+		".tgz": func() { g.Shell("tar xvfz %f -C %D") },
+		".bz2": func() { g.Shell("tar xvfj %f -C %D") },
+		".xz":  func() { g.Shell("tar xvfJ %f -C %D") },
+		".txz": func() { g.Shell("tar xvfJ %f -C %D") },
+		".rar": func() { g.Shell("unrar x %f -C %D") },
+
+		".py": func() { g.Shell("python %f") },
+		".rb": func() { g.Shell("ruby %f") },
+		".js": func() { g.Shell("node %f") },
+		".go": func() { g.Shell("go run %f") },
+
+		".jpg":  func() { g.Menu("image") },
+		".jpeg": func() { g.Menu("image") },
+		".gif":  func() { g.Menu("image") },
+		".png":  func() { g.Menu("image") },
+		".bmp":  func() { g.Menu("image") },
+
+		".avi":  func() { g.Menu("media") },
+		".mp4":  func() { g.Menu("media") },
+		".mkv":  func() { g.Menu("media") },
+		".wmv":  func() { g.Menu("media") },
+		".flv":  func() { g.Menu("media") },
+		".mp3":  func() { g.Menu("media") },
+		".flac": func() { g.Menu("media") },
+		".tta":  func() { g.Menu("media") },
+	}
 
 	g.MergeExtmap(widget.Extmap{
-		"C-m": { // associates by file types with the enter key event
-			".dir":  func() { g.Dir().EnterDir() },
-			".exec": func() { g.Shell(" ./" + g.File().Name()) },
-
-			".zip": func() { g.Shell("unzip %f -d %D") },
-			".tar": func() { g.Shell("tar xvf %f -C %D") },
-			".gz":  func() { g.Shell("tar xvfz %f -C %D") },
-			".tgz": func() { g.Shell("tar xvfz %f -C %D") },
-			".bz2": func() { g.Shell("tar xvfj %f -C %D") },
-			".xz":  func() { g.Shell("tar xvfJ %f -C %D") },
-			".txz": func() { g.Shell("tar xvfJ %f -C %D") },
-			".rar": func() { g.Shell("unrar x %f -C %D") },
-
-			".py": func() { g.Shell("python %f") },
-			".rb": func() { g.Shell("ruby %f") },
-			".js": func() { g.Shell("node %f") },
-			".go": func() { g.Shell("go run %f") },
-
-			".jpg":  func() { g.Menu("image") },
-			".jpeg": func() { g.Menu("image") },
-			".gif":  func() { g.Menu("image") },
-			".png":  func() { g.Menu("image") },
-			".bmp":  func() { g.Menu("image") },
-
-			".avi":  func() { g.Menu("media") },
-			".mp4":  func() { g.Menu("media") },
-			".mkv":  func() { g.Menu("media") },
-			".wmv":  func() { g.Menu("media") },
-			".flv":  func() { g.Menu("media") },
-			".mp3":  func() { g.Menu("media") },
-			".flac": func() { g.Menu("media") },
-			".tta":  func() { g.Menu("media") },
-		},
-		"v": {
-			".gz":  func() { g.Spawn("tar tvfz %f | less") },
-			".tgz": func() { g.Spawn("tar tvfz %f | less") },
-			".bz2": func() { g.Spawn("tar tvfj %f | less") },
-			".txz": func() { g.Spawn("tar tvfJ %f | less") },
-			".tar": func() { g.Spawn("tar tvf %f | less") },
-			".zip": func() { g.Spawn("zipinfo -Ocp932 %f | less") },
-			".rar": func() { g.Spawn("unrar l %f | less") },
-		},
+		"C-m": associate,
+		"o":   associate,
 	})
 }
 
@@ -302,6 +324,7 @@ func filerKeymap(g *goful.Goful) widget.Keymap {
 		"w":         func() { g.Workspace().ChdirNeighbor() },
 		"C-h":       func() { g.Dir().Chdir("..") },
 		"backspace": func() { g.Dir().Chdir("..") },
+		"u":         func() { g.Dir().Chdir("..") },
 		"~":         func() { g.Dir().Chdir("~") },
 		"\\":        func() { g.Dir().Chdir("/") },
 		"C-n":       func() { g.Dir().MoveCursor(1) },

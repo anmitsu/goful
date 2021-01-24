@@ -38,7 +38,7 @@ Goful is a CUI file manager implemented by Go.
 | `M-p`, `pgup`        | Page up |
 | `M-n`                | Scroll down |
 | `M-p`                | Scroll up |
-| `C-h`, `backspace`   | Change to upper directory |
+| `C-h`, `backspace`, `u`| Change to upper directory |
 | `~`                  | Change to home directory |
 | `\`                  | Change to root directory |
 | `w`                  | Change to neighbor directory |
@@ -51,14 +51,14 @@ Goful is a CUI file manager implemented by Go.
 | `space`              | Mark file on cursor |
 | `C-space`            | Toggle mark all files |
 | `C-l`                | Reload files |
-| `C-m`                | Open |
+| `C-m`, `o`           | Open |
+| `i`                  | Open by pager |
 | `s`                  | Sort menu |
-| `V`                  | View menu |
+| `v`                  | View menu |
 | `b`                  | Bookmark menu |
 | `e`                  | Editor menu |
-| `M-x`                | Command menu |
-| `x`                  | External command menu |
-| `A`                  | Archive menu |
+| `x`                  | Command menu |
+| `X`                  | External command menu |
 | `f`, `/`             | Find files |
 | `:`                  | Start shell mode |
 | `;`                  | Start shell suspend mode |
