@@ -162,8 +162,11 @@ func (g *Goful) copy(dst string, src ...string) {
 			g.Workspace().ReloadAll()
 			<-g.task
 		})
-		g.goWalk(walker, dstAbs, srcAbs...)
-		message.Infof("Copied to %s form %s", dst, src)
+		if err := g.goWalk(walker, dstAbs, srcAbs...); err != nil {
+			message.Error(err)
+		} else {
+			message.Infof("Copied to %s form %s", dst, src)
+		}
 	}()
 }
 
@@ -181,26 +184,32 @@ func (g *Goful) move(dst string, src ...string) {
 			g.Workspace().ReloadAll()
 			<-g.task
 		})
-		g.goWalk(walker, dstAbs, srcAbs...)
-		message.Infof("Moved to %s form %s", dst, src)
+		if err := g.goWalk(walker, dstAbs, srcAbs...); err != nil {
+			message.Error(err)
+		} else {
+			message.Infof("Moved to %s form %s", dst, src)
+		}
 	}()
 }
 
-func (g *Goful) goWalk(walker *walker, dst string, src ...string) {
+func (g *Goful) goWalk(walker *walker, dst string, src ...string) error {
 	g.ResizeRelative(0, 0, 0, -2)
 
 	size, count := calcSizeCount(src...)
 	progress.Start(size)
 	progress.StartTaskCount(count)
+	var err error
 	for _, s := range src {
-		if err := walker.walk(s, dst); err != nil {
-			message.Error(err)
+		if e := walker.walk(s, dst); e != nil {
+			err = e
+			break
 		}
 	}
 	progress.Finish()
 
 	g.ResizeRelative(0, 0, 0, 2)
 	widget.Show()
+	return err
 }
 
 func calcSizeCount(src ...string) (float64, int) {
@@ -235,6 +244,15 @@ func (w *walker) walk(src, dst string) error {
 	if err != nil {
 		return err
 	}
+	if dststat, err := os.Lstat(dst); err != nil {
+		if !os.IsNotExist(err) { // ignore error if not exist dst and create dst
+			return err
+		}
+	} else {
+		if dststat.IsDir() { // make to in exist dst directory
+			dst = filepath.Join(dst, filepath.Base(src))
+		}
+	}
 	if srcstat.IsDir() {
 		if strings.HasPrefix(dst, src) {
 			return fmt.Errorf("Cannot copy/move directory %s into itself %s", src, dst)
@@ -243,7 +261,6 @@ func (w *walker) walk(src, dst string) error {
 			return err
 		}
 	} else {
-		dst = filepath.Join(dst, filepath.Base(src))
 		if err := w.file2file(src, dst); err != nil {
 			return err
 		}
@@ -291,23 +308,22 @@ func (w *walker) dir2dir(src, dst string) error {
 		return err
 	}
 
-	dstdir := filepath.Join(dst, filepath.Base(src))
-	if _, err := os.Lstat(dstdir); err != nil {
-		if os.IsNotExist(err) {
-			if err := os.MkdirAll(dstdir, dirstat.Mode()); err != nil {
+	if _, err := os.Lstat(dst); err != nil {
+		if os.IsNotExist(err) { // make dst directory if dst not exists
+			if err := os.Mkdir(dst, dirstat.Mode()); err != nil {
 				return err
 			}
 		} else {
 			return err
 		}
-	} else { // dstdir is already exists
+	} else { // dst is already exists
 		switch w.dirConfirmed {
 		case overwriteNoAll:
 			return nil
 		case overwriteYesAll:
 			break
 		default:
-			w.dirConfirmed = w.confirm(fmt.Sprintf("Merge directory? %s -> %s", filepath.Base(src), dstdir))
+			w.dirConfirmed = w.confirm(fmt.Sprintf("Merge directory? %s -> %s", filepath.Base(src), dst))
 			switch w.dirConfirmed {
 			case overwriteNo, overwriteNoAll:
 				return nil
@@ -325,22 +341,21 @@ func (w *walker) dir2dir(src, dst string) error {
 			return err
 		}
 		for _, f := range fi {
+			src := filepath.Join(src, f.Name())
+			dst := filepath.Join(dst, f.Name())
 			if f.IsDir() {
-				srcdir := filepath.Join(src, f.Name())
-				if err := w.dir2dir(srcdir, dstdir); err != nil {
+				if err := w.dir2dir(src, dst); err != nil {
 					return err
 				}
 			} else {
-				srcfile := filepath.Join(src, f.Name())
-				dstfile := filepath.Join(dstdir, f.Name())
-				if err := w.file2file(srcfile, dstfile); err != nil {
+				if err := w.file2file(src, dst); err != nil {
 					return err
 				}
 			}
 		}
 	}
 
-	if err := w.callback.afterVisitDir(src, dirstat, dstdir); err != nil {
+	if err := w.callback.afterVisitDir(src, dirstat, dst); err != nil {
 		return err
 	}
 	return nil
