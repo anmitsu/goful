@@ -115,6 +115,9 @@ func (g *Goful) expandMacro(cmd string) (result string, background bool) {
 			prefix = false
 			src := ""
 			macrolen := 2
+			if nonQuote {
+				macrolen++
+			}
 			switch b {
 			case macroFile:
 				src = g.File().Name()
@@ -177,14 +180,14 @@ func (g *Goful) expandMacro(cmd string) (result string, background bool) {
 				}
 				goto other
 			}
-			if nonQuote {
-				nonQuote = false
-				macrolen++
-			}
 			ret = widget.DeleteBytes(ret, offset-1, macrolen)
 			ret = widget.InsertBytes(ret, []byte(src), offset-1)
 			offset += len(src) - macrolen
 			offset++
+			if nonQuote {
+				nonQuote = false
+				offset++
+			}
 			continue
 		}
 	other:

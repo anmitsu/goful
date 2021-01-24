@@ -45,6 +45,8 @@ func TestExpandMacro(t *testing.T) {
 		{`%\~f%~f`, `%~f..`},
 		{"%AA%ff", `%AA".."f`},
 		{"%~A~A%~ff", `%~A~A..f`},
+		{"%m %f", `".." ".."`},
+		{"%~f %f %~m", `.. ".." ..`},
 	}
 
 	for _, macro := range macros {
