@@ -196,7 +196,7 @@ func (g *Goful) goWalk(walker *walker, dst string, src ...string) error {
 	g.ResizeRelative(0, 0, 0, -2)
 
 	size, count := calcSizeCount(src...)
-	progress.Start(size)
+	progress.Start(float64(size))
 	progress.StartTaskCount(count)
 	var err error
 	for _, s := range src {
@@ -212,7 +212,7 @@ func (g *Goful) goWalk(walker *walker, dst string, src ...string) error {
 	return err
 }
 
-func calcSizeCount(src ...string) (float64, int) {
+func calcSizeCount(src ...string) (int64, int) {
 	size := int64(0)
 	count := 0
 	for _, s := range src {
@@ -225,7 +225,7 @@ func calcSizeCount(src ...string) (float64, int) {
 			return nil
 		})
 	}
-	return float64(size), count
+	return size, count
 }
 
 type walker struct {
@@ -535,7 +535,7 @@ func letCopy(srcfile, dstfile *os.File) error {
 	}()
 
 	progress.StartTask(srcstat)
-	buf := make([]byte, 1024*32)
+	buf := make([]byte, 4096)
 	for {
 		n, err := srcfile.Read(buf)
 		if err != nil && err != io.EOF {
