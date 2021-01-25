@@ -25,7 +25,7 @@ func newContent(name string) *content {
 func (e *content) Name() string { return e.name }
 
 func (e *content) Draw(x, y, width int, focus bool) {
-	s := runewidth.Truncate(e.Name(), width, "...")
+	s := runewidth.Truncate(e.Name(), width, "~")
 	s = runewidth.FillRight(s, width)
 	style := look.Default()
 	if focus {
@@ -51,13 +51,13 @@ func (e *highlightContent) Draw(x, y, width int, focus bool) {
 		style = style.Reverse(true)
 	}
 	if e.highlight == "" {
-		s := runewidth.Truncate(e.Name(), width, "...")
+		s := runewidth.Truncate(e.Name(), width, "~")
 		s = runewidth.FillRight(s, width)
 		SetCells(x, y, s, style)
 		return
 	}
 
-	name := runewidth.Truncate(e.Name(), width, "...")
+	name := runewidth.Truncate(e.Name(), width, "~")
 	for _, s := range utils.SplitWithSep(name, e.highlight) {
 		if s == e.highlight {
 			style := look.Highlight()

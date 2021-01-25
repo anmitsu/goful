@@ -95,6 +95,6 @@ func (w *progressWindow) drawTask() {
 	x, y := w.LeftTop()
 	name := w.task.Name()
 	s := fmt.Sprintf("Progress %d/%d (%sB): %s", w.done+1, w.taskCount, size, name)
-	s = runewidth.Truncate(s, w.Width(), "...")
+	s = runewidth.Truncate(s, w.Width(), "~")
 	widget.SetCells(x, y, s, look.Default())
 }

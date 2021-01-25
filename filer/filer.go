@@ -256,7 +256,7 @@ func (f *Filer) drawHeader() {
 	width := (f.Width() - x) / len(ws.Dirs)
 	for i := 0; i < len(ws.Dirs); i++ {
 		s := fmt.Sprintf("[%d] %s", i+1, ws.Dirs[i].Title())
-		s = runewidth.Truncate(s, width, "...")
+		s = runewidth.Truncate(s, width, "~")
 		s = runewidth.FillRight(s, width)
 		if ws.Focus != i {
 			x = widget.SetCells(x, y, s, look.Default())

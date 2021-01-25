@@ -112,7 +112,7 @@ func (c *Cmdline) DrawLine() {
 	s = runewidth.Truncate(s, w, "")
 	if c.Cursor() >= w {
 		s = c.TextBeforeCursor()
-		s = widget.TruncLeft(s, w, "...")
+		s = widget.TruncLeft(s, w, "~")
 		x = widget.SetCells(x, y, s, look.Cmdline())
 		widget.ShowCursor(x, y)
 	} else {

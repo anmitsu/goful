@@ -206,7 +206,7 @@ func (f *FileStat) Draw(x, y, width int, focus bool) {
 		pre = "*"
 	}
 	s := pre + f.display + f.suffix()
-	s = runewidth.Truncate(s, width, "...")
+	s = runewidth.Truncate(s, width, "~")
 	s = runewidth.FillRight(s, width)
 	x = widget.SetCells(x, y, s, style)
 	widget.SetCells(x, y, states, style)
