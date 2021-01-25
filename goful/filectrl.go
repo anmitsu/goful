@@ -355,7 +355,7 @@ func (w *walker) dir2dir(src, dst string) error {
 		}
 	}
 
-	if err := w.callback.afterVisitDir(src, dirstat, dst); err != nil {
+	if err := w.callback.afterVisitDir(src, dst); err != nil {
 		return err
 	}
 	return nil
@@ -363,7 +363,7 @@ func (w *walker) dir2dir(src, dst string) error {
 
 type fileJob interface {
 	job(src, dst string) error
-	afterVisitDir(src string, srcstat os.FileInfo, dst string) error
+	afterVisitDir(src, dst string) error
 }
 
 type (
@@ -378,8 +378,8 @@ func (job copyJob) job(src, dst string) error {
 	return nil
 }
 
-func (job copyJob) afterVisitDir(src string, srcstat os.FileInfo, dst string) error {
-	if err := copyTimes(srcstat, dst); err != nil {
+func (job copyJob) afterVisitDir(src, dst string) error {
+	if err := copyTimes(src, dst); err != nil {
 		return err
 	}
 	return nil
@@ -392,8 +392,8 @@ func (job moveJob) job(src, dst string) error {
 	return nil
 }
 
-func (job moveJob) afterVisitDir(src string, srcstat os.FileInfo, dst string) error {
-	if err := copyTimes(srcstat, dst); err != nil {
+func (job moveJob) afterVisitDir(src, dst string) error {
+	if err := copyTimes(src, dst); err != nil {
 		return err
 	}
 	if err := removeEmptyDir(src); err != nil {
@@ -441,7 +441,7 @@ func copyFile(src, dst string) error { // not make directories in this function
 	if err := letCopy(srcfile, dstfile); err != nil {
 		return err
 	}
-	if err := copyTimes(srcstat, dst); err != nil {
+	if err := copyTimes(src, dst); err != nil {
 		return err
 	}
 	return nil
@@ -458,7 +458,11 @@ func copySymlink(src, dst string) error {
 	return nil
 }
 
-func copyTimes(srcstat os.FileInfo, dst string) error {
+func copyTimes(src, dst string) error {
+	srcstat, err := os.Stat(src)
+	if err != nil {
+		return err
+	}
 	mtime := srcstat.ModTime()
 	atime := srcstat.ModTime() // atime := time.Unix(srcstat.Sys().(*syscall.Stat_t).Atim.Unix())
 	if err := os.Chtimes(dst, atime, mtime); err != nil {
