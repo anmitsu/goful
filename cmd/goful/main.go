@@ -19,9 +19,11 @@ func main() {
 	widget.Init()
 	defer widget.Fini()
 
-	// Set a title if in a terminal such as screen and tmux.
+	// Change a terminal title.
 	if strings.Contains(os.Getenv("TERM"), "screen") {
-		os.Stdout.WriteString("\033kgoful\033\\")
+		os.Stdout.WriteString("\033kgoful\033\\") // for tmux
+	} else {
+		os.Stdout.WriteString("\033]0;goful\007\\") // for otherwise
 	}
 
 	const state = "~/.goful/state.json"
