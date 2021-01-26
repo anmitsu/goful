@@ -17,10 +17,10 @@ func Add(name string, a ...interface{}) {
 	}
 	items := menusMap[name]
 	for i := 0; i < len(a); i += 3 {
-		label := a[i].(string)
-		accel := a[i+1].(string)
+		accel := a[i].(string)
+		label := a[i+1].(string)
 		callback := a[i+2].(func())
-		items = append(items, &menuItem{label, accel, callback})
+		items = append(items, &menuItem{accel, label, callback})
 	}
 	menusMap[name] = items
 }
@@ -33,8 +33,8 @@ func Config(config func(*Menu) widget.Keymap) {
 }
 
 type menuItem struct {
-	label    string
 	accel    string
+	label    string
 	callback func()
 }
 
@@ -61,7 +61,7 @@ func New(name string, filer widget.Widget) (*Menu, error) {
 		filer:   filer,
 	}
 	for _, item := range items {
-		s := fmt.Sprintf("%s   %s", item.accel, item.label)
+		s := fmt.Sprintf("%-3s %s", item.accel, item.label)
 		menu.AppendString(s)
 	}
 	return menu, nil
