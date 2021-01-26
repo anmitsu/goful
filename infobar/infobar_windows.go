@@ -34,7 +34,7 @@ func (w *infoWindow) draw(fi os.FileInfo) {
 	used := float64(all-free) / float64(all) * 100
 	freeSI := utils.FormatSize(free)
 
-	info := fmt.Sprintf("%s free (%.1f%s used) %s %d %s %s", freeSI, used, "%", perm, size, mtime, name)
+	info := fmt.Sprintf("%s free %.1f%% used %s %d %s %s", freeSI, used, perm, size, mtime, name)
 	s := runewidth.Truncate(info, w.Width(), "~")
 	widget.SetCells(x, y, s, look.Default())
 }
