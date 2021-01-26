@@ -244,7 +244,7 @@ func (w *walker) walk(src, dst string) error {
 	if err != nil {
 		return err
 	}
-	if dststat, err := os.Lstat(dst); err != nil {
+	if dststat, err := os.Stat(dst); err != nil {
 		if !os.IsNotExist(err) { // ignore error if not exist dst and create dst
 			return err
 		}
@@ -308,7 +308,7 @@ func (w *walker) dir2dir(src, dst string) error {
 		return err
 	}
 
-	if _, err := os.Lstat(dst); err != nil {
+	if _, err := os.Stat(dst); err != nil {
 		if os.IsNotExist(err) { // make dst directory if dst not exists
 			if err := os.Mkdir(dst, dirstat.Mode()); err != nil {
 				return err
