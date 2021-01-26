@@ -33,6 +33,13 @@ func TogglePermView() { statView.permission = !statView.permission }
 // ToggleTimeView toggles the file time view.
 func ToggleTimeView() { statView.time = !statView.time }
 
+var timeFormat = "06-01-02 15:04"
+
+// SetTimeFormat sets the time format of files.
+func SetTimeFormat(format string) {
+	timeFormat = format
+}
+
 // FileStat is file information.
 type FileStat struct {
 	os.FileInfo             // os.Lstat(path)
@@ -170,7 +177,7 @@ func (f *FileStat) states() string {
 		ret += " " + f.stat.Mode().String()
 	}
 	if statView.time {
-		ret += " " + f.stat.ModTime().Format("06-01-02 15:04")
+		ret += " " + f.stat.ModTime().Format(timeFormat)
 	}
 	return ret
 }

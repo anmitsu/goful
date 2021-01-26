@@ -63,7 +63,8 @@ func config(g *goful.Goful) {
 	cmdline.ConfigCompletion(completionKeymap)
 	menu.Config(menuKeymap)
 
-	filer.SetStatView(true, false, true) // size, permission and time
+	filer.SetStatView(true, false, true)  // size, permission and time
+	filer.SetTimeFormat("06-01-02 15:04") // ex: "Jan _2 15:04"
 
 	// Setup open command for C-m (when the enter key is pressed)
 	// The macro %f means expanded to a file name, for more see (spawn.go)
