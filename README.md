@@ -4,13 +4,13 @@
 [![Go Reference](https://pkg.go.dev/badge/github.com/anmitsu/goful.svg)](https://pkg.go.dev/github.com/anmitsu/goful)
 [![MIT License](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/anmitsu/goful/blob/master/LICENSE)
 
-Goful is a CUI file manager implemented by Go.
+Goful is a CUI file manager written in Go.
 
 * Works on cross-platform such as gnome-terminal in Ubuntu and cmd.exe in
   Windows.
-* Multi window and workspace to display directory contents.
-* A command line to execute external commands such as bash and tmux.
-* Provides file search, glob, copy, bulk rename, etc.
+* Displays multiple windows and workspaces.
+* A command line to execute using such as bash and tmux.
+* Provides filtering search, async copy, glob, bulk rename, etc.
 
 ## Install
 
