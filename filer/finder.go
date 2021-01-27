@@ -115,10 +115,9 @@ func (f *Finder) find(callback func(name string)) {
 func (f *Finder) Draw() {
 	f.Clear()
 	x, y := f.LeftTop()
-	const prompt = "Finder: "
-	x = widget.SetCells(x, y, prompt, look.Prompt())
-	x = widget.SetCells(x, y, f.String(), look.Finder())
-	spacewidth := f.Width() - len(prompt) - runewidth.StringWidth(f.String())
+	s := "Find: " + f.String()
+	x = widget.SetCells(x, y, s, look.Finder())
+	spacewidth := f.Width() - runewidth.StringWidth(s)
 	if spacewidth > 0 {
 		widget.SetCells(x, y, strings.Repeat(" ", spacewidth), look.Finder())
 	}
