@@ -277,38 +277,49 @@ func config(g *goful.Goful) {
 		"v", "vlc     ", func() { g.Spawn("vlc %f %&") },
 	)
 
-	associate := map[string]func(){
-		".dir":  func() { g.Dir().EnterDir() },
-		".exec": func() { g.Shell(" ./" + g.File().Name()) },
+	var associate widget.Keymap
+	if runtime.GOOS == "windows" {
+		associate = widget.Keymap{
+			".dir": func() { g.Dir().EnterDir() },
+			".go":  func() { g.Shell("go run %~f") },
+			".py":  func() { g.Shell("python %~f") },
+			".rb":  func() { g.Shell("ruby %~f") },
+			".js":  func() { g.Shell("node %~f") },
+		}
+	} else {
+		associate = widget.Keymap{
+			".dir":  func() { g.Dir().EnterDir() },
+			".exec": func() { g.Shell(" ./" + g.File().Name()) },
 
-		".zip": func() { g.Shell("unzip %f -d %D") },
-		".tar": func() { g.Shell("tar xvf %f -C %D") },
-		".gz":  func() { g.Shell("tar xvfz %f -C %D") },
-		".tgz": func() { g.Shell("tar xvfz %f -C %D") },
-		".bz2": func() { g.Shell("tar xvfj %f -C %D") },
-		".xz":  func() { g.Shell("tar xvfJ %f -C %D") },
-		".txz": func() { g.Shell("tar xvfJ %f -C %D") },
-		".rar": func() { g.Shell("unrar x %f -C %D") },
+			".zip": func() { g.Shell("unzip %f -d %D") },
+			".tar": func() { g.Shell("tar xvf %f -C %D") },
+			".gz":  func() { g.Shell("tar xvfz %f -C %D") },
+			".tgz": func() { g.Shell("tar xvfz %f -C %D") },
+			".bz2": func() { g.Shell("tar xvfj %f -C %D") },
+			".xz":  func() { g.Shell("tar xvfJ %f -C %D") },
+			".txz": func() { g.Shell("tar xvfJ %f -C %D") },
+			".rar": func() { g.Shell("unrar x %f -C %D") },
 
-		".py": func() { g.Shell("python %f") },
-		".rb": func() { g.Shell("ruby %f") },
-		".js": func() { g.Shell("node %f") },
-		".go": func() { g.Shell("go run %f") },
+			".go": func() { g.Shell("go run %f") },
+			".py": func() { g.Shell("python %f") },
+			".rb": func() { g.Shell("ruby %f") },
+			".js": func() { g.Shell("node %f") },
 
-		".jpg":  func() { g.Menu("image") },
-		".jpeg": func() { g.Menu("image") },
-		".gif":  func() { g.Menu("image") },
-		".png":  func() { g.Menu("image") },
-		".bmp":  func() { g.Menu("image") },
+			".jpg":  func() { g.Menu("image") },
+			".jpeg": func() { g.Menu("image") },
+			".gif":  func() { g.Menu("image") },
+			".png":  func() { g.Menu("image") },
+			".bmp":  func() { g.Menu("image") },
 
-		".avi":  func() { g.Menu("media") },
-		".mp4":  func() { g.Menu("media") },
-		".mkv":  func() { g.Menu("media") },
-		".wmv":  func() { g.Menu("media") },
-		".flv":  func() { g.Menu("media") },
-		".mp3":  func() { g.Menu("media") },
-		".flac": func() { g.Menu("media") },
-		".tta":  func() { g.Menu("media") },
+			".avi":  func() { g.Menu("media") },
+			".mp4":  func() { g.Menu("media") },
+			".mkv":  func() { g.Menu("media") },
+			".wmv":  func() { g.Menu("media") },
+			".flv":  func() { g.Menu("media") },
+			".mp3":  func() { g.Menu("media") },
+			".flac": func() { g.Menu("media") },
+			".tta":  func() { g.Menu("media") },
+		}
 	}
 
 	g.MergeExtmap(widget.Extmap{
