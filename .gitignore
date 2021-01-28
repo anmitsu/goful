@@ -1,4 +1,2 @@
-cmd/goful/*
-!/cmd/goful/main.go
 *.exe
 *.test
