@@ -36,6 +36,33 @@ func TestAbbrPath(t *testing.T) {
 	}
 }
 
+func TestShortenPath(t *testing.T) {
+	for _, d := range []struct {
+		path   string
+		width  int
+		result string
+	}{
+		{"/", 0, "/"},
+		{"/home/", 2, "/h"},
+		{"/home///", 2, "/h"},
+		{"/home///", 10, "/home///"},
+		{"/home/abc/def/hij", 14, "/h/abc/def/hij"},
+		{"/home/abc/def/hij", 12, "/h/a/def/hij"},
+		{"/home/abc/def/hij", 10, "/h/a/d/hij"},
+		{"/home/abc/def/hij", 9, "/h/a/d/hij"},
+		{"/home/abc/def/hij", 1, "/h/a/d/hij"},
+		{"/home/あいう/かきく/さしす", 23, "/h/あいう/かきく/さしす"},
+		{"/home/あいう/かきく/さしす", 19, "/h/あ/かきく/さしす"},
+		{"/home/あいう/かきく/さしす", 15, "/h/あ/か/さしす"},
+		{"/home/あいう/かきく/さしす", 14, "/h/あ/か/さしす"},
+		{"/home/あいう/かきく/さしす", 1, "/h/あ/か/さしす"},
+	} {
+		if s := ShortenPath(d.path, d.width); s != d.result {
+			t.Errorf("ShortenPath(%q, %d)=%q, want %q", d.path, d.width, s, d.result)
+		}
+	}
+}
+
 func TestRemoveExt(t *testing.T) {
 	for _, d := range []struct {
 		path   string

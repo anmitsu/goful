@@ -255,14 +255,17 @@ func (f *Filer) drawHeader() {
 	ws := f.Workspace()
 	width := (f.Width() - x) / len(ws.Dirs)
 	for i := 0; i < len(ws.Dirs); i++ {
-		s := fmt.Sprintf("[%d] %s", i+1, ws.Dirs[i].Title())
-		s = runewidth.Truncate(s, width, "~")
-		s = runewidth.FillRight(s, width)
-		if ws.Focus != i {
-			x = widget.SetCells(x, y, s, look.Default())
-		} else {
-			x = widget.SetCells(x, y, s, look.Default().Reverse(true))
+		style := look.Default()
+		if ws.Focus == i {
+			style = style.Reverse(true)
 		}
+		s := fmt.Sprintf("[%d] ", i+1)
+		x = widget.SetCells(x, y, s, style)
+		w := width - len(s)
+		s = utils.ShortenPath(ws.Dirs[i].Title(), w)
+		s = runewidth.Truncate(s, w, "~")
+		s = runewidth.FillRight(s, w)
+		x = widget.SetCells(x, y, s, style)
 	}
 }
 

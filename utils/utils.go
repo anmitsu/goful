@@ -9,6 +9,8 @@ import (
 	"path/filepath"
 	"runtime"
 	"strings"
+
+	"github.com/mattn/go-runewidth"
 )
 
 // ExpandPath expands path beginning of ~  to the home directory.
@@ -32,6 +34,31 @@ func AbbrPath(name string) string {
 		return "~" + name[lenhome:]
 	}
 	return name
+}
+
+// ShortenPath returns a shorten path to be shorter than width.
+func ShortenPath(path string, width int) string {
+	if width < runewidth.StringWidth(path) {
+		root := filepath.VolumeName(path)
+		names := strings.Split(path, string(filepath.Separator))
+		for i, name := range names[:len(names)-1] {
+			if name == root {
+				if name == "" {
+					names[i] = string(filepath.Separator)
+				}
+				continue
+			}
+			for _, r := range name {
+				names[i] = string(r)
+				break
+			}
+			path = filepath.Join(names...)
+			if runewidth.StringWidth(path) <= width {
+				break
+			}
+		}
+	}
+	return path
 }
 
 // RemoveExt removes extension from the name.
