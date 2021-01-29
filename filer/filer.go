@@ -33,8 +33,8 @@ func New(x, y, width, height int) *Filer {
 		home = "/"
 	}
 
-	workspaces := make([]*Workspace, 5)
-	for i := 0; i < 5; i++ {
+	workspaces := make([]*Workspace, 3)
+	for i := 0; i < 3; i++ {
 		title := fmt.Sprintf("%d", i+1)
 		ws := NewWorkspace(x, y+1, width, height-1, title)
 		ws.Dirs = make([]*Directory, 2)
