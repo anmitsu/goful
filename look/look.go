@@ -105,7 +105,7 @@ func setDefault() {
 	cmdlineMacro = d.Foreground(tcell.ColorFuchsia)
 	cmdlineOption = d.Foreground(tcell.ColorYellow)
 	highlight = d.Bold(true)
-	title = d.Foreground(tcell.ColorAqua).Bold(true)
+	title = d
 	symlink = d.Foreground(tcell.ColorFuchsia)
 	symlinkDir = d.Foreground(tcell.ColorFuchsia).Bold(true)
 	directory = d.Foreground(tcell.ColorAqua).Bold(true)
@@ -127,7 +127,7 @@ func setMidnight() {
 	cmdlineMacro = d.Foreground(tcell.ColorFuchsia).Background(bg)
 	cmdlineOption = d.Foreground(tcell.ColorYellow).Background(bg)
 	highlight = defaultAttr.Bold(true)
-	title = d.Foreground(tcell.ColorAqua).Background(bg).Bold(true)
+	title = defaultAttr
 	symlink = d.Foreground(tcell.ColorFuchsia).Background(bg)
 	symlinkDir = d.Foreground(tcell.ColorFuchsia).Background(bg).Bold(true)
 	directory = d.Foreground(tcell.ColorAqua).Background(bg).Bold(true)
@@ -149,7 +149,7 @@ func setBlack() {
 	cmdlineMacro = d.Foreground(tcell.ColorFuchsia).Background(bg)
 	cmdlineOption = d.Foreground(tcell.ColorYellow).Background(bg)
 	highlight = defaultAttr.Bold(true)
-	title = d.Foreground(tcell.ColorAqua).Background(bg).Bold(true)
+	title = defaultAttr
 	symlink = d.Foreground(tcell.ColorFuchsia).Background(bg)
 	symlinkDir = d.Foreground(tcell.ColorFuchsia).Background(bg).Bold(true)
 	directory = d.Foreground(tcell.ColorAqua).Background(bg).Bold(true)
@@ -171,7 +171,7 @@ func setWhite() {
 	cmdlineMacro = d.Foreground(tcell.ColorFuchsia).Background(bg)
 	cmdlineOption = d.Foreground(tcell.ColorOlive).Background(bg)
 	highlight = defaultAttr.Bold(true)
-	title = d.Foreground(tcell.ColorNavy).Background(bg).Bold(true)
+	title = defaultAttr
 	symlink = d.Foreground(tcell.ColorFuchsia).Background(bg)
 	symlinkDir = d.Foreground(tcell.ColorFuchsia).Background(bg).Bold(true)
 	directory = d.Foreground(tcell.ColorNavy).Background(bg).Bold(true)
