@@ -11,7 +11,6 @@ import (
 	"github.com/anmitsu/goful/message"
 	"github.com/anmitsu/goful/utils"
 	"github.com/anmitsu/goful/widget"
-	"github.com/mattn/go-runewidth"
 )
 
 type sortType string
@@ -231,8 +230,10 @@ func (d *Directory) read() {
 		d.finder.find(callback)
 	} else {
 		d.ClearList()
-		d.AppendList(NewFileStat(d.Path, ".."))
 		d.reader.Read(callback)
+	}
+	if d.IsEmpty() {
+		d.AppendList(NewFileStat(d.Path, ".."))
 	}
 	sort.Sort(d)
 
@@ -303,13 +304,6 @@ func (d *Directory) SortExtDec() { d.sortBy(sortExtRev) }
 func (d *Directory) Less(i, j int) bool {
 	ni := d.List()[i].Name()
 	nj := d.List()[j].Name()
-	switch ".." {
-	case ni:
-		return true
-	case nj:
-		return false
-	}
-
 	switch d.SortKind {
 	case sortName:
 		return ni < nj
@@ -477,14 +471,8 @@ func (d *Directory) MarkfileQuotedPaths() []string {
 	return markfiles
 }
 
-func (d *Directory) drawHeader() {
-	x, y := d.LeftTop()
-	s := runewidth.Truncate(d.Title(), d.Width()-1, "")
-	widget.SetCells(x, y, s, look.Title())
-}
-
 func (d *Directory) drawFooter() {
-	size := len(d.List()) - 1
+	size := len(d.List())
 	p := d.ScrollRate()
 	s := fmt.Sprintf("[%d/%d] %s(%d) %s %s", d.MarkCount(), size, p, d.Cursor(), d.SortKind, d.reader.String())
 	x, y := d.LeftBottom()
@@ -520,7 +508,6 @@ func (d *Directory) draw(focus bool) {
 	d.AdjustCursor()
 	d.AdjustOffset()
 	d.Border()
-	d.drawHeader()
 	d.drawFiles(focus)
 	d.drawFooter()
 	if d.finder != nil {

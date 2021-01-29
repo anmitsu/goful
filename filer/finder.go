@@ -29,9 +29,9 @@ func ConfigFinder(config func(*Finder) widget.Keymap) {
 
 // NewFinder returns a new finder to position the directory bottom.
 func NewFinder(dir *Directory, x, y, width, height int) *Finder {
-	names := make([]string, len(dir.List())-1)
-	for i := 0; i < len(dir.List())-1; i++ {
-		names[i] = dir.List()[i+1].Name() // not contain ".."
+	names := make([]string, len(dir.List()))
+	for i := 0; i < len(dir.List()); i++ {
+		names[i] = dir.List()[i].Name()
 	}
 
 	finder := &Finder{
@@ -99,11 +99,13 @@ func (f *Finder) find(callback func(name string)) {
 		current = f.dir.CurrentContent().Name()
 	}
 	f.dir.ClearList()
-	f.dir.AppendList(NewFileStat(f.dir.Path, ".."))
 	for _, name := range f.names {
 		if re.MatchString(name) {
 			callback(name)
 		}
+	}
+	if f.dir.IsEmpty() {
+		f.dir.AppendList(NewFileStat(f.dir.Path, ".."))
 	}
 	if current != "" {
 		f.dir.SetCursorByName(current)
@@ -128,7 +130,7 @@ func (f *Finder) Draw() {
 func (f *Finder) Exit() {
 	f.exitNotRead()
 	name := f.startname
-	if len(f.dir.List()) > 1 {
+	if len(f.dir.List()) > 0 {
 		name = f.dir.File().Name()
 	}
 	f.dir.read()
