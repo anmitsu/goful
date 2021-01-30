@@ -286,15 +286,6 @@ func (d *Directory) File() *FileStat {
 	return d.CurrentContent().(*FileStat)
 }
 
-// Files returns marked files.
-func (d *Directory) Files() []*FileStat {
-	files := make([]*FileStat, len(d.List()))
-	for i, e := range d.List() {
-		files[i] = e.(*FileStat)
-	}
-	return files
-}
-
 // Base returns the directory name.
 func (d *Directory) Base() string { return filepath.Base(d.Path) }
 
@@ -333,10 +324,7 @@ func (d *Directory) Less(i, j int) bool {
 		id := d.List()[i].(*FileStat).stat.IsDir()
 		jd := d.List()[j].(*FileStat).stat.IsDir()
 		if !(id && jd) && (id || jd) {
-			if id {
-				return true
-			}
-			return false
+			return id
 		}
 	}
 	switch d.Sort {
