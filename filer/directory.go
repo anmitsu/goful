@@ -6,6 +6,7 @@ import (
 	"os"
 	"path/filepath"
 	"sort"
+	"strings"
 
 	"github.com/anmitsu/goful/look"
 	"github.com/anmitsu/goful/message"
@@ -26,6 +27,21 @@ const (
 	sortExtRev            = "Ext[$]"
 )
 
+var priorityDir = true
+
+// TogglePriority toggles the priority for sorting files.
+// The directory is prioritized in sorting if this is true.
+func TogglePriority() {
+	priorityDir = !priorityDir
+}
+
+var showHiddens = true
+
+// ToggleShowHiddens toggles the showing of hidden files.
+func ToggleShowHiddens() {
+	showHiddens = !showHiddens
+}
+
 type reader interface {
 	Read(callback func(name string))
 	String() string
@@ -45,6 +61,9 @@ func (s defaultReader) Read(callback func(string)) {
 	for {
 		names, err := fd.Readdirnames(100)
 		for _, name := range names {
+			if !showHiddens && strings.HasPrefix(name, ".") {
+				continue
+			}
 			callback(name)
 		}
 
@@ -70,6 +89,9 @@ func (s globPattern) Read(callback func(name string)) {
 		return
 	}
 	for _, name := range matches {
+		if !showHiddens && strings.HasPrefix(name, ".") {
+			continue
+		}
 		callback(name)
 	}
 }
@@ -86,6 +108,11 @@ func (s globDirPattern) Read(callback func(string)) {
 			return nil
 		}
 		if ok, _ := filepath.Match(string(s), info.Name()); ok {
+			if !showHiddens {
+				if strings.HasPrefix(path, ".") || strings.HasPrefix(info.Name(), ".") {
+					return nil
+				}
+			}
 			callback(path)
 		}
 		return nil
@@ -302,13 +329,21 @@ func (d *Directory) SortExtDec() { d.sortBy(sortExtRev) }
 
 // Less compares based on SortKind.
 func (d *Directory) Less(i, j int) bool {
-	ni := d.List()[i].Name()
-	nj := d.List()[j].Name()
+	if priorityDir {
+		id := d.List()[i].(*FileStat).stat.IsDir()
+		jd := d.List()[j].(*FileStat).stat.IsDir()
+		if !(id && jd) && (id || jd) {
+			if id {
+				return true
+			}
+			return false
+		}
+	}
 	switch d.SortKind {
 	case sortName:
-		return ni < nj
+		return d.List()[i].Name() < d.List()[j].Name()
 	case sortNameRev:
-		return ni > nj
+		return d.List()[i].Name() > d.List()[j].Name()
 	case sortMtime:
 		return d.lessMtime(i, j)
 	case sortMtimeRev:
@@ -322,7 +357,7 @@ func (d *Directory) Less(i, j int) bool {
 	case sortExtRev:
 		return d.lessExt(j, i)
 	}
-	return ni < nj
+	return d.List()[i].Name() < d.List()[j].Name()
 }
 
 func (d *Directory) lessMtime(i, j int) bool {

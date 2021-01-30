@@ -132,6 +132,7 @@ func config(g *goful.Goful) {
 		"T", "sort time decending", func() { g.Dir().SortMtimeDec() },
 		"e", "sort ext           ", func() { g.Dir().SortExt() },
 		"E", "sort ext decending ", func() { g.Dir().SortExtDec() },
+		".", "toggle priority    ", func() { filer.TogglePriority(); g.Workspace().ReloadAll() },
 	)
 	g.AddKeymap("s", func() { g.Menu("sort") })
 
@@ -139,6 +140,7 @@ func config(g *goful.Goful) {
 		"s", "stat menu    ", func() { g.Menu("stat") },
 		"l", "layout menu  ", func() { g.Menu("layout") },
 		"L", "look menu    ", func() { g.Menu("look") },
+		".", "toggle show hidden files", func() { filer.ToggleShowHiddens(); g.Workspace().ReloadAll() },
 	)
 	g.AddKeymap("v", func() { g.Menu("view") })
 
