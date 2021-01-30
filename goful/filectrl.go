@@ -123,31 +123,6 @@ func (g *Goful) remove(files ...string) {
 	}()
 }
 
-type overWrite int
-
-const (
-	overwriteYes overWrite = iota
-	overwriteNo
-	overwriteYesAll
-	overwriteNoAll
-	overwriteCancel
-)
-
-func (g *Goful) confirm(message string) overWrite {
-	switch g.dialog(message, "yes", "no", "!", ".") {
-	case "yes":
-		return overwriteYes
-	case "no":
-		return overwriteNo
-	case "!":
-		return overwriteYesAll
-	case ".":
-		return overwriteNoAll
-	default:
-		return overwriteCancel
-	}
-}
-
 func (g *Goful) copy(dst string, src ...string) {
 	srcAbs := make([]string, len(src))
 	for i := 0; i < len(src); i++ {
@@ -268,6 +243,31 @@ func (w *walker) walk(src, dst string) error {
 	return nil
 }
 
+type overWrite int
+
+const (
+	overwriteYes overWrite = iota
+	overwriteNo
+	overwriteYesAll
+	overwriteNoAll
+	overwriteCancel
+)
+
+func (w *walker) confirm(message string) overWrite {
+	switch w.dialog(message, "yes", "no", "!", ".") {
+	case "yes":
+		return overwriteYes
+	case "no":
+		return overwriteNo
+	case "!":
+		return overwriteYesAll
+	case ".":
+		return overwriteNoAll
+	default:
+		return overwriteCancel
+	}
+}
+
 func (w *walker) file2file(src, dst string) error {
 	if _, err := os.Lstat(dst); err != nil {
 		if !os.IsNotExist(err) {
@@ -280,7 +280,7 @@ func (w *walker) file2file(src, dst string) error {
 		case overwriteYesAll:
 			break
 		default:
-			w.fileConfirmed = w.confirm(fmt.Sprintf("Overwrite? %s -> %s", filepath.Base(src), dst))
+			w.fileConfirmed = w.confirm(fmt.Sprintf("Overwrite? exists %s", dst))
 			switch w.fileConfirmed {
 			case overwriteNo, overwriteNoAll:
 				return nil
@@ -297,20 +297,9 @@ func (w *walker) file2file(src, dst string) error {
 }
 
 func (w *walker) dir2dir(src, dst string) error {
-	srcdir, err := os.Open(src)
-	if err != nil {
-		return err
-	}
-	defer srcdir.Close()
-
-	dirstat, err := srcdir.Stat()
-	if err != nil {
-		return err
-	}
-
 	if _, err := os.Stat(dst); err != nil {
 		if os.IsNotExist(err) { // make dst directory if dst not exists
-			if err := os.Mkdir(dst, dirstat.Mode()); err != nil {
+			if err := copyDir(src, dst); err != nil {
 				return err
 			}
 		} else {
@@ -323,7 +312,7 @@ func (w *walker) dir2dir(src, dst string) error {
 		case overwriteYesAll:
 			break
 		default:
-			w.dirConfirmed = w.confirm(fmt.Sprintf("Merge directory? %s -> %s", filepath.Base(src), dst))
+			w.dirConfirmed = w.confirm(fmt.Sprintf("Merge? exists %s", dst))
 			switch w.dirConfirmed {
 			case overwriteNo, overwriteNoAll:
 				return nil
@@ -333,6 +322,11 @@ func (w *walker) dir2dir(src, dst string) error {
 		}
 	}
 
+	srcdir, err := os.Open(src)
+	if err != nil {
+		return err
+	}
+	defer srcdir.Close()
 	for {
 		fi, err := srcdir.Readdir(100)
 		if err == io.EOF {
@@ -407,6 +401,17 @@ func removeFiles(files ...string) error {
 		if err := os.RemoveAll(file); err != nil {
 			return err
 		}
+	}
+	return nil
+}
+
+func copyDir(src, dst string) error {
+	srcstat, err := os.Stat(src)
+	if err != nil {
+		return err
+	}
+	if err := os.Mkdir(dst, srcstat.Mode()); err != nil {
+		return err
 	}
 	return nil
 }
@@ -514,11 +519,6 @@ func removeEmptyDir(src string) error {
 }
 
 func letCopy(srcfile, dstfile *os.File) error {
-	srcstat, err := srcfile.Stat()
-	if err != nil {
-		return err
-	}
-
 	quit := make(chan bool)
 	go func() { // drawing progress
 		ticker := time.NewTicker(50 * time.Millisecond)
@@ -534,6 +534,10 @@ func letCopy(srcfile, dstfile *os.File) error {
 		}
 	}()
 
+	srcstat, err := srcfile.Stat()
+	if err != nil {
+		return err
+	}
 	progress.StartTask(srcstat)
 	buf := make([]byte, 4096)
 	for {
