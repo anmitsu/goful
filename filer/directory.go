@@ -14,6 +14,38 @@ import (
 	"github.com/anmitsu/goful/widget"
 )
 
+// Directory is a list box to store file stats.
+type Directory struct {
+	*widget.ListBox
+	reader  reader
+	history map[string]string // key: path, value: file name on cursor
+	finder  *Finder
+	Path    string   `json:"path"`
+	Sort    sortType `json:"sort_kind"`
+}
+
+// NewDirectory creates a new directory based on specified size and coordinates.
+func NewDirectory(x, y, width, height int) *Directory {
+	path, _ := filepath.Abs(".")
+	listbox := widget.NewListBox(x, y, width, height, path)
+	listbox.SetBorderStyle(borderStyle)
+	return &Directory{
+		ListBox: listbox,
+		reader:  defaultReader("."),
+		history: map[string]string{},
+		Path:    path,
+		Sort:    sortName,
+	}
+}
+
+// default border style
+var borderStyle widget.BorderStyle = widget.ULBorder
+
+// SetBorderStyle sets a directory default border style.
+func SetBorderStyle(style widget.BorderStyle) {
+	borderStyle = style
+}
+
 type sortType string
 
 const (
@@ -117,38 +149,6 @@ func (s globDirPattern) Read(callback func(string)) {
 		}
 		return nil
 	})
-}
-
-// default border style
-var borderStyle widget.BorderStyle = widget.ULBorder
-
-// SetBorderStyle sets a directory default border style.
-func SetBorderStyle(style widget.BorderStyle) {
-	borderStyle = style
-}
-
-// Directory is a list box to store file stats.
-type Directory struct {
-	*widget.ListBox
-	reader   reader
-	history  map[string]string // key: path, value: file name on cursor
-	finder   *Finder
-	Path     string   `json:"path"`
-	SortKind sortType `json:"sort_kind"`
-}
-
-// NewDirectory creates a new directory based on specified size and coordinates.
-func NewDirectory(x, y, width, height int) *Directory {
-	path, _ := filepath.Abs(".")
-	listbox := widget.NewListBox(x, y, width, height, path)
-	listbox.SetBorderStyle(borderStyle)
-	return &Directory{
-		ListBox:  listbox,
-		reader:   defaultReader("."),
-		history:  map[string]string{},
-		Path:     path,
-		SortKind: sortName,
-	}
 }
 
 func (d *Directory) init4json() {
@@ -299,7 +299,7 @@ func (d *Directory) Files() []*FileStat {
 func (d *Directory) Base() string { return filepath.Base(d.Path) }
 
 func (d *Directory) sortBy(typ sortType) {
-	d.SortKind = typ
+	d.Sort = typ
 	sort.Sort(d)
 }
 
@@ -327,7 +327,7 @@ func (d *Directory) SortExt() { d.sortBy(sortExt) }
 // SortExtDec sorts files in descending order by the file extension.
 func (d *Directory) SortExtDec() { d.sortBy(sortExtRev) }
 
-// Less compares based on SortKind.
+// Less compares based on Sort.
 func (d *Directory) Less(i, j int) bool {
 	if priorityDir {
 		id := d.List()[i].(*FileStat).stat.IsDir()
@@ -339,7 +339,7 @@ func (d *Directory) Less(i, j int) bool {
 			return false
 		}
 	}
-	switch d.SortKind {
+	switch d.Sort {
 	case sortName:
 		return d.List()[i].Name() < d.List()[j].Name()
 	case sortNameRev:
@@ -509,7 +509,7 @@ func (d *Directory) MarkfileQuotedPaths() []string {
 func (d *Directory) drawFooter() {
 	count := len(d.List()) - 1
 	s := fmt.Sprintf("[%d/%d] %s(%d) %s %s",
-		d.MarkCount(), count, d.ScrollRate(), d.Cursor(), d.SortKind, d.reader.String())
+		d.MarkCount(), count, d.ScrollRate(), d.Cursor(), d.Sort, d.reader.String())
 	x, y := d.LeftBottom()
 	widget.SetCells(x, y, s, look.Default())
 }
