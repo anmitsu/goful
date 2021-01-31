@@ -11,15 +11,15 @@ Goful is a CUI file manager written in Go.
 * A command line to execute using such as bash and tmux.
 * Provides filtering search, async copy, glob, bulk rename, etc.
 
+![demo](.github/demo.gif)
+
+For more [demos](.github/demo.md)
+
 ## Install
 
     $ go get github.com/anmitsu/goful
     ...
     $ goful
-
-![demo](.github/demo.gif)
-
-### For more [demos](.github/demo.md)
 
 ## Usage
 
@@ -74,7 +74,7 @@ Goful is a CUI file manager written in Go.
 | `C-g`, `esc`         | Cancel |
 | `q`, `Q`             | Quit application |
 
-### For more see [main.go](main.go)
+For more see [main.go](main.go)
 
 ## Customize
 
