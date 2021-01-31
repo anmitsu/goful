@@ -1,4 +1,4 @@
-package goful
+package app
 
 import (
 	"fmt"

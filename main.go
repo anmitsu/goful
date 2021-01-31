@@ -5,9 +5,9 @@ import (
 	"runtime"
 	"strings"
 
+	"github.com/anmitsu/goful/app"
 	"github.com/anmitsu/goful/cmdline"
 	"github.com/anmitsu/goful/filer"
-	"github.com/anmitsu/goful/goful"
 	"github.com/anmitsu/goful/look"
 	"github.com/anmitsu/goful/menu"
 	"github.com/anmitsu/goful/message"
@@ -29,17 +29,17 @@ func main() {
 	const state = "~/.goful/state.json"
 	const history = "~/.goful/history/shell"
 
-	app := goful.New(state)
-	config(app)
+	goful := app.NewGoful(state)
+	config(goful)
 	cmdline.LoadHistory(history)
 
-	app.Run()
+	goful.Run()
 
-	app.SaveState(state)
+	goful.SaveState(state)
 	cmdline.SaveHistory(history)
 }
 
-func config(g *goful.Goful) {
+func config(g *app.Goful) {
 	look.Set("default") // default, midnight, black, white
 
 	if runewidth.EastAsianWidth {
@@ -332,7 +332,7 @@ func config(g *goful.Goful) {
 
 // Widget keymap functions.
 
-func filerKeymap(g *goful.Goful) widget.Keymap {
+func filerKeymap(g *app.Goful) widget.Keymap {
 	return widget.Keymap{
 		"M-C-o":     func() { g.CreateWorkspace() },
 		"M-C-w":     func() { g.CloseWorkspace() },

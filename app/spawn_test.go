@@ -1,4 +1,4 @@
-package goful
+package app
 
 import (
 	"fmt"
@@ -8,7 +8,7 @@ import (
 )
 
 func TestExpandMacro(t *testing.T) {
-	g := New("")
+	g := NewGoful("")
 	g.Workspace().ReloadAll() // in home directory
 
 	home, _ := os.UserHomeDir()

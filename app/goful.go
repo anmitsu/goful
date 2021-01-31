@@ -1,5 +1,5 @@
-// Package goful is a CUI file manager.
-package goful
+// Package app is goful application components.
+package app
 
 import (
 	"github.com/anmitsu/goful/filer"
@@ -24,8 +24,8 @@ type Goful struct {
 	exit      bool
 }
 
-// New creates a new goful client based recording a previous state.
-func New(path string) *Goful {
+// NewGoful creates a new goful client based recording a previous state.
+func NewGoful(path string) *Goful {
 	message.Init()
 	infobar.Init()
 	progress.Init()
