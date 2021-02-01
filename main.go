@@ -21,9 +21,9 @@ func main() {
 
 	// Change a terminal title.
 	if strings.Contains(os.Getenv("TERM"), "screen") {
-		os.Stdout.WriteString("\033kgoful\033\\") // for tmux
+		os.Stdout.WriteString("\033kgoful\033") // for tmux
 	} else {
-		os.Stdout.WriteString("\033]0;goful\007\\") // for otherwise
+		os.Stdout.WriteString("\033]0;goful\007") // for otherwise
 	}
 
 	const state = "~/.goful/state.json"
@@ -118,7 +118,8 @@ func config(g *app.Goful) {
 				return []string{"tmux", "new-window", "-n", cmd, cmd + tail}
 			}
 			// To execute bash in gnome-terminal of a new window or tab.
-			return []string{"gnome-terminal", "--", "bash", "-c", cmd + tail}
+			title := "echo -n '\033]0;" + cmd + "\007';" // for change title
+			return []string{"gnome-terminal", "--", "bash", "-c", title + cmd + tail}
 		})
 	}
 
