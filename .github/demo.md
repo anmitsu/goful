@@ -1,6 +1,6 @@
 # Goful Demos
 
-## Progress
+## Copy/Move Progress
 
 File/directory copy (default `c`) and move (default `m`).
 
@@ -36,5 +36,34 @@ tile-bottom, one-row, one-column and fullscreen.
 View menu (default `v`), run layout menu and select layout:
 
 ![demo_layout](demo_layout.gif)
+
+## Execute Terminal and Shell
+
+Shell mode (default `:` and suspended `;`) runs a terminal and execute shell
+such as bash and tmux.  The cmdline completion (file names and commands in
+$PATH) is available (default `C-i` that means `tab`).
+
+For example, spawns commands by bash in a gnome-terminal new tab:
+
+![demo_shell](demo_shell.gif)
+
+The terminal immediately doesn't close when command finished because check
+outputs.
+
+If goful is running in tmux, it creates a new window and executes the command.
+
+## Expand Macro
+
+macro        | expanded string |
+-------------|------------------
+`%f`, `%F`   | File name/path on cursor
+`%x`, `%X`   | File name/path with extension excluded on cursor
+`%m`, `%M`   | Marked file names/paths joined by spaces
+`%d`, `%D`   | Directory name/path on cursor
+`%d2`, `%D2` | Neighbor directory name/path
+`%~f`, `%~F`<br>`%~x`, `%~X`<br>`%~m`, `%~M`<br>`%~d`, `%~D`<br>`%~d2`, `%~D2` | Expand by non quote
+`%&`         | Flag to run command in background
+
+![demo_macro](demo_macro.gif)
 
 <!-- demo size 120x35 -->
