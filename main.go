@@ -104,7 +104,7 @@ func config(g *app.Goful) {
 			return []string{"cmd", "/c", cmd}
 		})
 		g.ConfigTerminal(func(cmd string) []string {
-			return []string{"cmd", "/c", "start", "cmd", "/k", cmd}
+			return []string{"cmd", "/c", "start", "cmd", "/c", cmd + "& pause"}
 		})
 	} else {
 		g.ConfigShell(func(cmd string) []string {
