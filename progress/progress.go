@@ -30,6 +30,7 @@ func Start(maxval float64) {
 func Finish() {
 	progress.gauge.Finish()
 	progress.Clear()
+	progress.gauge.Clear()
 }
 
 // IsFinished reports whether progressing finished.

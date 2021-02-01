@@ -148,7 +148,6 @@ func (c *Cmdline) Input(key string) {
 // Exit the cmdline and add a cmdline text to the history.
 func (c *Cmdline) Exit() {
 	c.History.add()
-	c.History = nil
 	widget.HideCursor()
 	c.filer.ResizeRelative(0, 0, 0, 1)
 	c.filer.Disconnect()
