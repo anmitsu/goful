@@ -1,6 +1,6 @@
 # Goful Demos
 
-## Copy/Move Progress
+## Copy Progress
 
 File/directory copy (default `c`) and move (default `m`).
 
@@ -8,8 +8,8 @@ For example, copy to a neighbor directory from selected and mark files:
 
 ![demo_copy](demo_copy.gif)
 
-During copy/move processing draws progress percent, gauge, bps and estimated
-time of arrival.
+During copy processing draws progress percent, gauge, bps and estimated time of
+arrival.
 
 ## Bulk Rename
 
@@ -54,15 +54,22 @@ If goful is running in tmux, it creates a new window and executes the command.
 
 ## Expand Macro
 
-macro        | expanded string |
+macro        | expanded string
 -------------|------------------
-`%f`, `%F`   | File name/path on cursor
-`%x`, `%X`   | File name/path with extension excluded on cursor
-`%m`, `%M`   | Marked file names/paths joined by spaces
-`%d`, `%D`   | Directory name/path on cursor
-`%d2`, `%D2` | Neighbor directory name/path
-`%~f`, `%~F`<br>`%~x`, `%~X`<br>`%~m`, `%~M`<br>`%~d`, `%~D`<br>`%~d2`, `%~D2` | Expand by non quote
-`%&`         | Flag to run command in background
+`%f` `%F`   | File name/path on cursor
+`%x` `%X`   | File name/path with extension excluded on cursor
+`%m` `%M`   | Marked file names/paths joined by spaces
+`%d` `%D`   | Directory name/path on cursor
+`%d2` `%D2` | Neighbor directory name/path
+`%~f` ...   | Expand by non quote
+`%&`        | Flag to run command in background
+
+The macro is useful if do not want to specify a file name when run the shell.
+
+Macros starts with `%` are expanded surrounded by quote, and those starts with
+`%~` are expanded by non quote.  The `%~` mainly uses to for cmd.exe.
+
+Use `%&` when background execute the shell such as GUI apps launching.
 
 ![demo_macro](demo_macro.gif)
 
