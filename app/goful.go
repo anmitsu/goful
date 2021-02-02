@@ -3,7 +3,7 @@ package app
 
 import (
 	"github.com/anmitsu/goful/filer"
-	"github.com/anmitsu/goful/infobar"
+	"github.com/anmitsu/goful/info"
 	"github.com/anmitsu/goful/menu"
 	"github.com/anmitsu/goful/message"
 	"github.com/anmitsu/goful/progress"
@@ -27,7 +27,7 @@ type Goful struct {
 // NewGoful creates a new goful client based recording a previous state.
 func NewGoful(path string) *Goful {
 	message.Init()
-	infobar.Init()
+	info.Init()
 	progress.Init()
 	width, height := widget.Size()
 	goful := &Goful{
@@ -75,9 +75,9 @@ func (g *Goful) Resize(x, y, width, height int) {
 	if wid := g.Next(); wid != nil {
 		wid.Resize(x, y, width, height-2-offset)
 	}
-	message.Resize(0, height-2, width, 1)
-	infobar.Resize(0, height-1, width, 1)
 	progress.Resize(0, height-4, width, 1)
+	message.Resize(0, height-2, width, 1)
+	info.Resize(0, height-1, width, 1)
 }
 
 // Draw all widgets.
@@ -86,9 +86,9 @@ func (g *Goful) Draw() {
 	if g.Next() != nil {
 		g.Next().Draw()
 	}
-	message.Draw()
-	infobar.Draw(g.File())
 	progress.Draw()
+	message.Draw()
+	info.Draw(g.File())
 }
 
 // Input to a current widget.

@@ -1,5 +1,5 @@
-// Package infobar displays the file information.
-package infobar
+// Package info displays the file information.
+package info
 
 import (
 	"os"
@@ -7,28 +7,28 @@ import (
 	"github.com/anmitsu/goful/widget"
 )
 
-var infobar *infoWindow
+var info *infoWindow
 
 // Draw the information bar for file information.
 func Draw(fi os.FileInfo) {
-	infobar.draw(fi)
+	info.draw(fi)
 }
 
 // Resize the information bar.
 func Resize(x, y, width, height int) {
-	infobar.Resize(x, y, width, height)
+	info.Resize(x, y, width, height)
 }
 
 // ResizeRelative resizes relative to current size.
 func ResizeRelative(x, y, width, height int) {
-	infobar.Clear()
-	infobar.ResizeRelative(x, y, width, height)
+	info.Clear()
+	info.ResizeRelative(x, y, width, height)
 }
 
 // Init the information bar at the bottom position.
 func Init() {
 	width, height := widget.Size()
-	infobar = &infoWindow{widget.NewWindow(0, height-1, width, 1)}
+	info = &infoWindow{widget.NewWindow(0, height-1, width, 1)}
 }
 
 // infoWindow is the information window to display file information.
