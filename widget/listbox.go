@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"github.com/anmitsu/goful/look"
-	"github.com/anmitsu/goful/utils"
+	"github.com/anmitsu/goful/util"
 	"github.com/mattn/go-runewidth"
 )
 
@@ -58,7 +58,7 @@ func (e *highlightContent) Draw(x, y, width int, focus bool) {
 	}
 
 	name := runewidth.Truncate(e.Name(), width, "~")
-	for _, s := range utils.SplitWithSep(name, e.highlight) {
+	for _, s := range util.SplitWithSep(name, e.highlight) {
 		if s == e.highlight {
 			style := look.Highlight()
 			if focus {

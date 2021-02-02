@@ -7,7 +7,7 @@ import (
 	"strings"
 
 	"github.com/anmitsu/goful/message"
-	"github.com/anmitsu/goful/utils"
+	"github.com/anmitsu/goful/util"
 	"github.com/anmitsu/goful/widget"
 )
 
@@ -122,22 +122,22 @@ func (g *Goful) expandMacro(cmd string) (result string, background bool) {
 			case macroFile:
 				src = g.File().Name()
 				if !nonQuote {
-					src = utils.Quote(src)
+					src = util.Quote(src)
 				}
 			case macroFilePath:
 				src = g.File().Path()
 				if !nonQuote {
-					src = utils.Quote(src)
+					src = util.Quote(src)
 				}
 			case macroFileWithoutExt:
-				src = utils.RemoveExt(g.File().Name())
+				src = util.RemoveExt(g.File().Name())
 				if !nonQuote {
-					src = utils.Quote(src)
+					src = util.Quote(src)
 				}
 			case macroFileWithoutExtPath:
-				src = utils.RemoveExt(g.File().Path())
+				src = util.RemoveExt(g.File().Path())
 				if !nonQuote {
-					src = utils.Quote(src)
+					src = util.Quote(src)
 				}
 			case macroMarkfile:
 				if !nonQuote {
@@ -159,7 +159,7 @@ func (g *Goful) expandMacro(cmd string) (result string, background bool) {
 					src = g.Dir().Base()
 				}
 				if !nonQuote {
-					src = utils.Quote(src)
+					src = util.Quote(src)
 				}
 			case macroDirPath:
 				if i != len(data)-1 && data[i+1] == macroNextDir {
@@ -169,7 +169,7 @@ func (g *Goful) expandMacro(cmd string) (result string, background bool) {
 					src = g.Dir().Path
 				}
 				if !nonQuote {
-					src = utils.Quote(src)
+					src = util.Quote(src)
 				}
 			case macroRunBackground:
 				background = true

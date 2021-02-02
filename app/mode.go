@@ -11,7 +11,7 @@ import (
 	"github.com/anmitsu/goful/cmdline"
 	"github.com/anmitsu/goful/look"
 	"github.com/anmitsu/goful/message"
-	"github.com/anmitsu/goful/utils"
+	"github.com/anmitsu/goful/util"
 	"github.com/anmitsu/goful/widget"
 )
 
@@ -21,7 +21,7 @@ var re = regexp.MustCompile(`([;|>&])|(%~?(?:[&mMfFxX]|[dD]2?))|([[:space:]]-[[:
 // Shell starts the shell mode.
 // The head of variadic arguments is used for cursor positioning.
 func (g *Goful) Shell(cmd string, offset ...int) {
-	commands, err := utils.SearchCommands()
+	commands, err := util.SearchCommands()
 	if err != nil {
 		message.Error(err)
 	}
@@ -36,7 +36,7 @@ func (g *Goful) Shell(cmd string, offset ...int) {
 // ShellSuspend starts the shell mode and suspends screen after running.
 // The head of variadic arguments is used for cursor positioning.
 func (g *Goful) ShellSuspend(cmd string, offset ...int) {
-	commands, err := utils.SearchCommands()
+	commands, err := util.SearchCommands()
 	if err != nil {
 		message.Error(err)
 	}

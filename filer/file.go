@@ -7,7 +7,7 @@ import (
 
 	"github.com/anmitsu/goful/look"
 	"github.com/anmitsu/goful/message"
-	"github.com/anmitsu/goful/utils"
+	"github.com/anmitsu/goful/util"
 	"github.com/anmitsu/goful/widget"
 	"github.com/gdamore/tcell/v2"
 	"github.com/mattn/go-runewidth"
@@ -68,7 +68,7 @@ func NewFileStat(dir string, name string) *FileStat {
 	if stat.IsDir() {
 		display = name
 	} else {
-		display = utils.RemoveExt(name)
+		display = util.RemoveExt(name)
 	}
 
 	return &FileStat{
@@ -96,7 +96,7 @@ func (f *FileStat) ResetDisplay() {
 	if f.stat.IsDir() {
 		f.display = f.name
 	} else {
-		f.display = utils.RemoveExt(f.name)
+		f.display = util.RemoveExt(f.name)
 	}
 }
 
@@ -170,7 +170,7 @@ func (f *FileStat) states() string {
 		if f.stat.IsDir() {
 			ret += fmt.Sprintf("%8s", "<DIR>")
 		} else {
-			ret += fmt.Sprintf("%8s", utils.FormatSize(f.stat.Size()))
+			ret += fmt.Sprintf("%8s", util.FormatSize(f.stat.Size()))
 		}
 	}
 	if statView.permission {

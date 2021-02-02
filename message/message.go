@@ -8,7 +8,7 @@ import (
 	"time"
 
 	"github.com/anmitsu/goful/look"
-	"github.com/anmitsu/goful/utils"
+	"github.com/anmitsu/goful/util"
 	"github.com/anmitsu/goful/widget"
 	"github.com/gdamore/tcell/v2"
 	"github.com/mattn/go-runewidth"
@@ -59,13 +59,13 @@ func Sec(sec time.Duration) {
 // SetInfoLog sets a path to log information messages.
 // If sets to "", non logging.
 func SetInfoLog(path string) {
-	messenger.infolog = utils.ExpandPath(path)
+	messenger.infolog = util.ExpandPath(path)
 }
 
 // SetErrorLog sets a path to log error messages.
 // If sets to "", non logging.
 func SetErrorLog(path string) {
-	messenger.errlog = utils.ExpandPath(path)
+	messenger.errlog = util.ExpandPath(path)
 }
 
 // Init initializes the message works asynchronously.

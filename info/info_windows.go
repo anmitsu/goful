@@ -9,7 +9,7 @@ import (
 	"unsafe"
 
 	"github.com/anmitsu/goful/look"
-	"github.com/anmitsu/goful/utils"
+	"github.com/anmitsu/goful/util"
 	"github.com/anmitsu/goful/widget"
 	"github.com/mattn/go-runewidth"
 )
@@ -32,7 +32,7 @@ func (w *infoWindow) draw(fi os.FileInfo) {
 		uintptr(unsafe.Pointer(&all)),
 		uintptr(unsafe.Pointer(nil)))
 	used := float64(all-free) / float64(all) * 100
-	freeSI := utils.FormatSize(free)
+	freeSI := util.FormatSize(free)
 
 	info := fmt.Sprintf("%s free %.1f%% used %s %d %s %s", freeSI, used, perm, size, mtime, name)
 	s := runewidth.Truncate(info, w.Width(), "~")

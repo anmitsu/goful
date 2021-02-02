@@ -6,7 +6,7 @@ import (
 	"os"
 
 	"github.com/anmitsu/goful/look"
-	"github.com/anmitsu/goful/utils"
+	"github.com/anmitsu/goful/util"
 	"github.com/anmitsu/goful/widget"
 	"github.com/mattn/go-runewidth"
 )
@@ -91,7 +91,7 @@ func (w *progressWindow) drawTask() {
 	}
 	w.Clear()
 
-	size := utils.FormatSize(w.task.Size())
+	size := util.FormatSize(w.task.Size())
 
 	x, y := w.LeftTop()
 	name := w.task.Name()

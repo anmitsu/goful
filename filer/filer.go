@@ -10,7 +10,7 @@ import (
 
 	"github.com/anmitsu/goful/look"
 	"github.com/anmitsu/goful/message"
-	"github.com/anmitsu/goful/utils"
+	"github.com/anmitsu/goful/util"
 	"github.com/anmitsu/goful/widget"
 	"github.com/mattn/go-runewidth"
 )
@@ -41,7 +41,7 @@ func New(x, y, width, height int) *Filer {
 		for j := 0; j < 2; j++ {
 			ws.Dirs[j] = NewDirectory(0, 0, 0, 0)
 			ws.Dirs[j].Path = home
-			ws.Dirs[j].SetTitle(utils.AbbrPath(home))
+			ws.Dirs[j].SetTitle(util.AbbrPath(home))
 		}
 		ws.allocate()
 		workspaces[i] = ws
@@ -57,7 +57,7 @@ func New(x, y, width, height int) *Filer {
 
 // NewFromState creates a new filer form the state json file.
 func NewFromState(path string, x, y, width, height int) *Filer {
-	file, err := os.Open(utils.ExpandPath(path))
+	file, err := os.Open(util.ExpandPath(path))
 	if err != nil {
 		return New(x, y, width, height)
 	}
@@ -101,7 +101,7 @@ func (f *Filer) SaveState(path string) error {
 		return err
 	}
 
-	file, err := os.Create(utils.ExpandPath(path))
+	file, err := os.Create(util.ExpandPath(path))
 	if err != nil {
 		return err
 	}
@@ -262,7 +262,7 @@ func (f *Filer) drawHeader() {
 		s := fmt.Sprintf("[%d] ", i+1)
 		x = widget.SetCells(x, y, s, style)
 		w := width - len(s)
-		s = utils.ShortenPath(ws.Dirs[i].Title(), w)
+		s = util.ShortenPath(ws.Dirs[i].Title(), w)
 		s = runewidth.Truncate(s, w, "~")
 		s = runewidth.FillRight(s, w)
 		x = widget.SetCells(x, y, s, style)

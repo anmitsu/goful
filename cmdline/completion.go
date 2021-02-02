@@ -6,7 +6,7 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/anmitsu/goful/utils"
+	"github.com/anmitsu/goful/util"
 	"github.com/anmitsu/goful/widget"
 	"github.com/google/shlex"
 )
@@ -138,7 +138,7 @@ func (p *parser) compFiles() (candidates []string) {
 }
 
 func (p *parser) compCommands() (candidates []string) {
-	commands, _ := utils.SearchCommands()
+	commands, _ := util.SearchCommands()
 	candidates = make([]string, 0, len(commands))
 	for name := range commands {
 		if strings.HasPrefix(name, p.current) {

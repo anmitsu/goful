@@ -1,4 +1,5 @@
-package utils
+// Package util provides misc utility functions.
+package util
 
 import (
 	"bufio"

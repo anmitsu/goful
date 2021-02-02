@@ -10,7 +10,7 @@ import (
 
 	"github.com/anmitsu/goful/look"
 	"github.com/anmitsu/goful/message"
-	"github.com/anmitsu/goful/utils"
+	"github.com/anmitsu/goful/util"
 	"github.com/anmitsu/goful/widget"
 )
 
@@ -154,7 +154,7 @@ func (s globDirPattern) Read(callback func(string)) {
 func (d *Directory) init4json() {
 	d.ListBox = widget.NewListBox(0, 0, 0, 0, "")
 	d.history = map[string]string{}
-	d.SetTitle(utils.AbbrPath(d.Path))
+	d.SetTitle(util.AbbrPath(d.Path))
 	d.SetColumn(1)
 	d.reader = defaultReader(".")
 }
@@ -193,7 +193,7 @@ func (d *Directory) Reset() {
 // Chdir changes the current directory and reads a new path by the default reader.
 // Sets the cursor to the history name or to the previous directory name if parent destinats.
 func (d *Directory) Chdir(path string) {
-	path = utils.ExpandPath(path)
+	path = util.ExpandPath(path)
 	path = filepath.Clean(path)
 	if !filepath.IsAbs(path) {
 		path, _ = filepath.Abs(filepath.Join(d.Path, path))
@@ -212,7 +212,7 @@ func (d *Directory) Chdir(path string) {
 	if !d.IsEmpty() {
 		d.history[d.Path] = d.File().Name()
 	}
-	d.SetTitle(utils.AbbrPath(path))
+	d.SetTitle(util.AbbrPath(path))
 	d.Path = path
 	d.reader = defaultReader(".")
 	d.read()
@@ -469,12 +469,12 @@ func (d *Directory) MarkfilePaths() []string {
 // MarkfileQuotedNames returns quoted file names for marked.
 func (d *Directory) MarkfileQuotedNames() []string {
 	if d.MarkCount() < 1 {
-		return []string{utils.Quote(d.File().Name())}
+		return []string{util.Quote(d.File().Name())}
 	}
 	markfiles := make([]string, 0, d.MarkCount())
 	for _, e := range d.List() {
 		if e.(*FileStat).IsMarked() {
-			markfiles = append(markfiles, utils.Quote(e.(*FileStat).Name()))
+			markfiles = append(markfiles, util.Quote(e.(*FileStat).Name()))
 		}
 	}
 	return markfiles
@@ -483,12 +483,12 @@ func (d *Directory) MarkfileQuotedNames() []string {
 // MarkfileQuotedPaths returns quoted file paths for marked.
 func (d *Directory) MarkfileQuotedPaths() []string {
 	if d.MarkCount() < 1 {
-		return []string{utils.Quote(d.File().Path())}
+		return []string{util.Quote(d.File().Path())}
 	}
 	markfiles := make([]string, 0, d.MarkCount())
 	for _, e := range d.List() {
 		if e.(*FileStat).IsMarked() {
-			markfiles = append(markfiles, utils.Quote(e.(*FileStat).Path()))
+			markfiles = append(markfiles, util.Quote(e.(*FileStat).Path()))
 		}
 	}
 	return markfiles

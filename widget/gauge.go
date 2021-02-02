@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"github.com/anmitsu/goful/look"
-	"github.com/anmitsu/goful/utils"
+	"github.com/anmitsu/goful/util"
 )
 
 // ProgressGauge is a progress bar changing with time.
@@ -83,7 +83,7 @@ func fmtString(d time.Duration) string {
 
 func (b *ProgressGauge) bps() string {
 	bps := b.curval / b.elapsedTime().Seconds()
-	return fmt.Sprintf("%sB/s", utils.FormatSize(int64(bps)))
+	return fmt.Sprintf("%sB/s", util.FormatSize(int64(bps)))
 }
 
 // Draw the progress gauge from start time to now and estimated time of arrival.

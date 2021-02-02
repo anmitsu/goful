@@ -9,7 +9,7 @@ import (
 	"syscall"
 
 	"github.com/anmitsu/goful/look"
-	"github.com/anmitsu/goful/utils"
+	"github.com/anmitsu/goful/util"
 	"github.com/anmitsu/goful/widget"
 	"github.com/mattn/go-runewidth"
 )
@@ -23,7 +23,7 @@ func (w *infoWindow) draw(fi os.FileInfo) {
 	free := statfs.Bavail * uint64(statfs.Bsize)
 	all := statfs.Blocks * uint64(statfs.Bsize)
 	used := float64(all-free) / float64(all) * 100
-	freeSI := utils.FormatSize(int64(free))
+	freeSI := util.FormatSize(int64(free))
 
 	stat := fi.Sys().(*syscall.Stat_t)
 	var username, group string

@@ -10,7 +10,7 @@ import (
 	"unicode/utf8"
 
 	"github.com/anmitsu/goful/look"
-	"github.com/anmitsu/goful/utils"
+	"github.com/anmitsu/goful/util"
 	"github.com/anmitsu/goful/widget"
 	"github.com/mattn/go-runewidth"
 )
@@ -163,7 +163,7 @@ var historyMap = map[string][]string{}
 
 // LoadHistory loads from a path and append to history maps of a key as the file name.
 func LoadHistory(path string) error {
-	path = utils.ExpandPath(path)
+	path = util.ExpandPath(path)
 	file, err := os.Open(path)
 	if err != nil {
 		return err
@@ -189,7 +189,7 @@ func LoadHistory(path string) error {
 
 // SaveHistory saves the history to a path.
 func SaveHistory(path string) error {
-	path = utils.ExpandPath(path)
+	path = util.ExpandPath(path)
 	if err := os.MkdirAll(filepath.Dir(path), 0755); err != nil {
 		return err
 	}
