@@ -378,7 +378,7 @@ func filerKeymap(g *app.Goful) widget.Keymap {
 		"pgdn":      func() { g.Dir().PageDown() },
 		"pgup":      func() { g.Dir().PageUp() },
 		" ":         func() { g.Dir().ToggleMark() },
-		"C-space":   func() { g.Dir().ToggleMarkAll() },
+		"C-space":   func() { g.Dir().InvertMark() },
 		"C-g":       func() { g.Dir().Reset() },
 		"C-[":       func() { g.Dir().Reset() }, // C-[ means ESC
 		"f":         func() { g.Dir().Finder() },

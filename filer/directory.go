@@ -397,8 +397,8 @@ func (d *Directory) ToggleMark() {
 	}
 }
 
-// ToggleMarkAll toggles all file marks.
-func (d *Directory) ToggleMarkAll() {
+// InvertMark toggles all file marks.
+func (d *Directory) InvertMark() {
 	for _, e := range d.List() {
 		if e.(*FileStat).Name() != ".." {
 			e.(*FileStat).ToggleMark()
