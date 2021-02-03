@@ -291,7 +291,9 @@ func (d *Directory) Base() string { return filepath.Base(d.Path) }
 
 func (d *Directory) sortBy(typ sortType) {
 	d.Sort = typ
+	name := d.File().Name()
 	sort.Sort(d)
+	d.SetCursorByName(name)
 }
 
 // SortName sorts files in ascending order by the file name.
