@@ -294,6 +294,7 @@ func (d *Directory) sortBy(typ sortType) {
 	name := d.File().Name()
 	sort.Sort(d)
 	d.SetCursorByName(name)
+	d.SetOffsetCenteredCursor()
 }
 
 // SortName sorts files in ascending order by the file name.
