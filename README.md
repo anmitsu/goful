@@ -13,7 +13,7 @@ Goful is a CUI file manager written in Go.
 
 ![demo](.github/demo.gif)
 
-For more [demos](.github/demo.md)
+More [demos](.github/demo.md)
 
 ## Install
 
@@ -41,28 +41,28 @@ key                  | function
 `~`                  | Change to home directory
 `\`                  | Change to root directory
 `w`                  | Change to neighbor directory
-`C-o`                | New directory window
+`C-o`                | Create directory window
 `C-w`                | Close directory window
 `M-f`                | Move next workspace
 `M-b`                | Move previous workspace
-`M-C-o`              | New workspace
+`M-C-o`              | Create workspace
 `M-C-w`              | Close workspace
 `space`              | Toggle mark
 `C-space`            | Invert mark
 `C-l`                | Reload
 `C-m` `o`            | Open
 `i`                  | Open by pager
-`s`                  | Sort menu
-`v`                  | View menu
-`b`                  | Bookmark menu
-`e`                  | Editor menu
-`x`                  | Command menu
-`X`                  | External command menu
+`s`                  | Sort
+`v`                  | View
+`b`                  | Bookmark
+`e`                  | Editor
+`x`                  | Command
+`X`                  | External command
 `f` `/`              | Find
-`:`                  | Start shell mode
-`;`                  | Start shell suspend mode
-`n`                  | Create new file
-`K`                  | Create new directory
+`:`                  | Shell
+`;`                  | Shell suspend
+`n`                  | Make file
+`K`                  | Make directory
 `c`                  | Copy
 `m`                  | Move
 `r`                  | Rename
