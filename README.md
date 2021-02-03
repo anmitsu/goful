@@ -33,8 +33,8 @@ key                  | function
 `C-b` `left` `h`     | Move cursor left
 `C-d`                | More move cursor down
 `C-u`                | More move cursor up
-`M-v` `pgdn`         | Page down
-`M-p` `pgup`         | Page up
+`C-v` `pgdn`         | Page down
+`M-v` `pgup`         | Page up
 `M-n`                | Scroll down
 `M-p`                | Scroll up
 `C-h` `backspace` `u`| Change to upper directory
