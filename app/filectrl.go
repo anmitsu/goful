@@ -23,7 +23,7 @@ func (g *Goful) rename(src, dst string) {
 			return
 		}
 	} else {
-		message := fmt.Sprintf("Overwrite? (%s -> %s)", src, dst)
+		message := fmt.Sprintf("Overwrite? %s", dst)
 		switch g.dialog(message, "yes", "no") {
 		case "yes":
 			break
