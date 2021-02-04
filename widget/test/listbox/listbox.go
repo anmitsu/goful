@@ -3,7 +3,6 @@ package main
 import (
 	"strings"
 
-	"github.com/anmitsu/goful/look"
 	"github.com/anmitsu/goful/widget"
 )
 
@@ -11,13 +10,15 @@ func main() {
 	widget.Init()
 	defer widget.Fini()
 
-	look.Set("default")
 	x, y := 0, 0
 	width, height := widget.Size()
 	lb := widget.NewListBox(x, y, width/2, height/2, "test")
 	lb2 := widget.NewListBox(int(float64(width)*0.7), y, int(float64(width)*0.3), height/2/2, "test2")
 	lb3 := widget.NewListBox(x, height/2, width/2, height/2, "test3")
 	lb4 := widget.NewListBox(width/2, height/2, width/2, height/2, "test4")
+
+	lb.SetBorderStyle(widget.AllBorder)
+	lb.SetBorderStyle(widget.AllBorder)
 
 	contents := []string{
 		"Hello world.",

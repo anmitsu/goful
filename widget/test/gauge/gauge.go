@@ -3,7 +3,6 @@ package main
 import (
 	"time"
 
-	"github.com/anmitsu/goful/look"
 	"github.com/anmitsu/goful/widget"
 )
 
@@ -11,7 +10,6 @@ func main() {
 	widget.Init()
 	defer widget.Fini()
 
-	look.Set("default")
 	maxval := 200 * 1024 * 1024
 
 	width, _ := widget.Size()

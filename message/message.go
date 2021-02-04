@@ -101,7 +101,7 @@ type message struct {
 func (m *message) info(s string) {
 	if m.infolog != "" {
 		if err := m.log(m.infolog, s); err != nil {
-			m.add(err.Error(), look.MessageErr())
+			m.add(err.Error(), look.MessageError())
 		}
 	}
 	m.add(s, look.MessageInfo())
@@ -110,10 +110,10 @@ func (m *message) info(s string) {
 func (m *message) error(e error) {
 	if m.errlog != "" {
 		if err := m.log(m.errlog, e.Error()); err != nil {
-			m.add(err.Error(), look.MessageErr())
+			m.add(err.Error(), look.MessageError())
 		}
 	}
-	m.add(e.Error(), look.MessageErr())
+	m.add(e.Error(), look.MessageError())
 }
 
 func (m *message) log(path, s string) error {
