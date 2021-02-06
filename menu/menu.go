@@ -101,7 +101,7 @@ func (w *Menu) Input(key string) {
 func (w *Menu) Exit() { w.filer.Disconnect() }
 
 // Next implements widget.Widget.
-func (w *Menu) Next() widget.Widget { return nil }
+func (w *Menu) Next() widget.Widget { return widget.Nil() }
 
 // Disconnect implements widget.Widget.
 func (w *Menu) Disconnect() {}

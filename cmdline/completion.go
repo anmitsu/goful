@@ -46,7 +46,7 @@ func NewCompletion(x, y, width, height int, cmdline *Cmdline) *Completion {
 }
 
 // Next returns nil.
-func (c *Completion) Next() widget.Widget { return nil }
+func (c *Completion) Next() widget.Widget { return widget.Nil() }
 
 // Disconnect do noting.
 func (c *Completion) Disconnect() {}

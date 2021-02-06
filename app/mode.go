@@ -119,7 +119,7 @@ func (g *Goful) dialog(message string, options ...string) string {
 	dialog := &dialogMode{message, options, ""}
 	g.next = cmdline.New(dialog, g)
 
-	for g.Next() != nil {
+	for !widget.IsNil(g.Next()) {
 		g.Draw()
 		widget.Show()
 		select {

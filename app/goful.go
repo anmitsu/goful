@@ -34,8 +34,7 @@ func NewGoful(path string) *Goful {
 		Filer:     filer.NewFromState(path, 0, 0, width, height-2),
 		shell:     nil,
 		terminal:  nil,
-		next:      nil,
-		event:     make(chan tcell.Event, 20),
+		next:      widget.Nil(),
 		interrupt: make(chan int, 2),
 		callback:  make(chan func()),
 		task:      make(chan int, 1),
@@ -63,7 +62,7 @@ func (g *Goful) ConfigFiler(f func(*Goful) widget.Keymap) {
 func (g *Goful) Next() widget.Widget { return g.next }
 
 // Disconnect references to a next widget for exiting.
-func (g *Goful) Disconnect() { g.next = nil }
+func (g *Goful) Disconnect() { g.next = widget.Nil() }
 
 // Resize all widgets.
 func (g *Goful) Resize(x, y, width, height int) {
@@ -72,9 +71,7 @@ func (g *Goful) Resize(x, y, width, height int) {
 		offset = 2
 	}
 	g.Filer.Resize(x, y, width, height-2-offset)
-	if wid := g.Next(); wid != nil {
-		wid.Resize(x, y, width, height-2-offset)
-	}
+	g.Next().Resize(x, y, width, height-2-offset)
 	progress.Resize(0, height-4, width, 1)
 	message.Resize(0, height-2, width, 1)
 	info.Resize(0, height-1, width, 1)
@@ -83,9 +80,7 @@ func (g *Goful) Resize(x, y, width, height int) {
 // Draw all widgets.
 func (g *Goful) Draw() {
 	g.Filer.Draw()
-	if g.Next() != nil {
 		g.Next().Draw()
-	}
 	progress.Draw()
 	message.Draw()
 	info.Draw(g.File())
@@ -93,7 +88,7 @@ func (g *Goful) Draw() {
 
 // Input to a current widget.
 func (g *Goful) Input(key string) {
-	if g.Next() != nil {
+	if !widget.IsNil(g.Next()) {
 		g.Next().Input(key)
 	} else {
 		g.Filer.Input(key)

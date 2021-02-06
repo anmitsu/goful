@@ -48,7 +48,7 @@ func New(m Mode, filer widget.Widget) *Cmdline {
 	c := &Cmdline{
 		TextBox:    widget.NewTextBox(x, y+height-1, width, 1),
 		filer:      filer,
-		completion: nil,
+		completion: widget.Nil(),
 		mode:       m,
 		History:    &History{},
 	}
@@ -68,7 +68,7 @@ func New(m Mode, filer widget.Widget) *Cmdline {
 func (c *Cmdline) Next() widget.Widget { return c.completion }
 
 // Disconnect a completion widget.
-func (c *Cmdline) Disconnect() { c.completion = nil }
+func (c *Cmdline) Disconnect() { c.completion = widget.Nil() }
 
 // StartCompletion starts a completion based on the cmdline text.
 func (c *Cmdline) StartCompletion() {
@@ -90,9 +90,7 @@ func (c *Cmdline) Resize(x, y, width, height int) {
 	y = (y + height) * 2 / 3
 	height -= y + 1
 	c.History.Resize(x, y, width, height)
-	if c.Next() != nil {
-		c.Next().Resize(x, y, width, height)
-	}
+	c.Next().Resize(x, y, width, height)
 	c.filer.ResizeRelative(0, 0, 0, -1)
 }
 
@@ -100,6 +98,7 @@ func (c *Cmdline) Resize(x, y, width, height int) {
 func (c *Cmdline) ResizeRelative(x, y, width, height int) {
 	c.TextBox.ResizeRelative(x, y, width, height)
 	c.History.ResizeRelative(x, y, width, height)
+	c.Next().ResizeRelative(x, y, width, height)
 }
 
 // DrawLine draws the cmdline.
@@ -124,7 +123,7 @@ func (c *Cmdline) DrawLine() {
 // Draw the cmdline and the completion or the histry list box
 func (c *Cmdline) Draw() {
 	c.mode.Draw(c)
-	if c.Next() != nil {
+	if !widget.IsNil(c.Next()) {
 		c.Next().Draw()
 	} else {
 		c.History.Draw()
@@ -133,7 +132,7 @@ func (c *Cmdline) Draw() {
 
 // Input to the text box or widget keymaps.
 func (c *Cmdline) Input(key string) {
-	if c.completion != nil {
+	if !widget.IsNil(c.completion) {
 		c.completion.Input(key)
 	} else if cb, ok := keymap(c)[key]; ok {
 		cb()

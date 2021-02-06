@@ -121,6 +121,28 @@ func (w *Window) ResizeRelative(x, y, width, height int) {
 	w.height += height
 }
 
+// IsNil returns whether nil widget.
+func IsNil(w Widget) bool {
+	_, ok := w.(nilWidget)
+	return ok
+}
+
+// Nil returns widget represent of nil.
+func Nil() Widget {
+	w := nilWidget{}
+	w.Window = NewWindow(0, 0, 0, 0)
+	return w
+}
+
+type nilWidget struct {
+	*Window
+}
+
+func (w nilWidget) Draw()            {}
+func (w nilWidget) Input(key string) {}
+func (w nilWidget) Next() Widget     { return w }
+func (w nilWidget) Disconnect()      {}
+
 // BorderStyle is a window border style.
 type BorderStyle int
 
