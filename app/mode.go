@@ -163,14 +163,14 @@ type quitMode struct {
 }
 
 func (m quitMode) String() string          { return "quit" }
-func (m quitMode) Prompt() string          { return "Quit? [yes/no]: " }
+func (m quitMode) Prompt() string          { return "Quit? [Y/n]: " }
 func (m quitMode) Draw(c *cmdline.Cmdline) { c.DrawLine() }
 func (m quitMode) Run(c *cmdline.Cmdline) {
 	switch c.String() {
-	case "yes":
+	case "Y", "y", "":
 		c.Exit()
 		m.exit = true
-	case "no":
+	case "n":
 		c.Exit()
 	default:
 		c.SetText("")
@@ -334,9 +334,9 @@ type removeMode struct {
 func (m *removeMode) String() string { return "remove" }
 func (m *removeMode) Prompt() string {
 	if m.Dir().IsMark() {
-		return fmt.Sprintf("Remove %d mark files? [yes/no]: ", m.Dir().MarkCount())
+		return fmt.Sprintf("Remove %d mark files? [y/n]: ", m.Dir().MarkCount())
 	} else if m.src != "" {
-		return fmt.Sprintf("Remove? %s [yes/no]: ", m.src)
+		return fmt.Sprintf("Remove? %s [y/n]: ", m.src)
 	} else {
 		return "Remove: "
 	}
@@ -345,14 +345,14 @@ func (m *removeMode) Draw(c *cmdline.Cmdline) { c.DrawLine() }
 func (m *removeMode) Run(c *cmdline.Cmdline) {
 	if marked := m.Dir().IsMark(); marked || m.src != "" {
 		switch c.String() {
-		case "yes":
+		case "y", "Y":
 			if marked {
 				m.remove(m.Dir().MarkfilePaths()...)
 			} else {
 				m.remove(m.src)
 			}
 			c.Exit()
-		case "no":
+		case "n", "N":
 			c.Exit()
 		default:
 			c.SetText("")

@@ -25,8 +25,8 @@ func (g *Goful) rename(src, dst string) {
 		}
 	} else {
 		message := fmt.Sprintf("Overwrite? %s", dst)
-		switch g.dialog(message, "yes", "no") {
-		case "yes":
+		switch g.dialog(message, "y", "n") {
+		case "y", "Y":
 			break
 		default:
 			return
@@ -62,8 +62,8 @@ func (g *Goful) bulkRename(pattern, repl string, files ...*filer.FileStat) {
 		return
 	}
 
-	switch g.dialog(fmt.Sprintf("Rename(%d)? origin -> result", count), "yes", "no") {
-	case "yes":
+	switch g.dialog(fmt.Sprintf("Rename(%d)? origin -> result", count), "y", "n") {
+	case "y", "Y":
 		renames := make([]string, 0, count)
 		for i, file := range files {
 			if newnames[i] == "" {
@@ -155,7 +155,7 @@ func (g *Goful) walk(walkFn func(dst string, src ...string), dst string, src ...
 
 	go func() {
 		g.task <- 1
-	g.ResizeRelative(0, 0, 0, -2)
+		g.ResizeRelative(0, 0, 0, -2)
 		g.Next().ResizeRelative(0, -2, 0, 0)
 		defer g.syncCallback(func() {
 			g.ResizeRelative(0, 0, 0, 2)
@@ -234,14 +234,14 @@ const (
 )
 
 func (w *walker) confirm(message string) overWrite {
-	switch w.dialog(message, "yes", "no", "!", ".") {
-	case "yes":
+	switch w.dialog(message, "y", "n", "Y", "N") {
+	case "y":
 		return overwriteYes
-	case "no":
+	case "n":
 		return overwriteNo
-	case "!":
+	case "Y":
 		return overwriteYesAll
-	case ".":
+	case "N":
 		return overwriteNoAll
 	default:
 		return overwriteCancel
