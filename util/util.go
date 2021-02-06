@@ -136,7 +136,7 @@ func searchPath(results map[string]bool, path string) (map[string]bool, error) {
 	return results, nil
 }
 
-// SearchCommands returns map with key is command name in $PATH and by bash compgen -c.
+// SearchCommands returns map with key is command name in $PATH.
 func SearchCommands() (map[string]bool, error) {
 	results := map[string]bool{}
 	for _, path := range strings.Split(os.Getenv("PATH"), string(os.PathListSeparator)) {
@@ -146,14 +146,30 @@ func SearchCommands() (map[string]bool, error) {
 			}
 		}
 	}
-
 	if runtime.GOOS == "windows" {
 		for key := range results {
 			if filepath.Ext(key) == ".exe" {
 				results[RemoveExt(key)] = true
 			}
 		}
-		return results, nil
 	}
 	return results, nil
+}
+
+// CalcSizeCount calculates files total size and count, excluding themself of
+// directories and links.
+func CalcSizeCount(src ...string) (int64, int) {
+	size := int64(0)
+	count := 0
+	for _, s := range src {
+		filepath.Walk(s, func(path string, fi os.FileInfo, err error) error {
+			if fi.IsDir() || fi.Mode()&os.ModeSymlink != 0 {
+				return nil
+			}
+			size += fi.Size()
+			count++
+			return nil
+		})
+	}
+	return size, count
 }

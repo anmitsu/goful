@@ -13,6 +13,7 @@ import (
 	"github.com/anmitsu/goful/filer"
 	"github.com/anmitsu/goful/message"
 	"github.com/anmitsu/goful/progress"
+	"github.com/anmitsu/goful/util"
 	"github.com/anmitsu/goful/widget"
 )
 
@@ -124,53 +125,55 @@ func (g *Goful) remove(files ...string) {
 }
 
 func (g *Goful) copy(dst string, src ...string) {
-	srcAbs := make([]string, len(src))
-	for i := 0; i < len(src); i++ {
-		srcAbs[i], _ = filepath.Abs(src[i])
-	}
-	dstAbs, _ := filepath.Abs(dst)
-
-	walker := g.newWalker(overwriteNo, overwriteNo, copyJob{})
-	go func() {
-		g.task <- 1
-		defer g.syncCallback(func() {
-			g.Workspace().ReloadAll()
-			<-g.task
-		})
-		if err := g.goWalk(walker, dstAbs, srcAbs...); err != nil {
+	g.walk(func(dst string, src ...string) {
+		walker := g.newWalker(overwriteNo, overwriteNo, copyJob{})
+		if err := g.letWalk(walker, dst, src...); err != nil {
 			message.Error(err)
 		} else {
 			message.Infof("Copied to %s form %s", dst, src)
 		}
-	}()
+	}, dst, src...)
 }
 
 func (g *Goful) move(dst string, src ...string) {
+	g.walk(func(dst string, src ...string) {
+		walker := g.newWalker(overwriteNo, overwriteNo, moveJob{})
+		if err := g.letWalk(walker, dst, src...); err != nil {
+			message.Error(err)
+		} else {
+			message.Infof("Moved to %s form %s", dst, src)
+		}
+	}, dst, src...)
+}
+
+func (g *Goful) walk(walkFn func(dst string, src ...string), dst string, src ...string) {
 	srcAbs := make([]string, len(src))
 	for i := 0; i < len(src); i++ {
 		srcAbs[i], _ = filepath.Abs(src[i])
 	}
 	dstAbs, _ := filepath.Abs(dst)
 
-	walker := g.newWalker(overwriteNo, overwriteNo, moveJob{})
+	g.ResizeRelative(0, 0, 0, -2)
+	if w := g.Next(); w != nil {
+		w.ResizeRelative(0, -2, 0, 0)
+	}
 	go func() {
 		g.task <- 1
 		defer g.syncCallback(func() {
+			g.ResizeRelative(0, 0, 0, 2)
+			if w := g.Next(); w != nil {
+				w.ResizeRelative(0, 2, 0, 0) // for cmdline and menu
+			}
+			widget.Show()
 			g.Workspace().ReloadAll()
 			<-g.task
 		})
-		if err := g.goWalk(walker, dstAbs, srcAbs...); err != nil {
-			message.Error(err)
-		} else {
-			message.Infof("Moved to %s form %s", dst, src)
-		}
+		walkFn(dstAbs, srcAbs...)
 	}()
 }
 
-func (g *Goful) goWalk(walker *walker, dst string, src ...string) error {
-	g.ResizeRelative(0, 0, 0, -2)
-
-	size, count := calcSizeCount(src...)
+func (g *Goful) letWalk(walker *walker, dst string, src ...string) error {
+	size, count := util.CalcSizeCount(src...)
 	progress.Start(float64(size))
 	progress.StartTaskCount(count)
 	var err error
@@ -181,26 +184,7 @@ func (g *Goful) goWalk(walker *walker, dst string, src ...string) error {
 		}
 	}
 	progress.Finish()
-
-	g.ResizeRelative(0, 0, 0, 2)
-	widget.Show()
 	return err
-}
-
-func calcSizeCount(src ...string) (int64, int) {
-	size := int64(0)
-	count := 0
-	for _, s := range src {
-		filepath.Walk(s, func(path string, info os.FileInfo, err error) error {
-			if info.IsDir() || info.Mode()&os.ModeSymlink != 0 {
-				return nil
-			}
-			size += info.Size()
-			count++
-			return nil
-		})
-	}
-	return size, count
 }
 
 type walker struct {
@@ -215,10 +199,6 @@ func (g *Goful) newWalker(fileConfirmed, dirConfirmed overWrite, f fileJob) *wal
 }
 
 func (w *walker) walk(src, dst string) error {
-	srcstat, err := os.Lstat(src)
-	if err != nil {
-		return err
-	}
 	if dststat, err := os.Stat(dst); err != nil {
 		if !os.IsNotExist(err) { // ignore error if not exist dst and create dst
 			return err
@@ -227,6 +207,10 @@ func (w *walker) walk(src, dst string) error {
 		if dststat.IsDir() { // make to in exist dst directory
 			dst = filepath.Join(dst, filepath.Base(src))
 		}
+	}
+	srcstat, err := os.Lstat(src)
+	if err != nil {
+		return err
 	}
 	if srcstat.IsDir() {
 		if strings.HasPrefix(dst, src) {
