@@ -11,7 +11,7 @@ import (
 	"github.com/gdamore/tcell/v2"
 )
 
-// Goful is a CUI file manager.
+// Goful represents a main application.
 type Goful struct {
 	*filer.Filer
 	shell     func(cmd string) []string
@@ -35,6 +35,7 @@ func NewGoful(path string) *Goful {
 		shell:     nil,
 		terminal:  nil,
 		next:      widget.Nil(),
+		event:     make(chan tcell.Event, 1),
 		interrupt: make(chan int, 2),
 		callback:  make(chan func()),
 		task:      make(chan int, 1),
@@ -80,7 +81,7 @@ func (g *Goful) Resize(x, y, width, height int) {
 // Draw all widgets.
 func (g *Goful) Draw() {
 	g.Filer.Draw()
-		g.Next().Draw()
+	g.Next().Draw()
 	progress.Draw()
 	message.Draw()
 	info.Draw(g.File())
