@@ -498,9 +498,8 @@ func (d *Directory) MarkfileQuotedPaths() []string {
 }
 
 func (d *Directory) drawFooter() {
-	count := len(d.List()) - 1
 	s := fmt.Sprintf("[%d/%d] %s(%d) %s %s",
-		d.MarkCount(), count, d.ScrollRate(), d.Cursor(), d.Sort, d.reader.String())
+		d.MarkCount(), len(d.List()), d.ScrollRate(), d.Cursor(), d.Sort, d.reader.String())
 	x, y := d.LeftBottom()
 	widget.SetCells(x, y, s, look.Default())
 }
