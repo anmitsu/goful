@@ -2,11 +2,9 @@
 package util
 
 import (
-	"bufio"
 	"fmt"
 	"io"
 	"os"
-	"os/exec"
 	"path/filepath"
 	"runtime"
 	"strings"
@@ -156,24 +154,6 @@ func SearchCommands() (map[string]bool, error) {
 			}
 		}
 		return results, nil
-	}
-	cmd := exec.Command("/bin/bash", "-c", "compgen -c")
-	out, err := cmd.StdoutPipe()
-	if err != nil {
-		return nil, err
-	}
-	if err := cmd.Start(); err != nil {
-		return nil, err
-	}
-	r := bufio.NewReader(out)
-	for {
-		line, _, err := r.ReadLine()
-		if err == io.EOF {
-			break
-		} else if err != nil {
-			return nil, err
-		}
-		results[string(line)] = true
 	}
 	return results, nil
 }
