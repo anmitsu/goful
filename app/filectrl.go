@@ -153,12 +153,12 @@ func (g *Goful) walk(walkFn func(dst string, src ...string), dst string, src ...
 	}
 	dstAbs, _ := filepath.Abs(dst)
 
+	go func() {
+		g.task <- 1
 	g.ResizeRelative(0, 0, 0, -2)
 	if w := g.Next(); w != nil {
 		w.ResizeRelative(0, -2, 0, 0)
 	}
-	go func() {
-		g.task <- 1
 		defer g.syncCallback(func() {
 			g.ResizeRelative(0, 0, 0, 2)
 			if w := g.Next(); w != nil {
