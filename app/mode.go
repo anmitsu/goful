@@ -139,7 +139,7 @@ type dialogMode struct {
 
 func (m *dialogMode) String() string { return "dialog" }
 func (m *dialogMode) Prompt() string {
-	return fmt.Sprintf("%s [%s]: ", m.message, strings.Join(m.options, "/"))
+	return fmt.Sprintf("%s [%s] ", m.message, strings.Join(m.options, "/"))
 }
 func (m *dialogMode) Draw(c *cmdline.Cmdline) { c.DrawLine() }
 func (m *dialogMode) Run(c *cmdline.Cmdline) {
@@ -163,7 +163,7 @@ type quitMode struct {
 }
 
 func (m quitMode) String() string          { return "quit" }
-func (m quitMode) Prompt() string          { return "Quit? [Y/n]: " }
+func (m quitMode) Prompt() string          { return "Quit? [Y/n] " }
 func (m quitMode) Draw(c *cmdline.Cmdline) { c.DrawLine() }
 func (m quitMode) Run(c *cmdline.Cmdline) {
 	switch c.String() {
@@ -196,11 +196,11 @@ type copyMode struct {
 func (m *copyMode) String() string { return "copy" }
 func (m *copyMode) Prompt() string {
 	if m.Dir().IsMark() {
-		return fmt.Sprintf("Copy %d mark files to: ", m.Dir().MarkCount())
+		return fmt.Sprintf("Copy %d mark files to ", m.Dir().MarkCount())
 	} else if m.src != "" {
-		return fmt.Sprintf("Copy from %s to: ", m.src)
+		return fmt.Sprintf("Copy from %s to ", m.src)
 	} else {
-		return "Copy from: "
+		return "Copy from "
 	}
 }
 func (m *copyMode) Draw(c *cmdline.Cmdline) { c.DrawLine() }
@@ -239,11 +239,11 @@ type moveMode struct {
 func (m *moveMode) String() string { return "move" }
 func (m *moveMode) Prompt() string {
 	if m.Dir().IsMark() {
-		return fmt.Sprintf("Move %d mark files to: ", m.Dir().MarkCount())
+		return fmt.Sprintf("Move %d mark files to ", m.Dir().MarkCount())
 	} else if m.src != "" {
-		return fmt.Sprintf("Move from %s to: ", m.src)
+		return fmt.Sprintf("Move from %s to ", m.src)
 	} else {
-		return "Move from: "
+		return "Move from "
 	}
 }
 func (m *moveMode) Draw(c *cmdline.Cmdline) { c.DrawLine() }
@@ -278,7 +278,7 @@ type renameMode struct {
 }
 
 func (m *renameMode) String() string          { return "rename" }
-func (m *renameMode) Prompt() string          { return fmt.Sprintf("Rename: %s -> ", m.src) }
+func (m *renameMode) Prompt() string          { return fmt.Sprintf("Rename %s -> ", m.src) }
 func (m *renameMode) Draw(c *cmdline.Cmdline) { c.DrawLine() }
 func (m *renameMode) Run(c *cmdline.Cmdline) {
 	dst := c.String()
@@ -301,7 +301,7 @@ type bulkRenameMode struct {
 }
 
 func (m *bulkRenameMode) String() string          { return "bulkrename" }
-func (m *bulkRenameMode) Prompt() string          { return "Rename by regexp: %s/" }
+func (m *bulkRenameMode) Prompt() string          { return "Rename by regexp %s/" }
 func (m *bulkRenameMode) Draw(c *cmdline.Cmdline) { c.DrawLine() }
 func (m *bulkRenameMode) Run(c *cmdline.Cmdline) {
 	var pattern, repl string
@@ -334,9 +334,9 @@ type removeMode struct {
 func (m *removeMode) String() string { return "remove" }
 func (m *removeMode) Prompt() string {
 	if m.Dir().IsMark() {
-		return fmt.Sprintf("Remove %d mark files? [y/n]: ", m.Dir().MarkCount())
+		return fmt.Sprintf("Remove %d mark files? [y/n] ", m.Dir().MarkCount())
 	} else if m.src != "" {
-		return fmt.Sprintf("Remove? %s [y/n]: ", m.src)
+		return fmt.Sprintf("Remove? %s [y/n] ", m.src)
 	} else {
 		return "Remove: "
 	}
@@ -459,9 +459,9 @@ type chmodMode struct {
 func (m *chmodMode) String() string { return "chmod" }
 func (m *chmodMode) Prompt() string {
 	if m.Dir().IsMark() {
-		return fmt.Sprintf("Chmod %d mark files to: ", m.Dir().MarkCount())
+		return fmt.Sprintf("Chmod %d mark files to ", m.Dir().MarkCount())
 	} else if m.fi != nil {
-		return fmt.Sprintf("Chmod %s: %o to ", m.fi.Name(), m.fi.Mode())
+		return fmt.Sprintf("Chmod %s %o to ", m.fi.Name(), m.fi.Mode())
 	}
 	return "Chmod: "
 }
@@ -525,7 +525,7 @@ type chdirMode struct {
 }
 
 func (m *chdirMode) String() string          { return "chdir" }
-func (m *chdirMode) Prompt() string          { return "Chdir to: " }
+func (m *chdirMode) Prompt() string          { return "Chdir to " }
 func (m *chdirMode) Draw(c *cmdline.Cmdline) { c.DrawLine() }
 func (m *chdirMode) Run(c *cmdline.Cmdline) {
 	if path := c.String(); path != "" {
