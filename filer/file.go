@@ -141,6 +141,26 @@ func (f *FileStat) IsExec() bool {
 	return f.stat.Mode().Perm()&0111 != 0
 }
 
+// IsFIFO reports whether the named pipe file.
+func (f *FileStat) IsFIFO() bool {
+	return f.stat.Mode()&os.ModeNamedPipe != 0
+}
+
+// IsDevice reports whether the device file.
+func (f *FileStat) IsDevice() bool {
+	return f.stat.Mode()&os.ModeDevice != 0
+}
+
+// IsCharDevice reports whether the character device file.
+func (f *FileStat) IsCharDevice() bool {
+	return f.stat.Mode()&os.ModeCharDevice != 0
+}
+
+// IsSocket reports whether the socket file.
+func (f *FileStat) IsSocket() bool {
+	return f.stat.Mode()&os.ModeSocket != 0
+}
+
 // IsMarked reports whether the marked file.
 func (f *FileStat) IsMarked() bool {
 	return f.marked
@@ -148,16 +168,17 @@ func (f *FileStat) IsMarked() bool {
 
 func (f *FileStat) suffix() string {
 	if f.IsLink() {
-		if link, err := os.Readlink(f.Path()); err != nil {
-			message.Error(err)
-		} else {
-			if f.stat.IsDir() {
-				return "@ -> " + link + "/"
-			}
-			return "@ -> " + link
+		link, _ := os.Readlink(f.Path())
+		if f.stat.IsDir() {
+			return "@ -> " + link + "/"
 		}
+		return "@ -> " + link
 	} else if f.IsDir() {
 		return "/"
+	} else if f.IsFIFO() {
+		return "|"
+	} else if f.IsSocket() {
+		return "="
 	} else if f.IsExec() {
 		return "*"
 	}
