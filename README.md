@@ -6,14 +6,14 @@
 
 Goful is a CUI file manager written in Go.
 
-* Works on cross-platform such as gnome-terminal and cmd.exe.
-* Displays multiple windows and workspaces.
-* A command line to execute using such as bash and tmux.
+* Works on cross-platform such as gnome-terminal and cmd.exe
+* Displays multiple windows and workspaces
+* A command line to execute using such as bash and tmux
 * Provides filtering search, async copy, glob, bulk rename, etc.
 
 ![demo](.github/demo.gif)
 
-More [demos](.github/demo.md)
+[More demos](.github/demo.md)
 
 ## Install
 
@@ -78,21 +78,40 @@ For more see [main.go](main.go)
 
 ## Customize
 
-Goful customizes by edit `main.go` and rebuild.
+Goful don't have a config file, instead you can customize by edit `main.go`.
 
-For example, install your customized binary to `$GOPATH/bin`.
+Examples of customizing:
 
-    Clone source code
-    $ git clone https://github.com/anmitsu/goful
+* Change and add keybindings
+* Change terminal and shell
+* Change file opener (editor, pager and more)
+* Adding bookmarks
+* Setting colors and looks
 
-    Copy original main.go to my/goful directory
-    $ cd goful
-    $ mkdir -p my/goful
-    $ cp main.go my/goful
-    $ cd my/goful
-    
-    After edited my/goful/main.go
-    $ go install
+Recommend remain original `main.go` and copy to own `main.go`.
+
+For example:
+
+1. Go to source directory
+
+```sh
+$ cd $GOPATH/src/github.com/anmitsu/goful
+```
+
+2. Copy original `main.go` to `my/goful` directory
+
+```sh
+$ cd goful
+$ mkdir -p my/goful
+$ cp main.go my/goful
+$ cd my/goful
+```
+
+3. Install after edit `my/goful/main.go`
+
+```sh
+$ go install
+```
 
 ## Contributing
 
