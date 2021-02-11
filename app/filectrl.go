@@ -500,6 +500,7 @@ func removeEmptyDir(src string) error {
 
 func letCopy(srcfile, dstfile *os.File) error {
 	quit := make(chan bool)
+	defer close(quit)
 	go func() { // drawing progress
 		ticker := time.NewTicker(50 * time.Millisecond)
 		defer ticker.Stop()
@@ -519,6 +520,7 @@ func letCopy(srcfile, dstfile *os.File) error {
 		return err
 	}
 	progress.StartTask(srcstat)
+	defer progress.FinishTask()
 	buf := make([]byte, 4096)
 	for {
 		n, err := srcfile.Read(buf)
@@ -533,7 +535,5 @@ func letCopy(srcfile, dstfile *os.File) error {
 		}
 		progress.Update(float64(n))
 	}
-	close(quit)
-	progress.FinishTask()
 	return nil
 }
