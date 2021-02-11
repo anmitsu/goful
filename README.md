@@ -88,30 +88,22 @@ Examples of customizing:
 * Adding bookmarks
 * Setting colors and looks
 
-Recommend remain original `main.go` and copy to own `main.go`.
+Recommend remain original `main.go` and copy to own `main.go` for example:
 
-For example:
+Go to source directory
 
-1. Go to source directory
+    $ cd $GOPATH/src/github.com/anmitsu/goful
 
-```sh
-$ cd $GOPATH/src/github.com/anmitsu/goful
-```
+Copy original `main.go` to `my/goful` directory
 
-2. Copy original `main.go` to `my/goful` directory
+    $ cd goful
+    $ mkdir -p my/goful
+    $ cp main.go my/goful
+    $ cd my/goful
 
-```sh
-$ cd goful
-$ mkdir -p my/goful
-$ cp main.go my/goful
-$ cd my/goful
-```
+Install after edit `my/goful/main.go`
 
-3. Install after edit `my/goful/main.go`
-
-```sh
-$ go install
-```
+    $ go install
 
 ## Contributing
 
