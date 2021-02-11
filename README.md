@@ -96,7 +96,6 @@ Go to source directory
 
 Copy original `main.go` to `my/goful` directory
 
-    $ cd goful
     $ mkdir -p my/goful
     $ cp main.go my/goful
     $ cd my/goful
