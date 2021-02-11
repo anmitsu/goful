@@ -310,18 +310,33 @@ func (w *Workspace) ResizeRelative(x, y, width, height int) {
 	w.allocate()
 }
 
-// Draw all directories.
+// Draw all directories and hide a cursor if all finders not active.
 func (w *Workspace) Draw() {
-	switch w.Layout {
-	case layoutFullscreen:
+	if w.Layout == layoutFullscreen {
 		w.Dir().draw(true)
-	default:
-		for i, d := range w.Dirs {
-			if i != w.Focus {
-				d.draw(false)
-			} else {
-				d.draw(true)
-			}
+	} else {
+		w.draw()
+	}
+	if !w.isShowCursor() {
+		widget.HideCursor()
+	}
+}
+
+func (w *Workspace) isShowCursor() bool {
+	for i, d := range w.Dirs {
+		if d.finder != nil && i == w.Focus {
+			return true
+		}
+	}
+	return false
+}
+
+func (w *Workspace) draw() {
+	for i, d := range w.Dirs {
+		if i != w.Focus {
+			d.draw(false)
+		} else {
+			d.draw(true)
 		}
 	}
 }

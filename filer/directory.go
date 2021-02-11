@@ -536,6 +536,6 @@ func (d *Directory) draw(focus bool) {
 	d.drawFiles(focus)
 	d.drawFooter()
 	if d.finder != nil {
-		d.finder.Draw()
+		d.finder.Draw(focus)
 	}
 }

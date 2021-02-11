@@ -113,8 +113,8 @@ func (f *Finder) find(callback func(name string)) {
 	}
 }
 
-// Draw the finder.
-func (f *Finder) Draw() {
+// Draw the finder and show a cursor if focus is true.
+func (f *Finder) Draw(focus bool) {
 	f.Clear()
 	x, y := f.LeftTop()
 	s := "Find: " + f.String()
@@ -123,7 +123,9 @@ func (f *Finder) Draw() {
 	if spacewidth > 0 {
 		widget.SetCells(x, y, strings.Repeat(" ", spacewidth), look.Finder())
 	}
-	widget.ShowCursor(x, y)
+	if focus {
+		widget.ShowCursor(x, y)
+	}
 }
 
 // Exit the finder and reload the directory to clear filtering.
