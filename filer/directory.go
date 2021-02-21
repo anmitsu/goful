@@ -50,13 +50,13 @@ type sortType string
 
 const (
 	sortName     sortType = "Name[^]"
-	sortNameRev           = "Name[$]"
-	sortSize              = "Size[^]"
-	sortSizeRev           = "Size[$]"
-	sortMtime             = "Time[^]"
-	sortMtimeRev          = "Time[$]"
-	sortExt               = "Ext[^]"
-	sortExtRev            = "Ext[$]"
+	sortNameRev  sortType = "Name[$]"
+	sortSize     sortType = "Size[^]"
+	sortSizeRev  sortType = "Size[$]"
+	sortMtime    sortType = "Time[^]"
+	sortMtimeRev sortType = "Time[$]"
+	sortExt      sortType = "Ext[^]"
+	sortExtRev   sortType = "Ext[$]"
 )
 
 var priorityDir = true
