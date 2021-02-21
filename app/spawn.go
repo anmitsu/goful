@@ -2,6 +2,7 @@ package app
 
 import (
 	"bytes"
+	"errors"
 	"os"
 	"os/exec"
 	"strings"
@@ -28,19 +29,24 @@ func (g *Goful) Spawn(cmd string) {
 }
 
 func spawn(cmd *exec.Cmd) error {
-	var bufout, buferr bytes.Buffer
+	var bufout bytes.Buffer
 	cmd.Stdout = &bufout
-	cmd.Stderr = &buferr
 	if err := cmd.Start(); err != nil {
 		return err
 	}
 	go func() {
-		cmd.Wait()
+		var errWait = cmd.Wait()
+		var stderr = &exec.ExitError{}
+		switch {
+		case errors.As(errWait, &stderr):
+			message.Errorf("%q: %s", cmd, stderr.Stderr)
+			return
+		case errWait != nil:
+			message.Errorf("%q: %v", cmd, errWait)
+			return
+		}
 		if bufout.Len() > 0 {
 			message.Info(bufout.String())
-		}
-		if buferr.Len() > 0 {
-			message.Errorf(buferr.String())
 		}
 	}()
 	return nil
