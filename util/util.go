@@ -118,10 +118,10 @@ func FormatSize(n int64) string {
 
 func searchPath(results map[string]bool, path string) (map[string]bool, error) {
 	dir, err := os.Open(path)
-	defer dir.Close()
 	if err != nil {
-		return results, err
+		return nil, fmt.Errorf("searching paths: %w", err)
 	}
+	defer dir.Close()
 	for {
 		names, err := dir.Readdirnames(100)
 		if err == io.EOF {
@@ -162,7 +162,7 @@ func CalcSizeCount(src ...string) (int64, int) {
 	size := int64(0)
 	count := 0
 	for _, s := range src {
-		filepath.Walk(s, func(path string, fi os.FileInfo, err error) error {
+		_ = filepath.Walk(s, func(path string, fi os.FileInfo, err error) error {
 			if fi.IsDir() || fi.Mode()&os.ModeSymlink != 0 {
 				return nil
 			}
