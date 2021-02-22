@@ -122,7 +122,7 @@ func (g *Goful) dialog(message string, options ...string) string {
 	for !widget.IsNil(g.Next()) {
 		g.Draw()
 		widget.Show()
-		<-g.event
+		g.eventHandler(<-g.event)
 	}
 	g.next = tmp
 	return dialog.result
