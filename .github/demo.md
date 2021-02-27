@@ -1,30 +1,72 @@
-# Goful Demos
+# Tutorial Demos
 
-## Copy Progress
+## Copy and Move
 
-File/directory copy (default `c`) and move (default `m`).
-
-For example, copy to a neighbor directory from selected and mark files:
+Copy (default `c`) and move (default `m`) mark (default `space` and invert
+`C-space`) files.
 
 ![demo_copy](demo_copy.gif)
 
-During copy processing draws progress percent, gauge, bps and estimated time of
-arrival.
+First input a copy source file name (or path).  The default source is a file
+name on the cursor.  If files are marked, this step is skipped.
+
+Second input a copy destination path and start copy processing.  The default
+destination is a neighboring directory path.
+
+During processing draws copying file count, size and name, progress percent,
+gauge, bps and estimated time of arrival.
+
+If the source file type is a directory, recursively copy.  Also copy
+modification time and permissions.
+
+Rise a override confirm dialog `[y/n/Y/N]` if the name same as source file
+exists in the destination.  This dialog means:
+
+* `y` is overwrite only this file
+* `n` is not overwrite only this file
+* `Y` is overwrite all later file
+* `N` is not overwrite all later file
+
+Copy process works asynchronously.  And processed in the order if you run
+multiple copies.
+
+Note that copy process can not interrupt.  If you want to interrupt, please quit
+the application (default `q` `Q`).
 
 ## Bulk Rename
 
-Bulk renaming (default `R`) for mark files:
+Bulk renaming (default `R`) for mark (default `space` and invert `C-space`)
+files.
+
+Rename by the regexp pattern.  Input like the vim substituting style
+(regexp/replaced).  Display and confirm matched files and replaced names before
+rename.
 
 ![demo_bulk](demo_bulk.gif)
 
-Rename by the regexp pattern.  Input to the cmdline like the vim substituting
-style (regexp/replaced).  Display and confirm matched files and replaced names
-before rename.
+## Finder (Filtering search)
+
+The finder (default `f` `/`) filters files in the directory.
+
+Input characters recognizes as the regexp.  Case insensitive when inputs
+lowercase only, on the other hand case sensitive when contains uppercase.
+
+Delete characters by `C-h` and `backspace` (default).  Can select input
+histories by `M-p` and `M-n` (default).
+
+Other than character inputs (exclude a space) and the finder keymap pass to the
+main input.
+
+Hit reset key (default `C-g` `C-[` means `Esc`) to clear filtering.
+
+![demo_finder](demo_finder.gif)
 
 ## Glob
 
 Glob is matched by wild card pattern in the current directory (default `g` and
 recursive `G`).
+
+Hit reset key (default `C-g` `C-[` means `Esc`) to clear glob patterns.
 
 ![demo_glob](demo_glob.gif)
 
