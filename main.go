@@ -31,12 +31,12 @@ func main() {
 
 	goful := app.NewGoful(state)
 	config(goful)
-	cmdline.LoadHistory(history)
+	_ = cmdline.LoadHistory(history)
 
 	goful.Run()
 
-	goful.SaveState(state)
-	cmdline.SaveHistory(history)
+	_ = goful.SaveState(state)
+	_ = cmdline.SaveHistory(history)
 }
 
 func config(g *app.Goful) {

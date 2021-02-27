@@ -65,13 +65,13 @@ func (g *Goful) SpawnSuspend(cmd string) {
 		widget.Init()
 		message.Info(cmd)
 	}(strings.Join(execCmd.Args, " "))
-	execCmd.Run()
+	_ = execCmd.Run()
 
 	shell := exec.Command(args[0])
 	shell.Stdin = os.Stdin
 	shell.Stdout = os.Stdout
 	shell.Stderr = os.Stderr
-	shell.Run()
+	_ = shell.Run()
 }
 
 const (

@@ -135,7 +135,7 @@ func (s globDirPattern) String() string {
 }
 
 func (s globDirPattern) Read(callback func(string)) {
-	filepath.Walk(".", func(path string, info os.FileInfo, err error) error {
+	_ = filepath.Walk(".", func(path string, info os.FileInfo, err error) error {
 		if path == "." {
 			return nil
 		}
