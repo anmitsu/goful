@@ -275,6 +275,7 @@ func Init() {
 
 // Fini finishes the tcell screen.
 func Fini() {
+	screen.ShowCursor(0, 0)
 	screen.Fini()
 }
 
