@@ -1,9 +1,9 @@
 package filer
 
 import (
-	"log"
 	"os"
 
+	"github.com/anmitsu/goful/message"
 	"github.com/anmitsu/goful/widget"
 )
 
@@ -111,7 +111,9 @@ func (w *Workspace) SetFocus(x int) {
 func (w *Workspace) attach() {
 	err := os.Chdir(w.Dir().Path)
 	if err != nil {
-		log.Fatalln(err)
+		message.Error(err)
+		home, _ := os.UserHomeDir()
+		w.Dir().Chdir(home)
 	}
 }
 
@@ -122,7 +124,9 @@ func (w *Workspace) ReloadAll() {
 	}
 	err := os.Chdir(w.Dir().Path)
 	if err != nil {
-		log.Fatalln(err)
+		message.Error(err)
+		home, _ := os.UserHomeDir()
+		w.Dir().Chdir(home)
 	}
 }
 
