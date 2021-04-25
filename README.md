@@ -15,6 +15,10 @@ Goful is a CUI file manager written in Go.
 
 ## Install
 
+### Pre-build releases
+
+See [releases](https://github.com/anmitsu/goful/releases).
+
 ### Go version >= 1.16
 
     $ go install github.com/anmitsu/goful@latest
