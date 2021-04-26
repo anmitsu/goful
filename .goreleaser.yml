@@ -37,3 +37,5 @@ changelog:
       - '^chore'
       - '^test'
       - '^style'
+      - Merge pull request
+      - Merge branch
