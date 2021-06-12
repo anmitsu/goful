@@ -16,11 +16,17 @@ import (
 )
 
 func main() {
+	is_tmux := false
 	widget.Init()
 	defer widget.Fini()
 
+	if runtime.GOOS == "darwin" {
+		is_tmux = strings.Contains(os.Getenv("TERM_PROGRAM"), "tmux")
+	} else {
+		is_tmux = strings.Contains(os.Getenv("TERM"), "screen")
+	}
 	// Change a terminal title.
-	if strings.Contains(os.Getenv("TERM"), "screen") {
+	if is_tmux {
 		os.Stdout.WriteString("\033kgoful\033") // for tmux
 	} else {
 		os.Stdout.WriteString("\033]0;goful\007") // for otherwise
@@ -30,7 +36,7 @@ func main() {
 	const history = "~/.goful/history/shell"
 
 	goful := app.NewGoful(state)
-	config(goful)
+	config(goful, is_tmux)
 	_ = cmdline.LoadHistory(history)
 
 	goful.Run()
@@ -39,7 +45,7 @@ func main() {
 	_ = cmdline.SaveHistory(history)
 }
 
-func config(g *app.Goful) {
+func config(g *app.Goful, is_tmux bool) {
 	look.Set("default") // default, midnight, black, white
 
 	if runewidth.EastAsianWidth {
@@ -114,7 +120,7 @@ func config(g *app.Goful) {
 			// for not close the terminal when the shell finishes running
 			const tail = `;read -p "HIT ENTER KEY"`
 
-			if strings.Contains(os.Getenv("TERM"), "screen") { // such as screen and tmux
+			if is_tmux { // such as screen and tmux
 				return []string{"tmux", "new-window", "-n", cmd, cmd + tail}
 			}
 			// To execute bash in gnome-terminal of a new window or tab.
