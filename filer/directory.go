@@ -185,8 +185,11 @@ func (d *Directory) Reset() {
 	if d.IsMark() {
 		d.MarkClear()
 	} else if _, ok := d.reader.(defaultReader); !ok {
+		name := d.File().Name()
 		d.reader = defaultReader(".")
 		d.read()
+		d.SetCursorByName(name)
+		d.SetOffsetCenteredCursor()
 	}
 }
 
