@@ -147,12 +147,6 @@ func (g *Goful) move(dst string, src ...string) {
 }
 
 func (g *Goful) walk(walkFn func(dst string, src ...string), dst string, src ...string) {
-	srcAbs := make([]string, len(src))
-	for i := 0; i < len(src); i++ {
-		srcAbs[i], _ = filepath.Abs(src[i])
-	}
-	dstAbs, _ := filepath.Abs(dst)
-
 	go func() {
 		g.task <- 1
 		g.ResizeRelative(0, 0, 0, -2)
@@ -164,17 +158,23 @@ func (g *Goful) walk(walkFn func(dst string, src ...string), dst string, src ...
 			g.Workspace().ReloadAll()
 			<-g.task
 		})
-		walkFn(dstAbs, srcAbs...)
+		walkFn(dst, src...)
 	}()
 }
 
 func (g *Goful) letWalk(walker *walker, dst string, src ...string) error {
-	size, count := util.CalcSizeCount(src...)
+	srcAbs := make([]string, len(src))
+	for i := 0; i < len(src); i++ {
+		srcAbs[i], _ = filepath.Abs(src[i])
+	}
+	dstAbs, _ := filepath.Abs(dst)
+
+	size, count := util.CalcSizeCount(srcAbs...)
 	progress.Start(float64(size))
 	progress.StartTaskCount(count)
 	var err error
-	for _, s := range src {
-		if e := walker.walk(s, dst); e != nil {
+	for _, s := range srcAbs {
+		if e := walker.walk(s, dstAbs); e != nil {
 			err = e
 			break
 		}
