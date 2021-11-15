@@ -48,7 +48,7 @@ type Menu struct {
 func New(name string, filer widget.Widget) (*Menu, error) {
 	items, ok := menusMap[name]
 	if !ok {
-		return nil, fmt.Errorf("Not found menu `%s'", name)
+		return nil, fmt.Errorf("not found menu `%s'", name)
 	}
 	x, y := filer.LeftBottom()
 	width := filer.Width()

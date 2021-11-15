@@ -18,7 +18,7 @@ type Finder struct {
 	historyPos int
 }
 
-var finderHistroy = make([]string, 0, 100)
+var finderHistory = make([]string, 0, 100)
 
 var finderKeymap func(*Finder) widget.Keymap
 
@@ -42,8 +42,8 @@ func NewFinder(dir *Directory, x, y, width, height int) *Finder {
 		historyPos: 0,
 	}
 
-	if len(finderHistroy) < 1 {
-		finderHistroy = append(finderHistroy, "")
+	if len(finderHistory) < 1 {
+		finderHistory = append(finderHistory, "")
 	}
 	finder.Edithook = func() { dir.read() }
 	return finder
@@ -52,16 +52,16 @@ func NewFinder(dir *Directory, x, y, width, height int) *Finder {
 // MoveHistory moves histories with specified amounts and sets to textbox.
 func (f *Finder) MoveHistory(amount int) {
 	f.historyPos += amount
-	if f.historyPos > len(finderHistroy)-1 {
-		f.historyPos = len(finderHistroy) - 1
+	if f.historyPos > len(finderHistory)-1 {
+		f.historyPos = len(finderHistory) - 1
 	} else if f.historyPos < 0 {
 		f.historyPos = 0
 	}
 	var text string
 	if f.historyPos != 0 {
-		text = finderHistroy[len(finderHistroy)-f.historyPos]
+		text = finderHistory[len(finderHistory)-f.historyPos]
 	} else {
-		text = finderHistroy[0]
+		text = finderHistory[0]
 	}
 	f.SetText(text)
 	f.Edithook()
@@ -70,16 +70,16 @@ func (f *Finder) MoveHistory(amount int) {
 func (f *Finder) addHistory() {
 	text := f.String()
 	if text != "" {
-		for i, hist := range finderHistroy {
+		for i, hist := range finderHistory {
 			if hist == text {
-				finderHistroy = append(finderHistroy[:i], finderHistroy[i+1:]...)
+				finderHistory = append(finderHistory[:i], finderHistory[i+1:]...)
 				break
 			}
 		}
-		if i := len(finderHistroy); i != cap(finderHistroy) {
-			finderHistroy = append(finderHistroy, text)
+		if i := len(finderHistory); i != cap(finderHistory) {
+			finderHistory = append(finderHistory, text)
 		} else {
-			finderHistroy = append(finderHistroy[2:i], text)
+			finderHistory = append(finderHistory[2:i], text)
 		}
 	}
 }
