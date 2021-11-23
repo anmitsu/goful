@@ -58,7 +58,7 @@ key                  | function
 `M-C-o`              | Create workspace
 `M-C-w`              | Close workspace
 `space`              | Toggle mark
-`C-space`            | Invert mark
+`M-=`                | Invert mark
 `C-l`                | Reload
 `C-m` `o`            | Open
 `i`                  | Open by pager
@@ -69,8 +69,8 @@ key                  | function
 `x`                  | Command
 `X`                  | External command
 `f` `/`              | Find
-`:`                  | Shell
-`;`                  | Shell suspend
+`;`                  | Shell
+`:`                  | Shell suspend
 `n`                  | Make file
 `K`                  | Make directory
 `c`                  | Copy
