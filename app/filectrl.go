@@ -125,28 +125,40 @@ func (g *Goful) remove(files ...string) {
 }
 
 func (g *Goful) copy(dst string, src ...string) {
-	g.walk(func(dst string, src ...string) {
+	srcAbs := make([]string, len(src))
+	for i := 0; i < len(src); i++ {
+		srcAbs[i], _ = filepath.Abs(src[i])
+	}
+	dstAbs, _ := filepath.Abs(dst)
+
+	g.asyncFilectrl(func() {
 		walker := g.newWalker(overwriteNo, overwriteNo, copyJob{})
-		if err := g.letWalk(walker, dst, src...); err != nil {
+		if err := letWalk(walker, dstAbs, srcAbs...); err != nil {
 			message.Error(err)
 		} else {
-			message.Infof("Copied to %s form %s", dst, src)
+			message.Infof("Copied to %s from %s", dstAbs, srcAbs)
 		}
-	}, dst, src...)
+	})
 }
 
 func (g *Goful) move(dst string, src ...string) {
-	g.walk(func(dst string, src ...string) {
+	srcAbs := make([]string, len(src))
+	for i := 0; i < len(src); i++ {
+		srcAbs[i], _ = filepath.Abs(src[i])
+	}
+	dstAbs, _ := filepath.Abs(dst)
+
+	g.asyncFilectrl(func() {
 		walker := g.newWalker(overwriteNo, overwriteNo, moveJob{})
-		if err := g.letWalk(walker, dst, src...); err != nil {
+		if err := letWalk(walker, dstAbs, srcAbs...); err != nil {
 			message.Error(err)
 		} else {
-			message.Infof("Moved to %s form %s", dst, src)
+			message.Infof("Moved to %s from %s", dstAbs, srcAbs)
 		}
-	}, dst, src...)
+	})
 }
 
-func (g *Goful) walk(walkFn func(dst string, src ...string), dst string, src ...string) {
+func (g *Goful) asyncFilectrl(fn func()) {
 	go func() {
 		g.task <- 1
 		g.ResizeRelative(0, 0, 0, -2)
@@ -158,23 +170,17 @@ func (g *Goful) walk(walkFn func(dst string, src ...string), dst string, src ...
 			g.Workspace().ReloadAll()
 			<-g.task
 		})
-		walkFn(dst, src...)
+		fn()
 	}()
 }
 
-func (g *Goful) letWalk(walker *walker, dst string, src ...string) error {
-	srcAbs := make([]string, len(src))
-	for i := 0; i < len(src); i++ {
-		srcAbs[i], _ = filepath.Abs(src[i])
-	}
-	dstAbs, _ := filepath.Abs(dst)
-
-	size, count := util.CalcSizeCount(srcAbs...)
+func letWalk(walker *walker, dst string, src ...string) error {
+	size, count := util.CalcSizeCount(src...)
 	progress.Start(float64(size))
 	progress.StartTaskCount(count)
 	var err error
-	for _, s := range srcAbs {
-		if e := walker.walk(s, dstAbs); e != nil {
+	for _, s := range src {
+		if e := walker.walk(s, dst); e != nil {
 			err = e
 			break
 		}
@@ -210,7 +216,7 @@ func (w *walker) walk(src, dst string) error {
 	}
 	if srcstat.IsDir() {
 		if strings.HasPrefix(dst, src) {
-			return fmt.Errorf("Cannot copy/move directory %s into itself %s", src, dst)
+			return fmt.Errorf("cannot copy/move directory %s into itself %s", src, dst)
 		}
 		if err := w.dir2dir(src, dst); err != nil {
 			return err
