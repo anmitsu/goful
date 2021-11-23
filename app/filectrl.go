@@ -7,7 +7,6 @@ import (
 	"path/filepath"
 	"regexp"
 	"strings"
-	"syscall"
 	"time"
 
 	"github.com/anmitsu/goful/filer"
@@ -464,11 +463,7 @@ func copyTimes(src, dst string) error {
 
 func moveFile(src, dst string) error {
 	if err := os.Rename(src, dst); err != nil {
-		if err.(*os.LinkError).Err == syscall.EXDEV { // cross-device link
-			if err := copyFileAfterRemove(src, dst); err != nil {
-				return err
-			}
-		} else {
+		if err := copyFileAfterRemove(src, dst); err != nil {
 			return err
 		}
 	}
